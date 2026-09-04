@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Acento Ortográfico - Juego SEGA</title>
+  
+  <!-- SDKs de Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -279,7 +284,7 @@
       <p id="grade-details" style="margin: 0; color: #aaa;"></p>
     </div>
 
-    <h2>Tabla de Clasificación (Ranking)</h2>
+    <h2>Tabla de Clasificación General (En Vivo)</h2>
     <div class="table-container">
       <table class="leaderboard-table">
         <thead>
@@ -290,52 +295,52 @@
             <th>Aciertos</th>
           </tr>
         </thead>
-        <tbody id="leaderboard-body"></tbody>
+        <tbody id="leaderboard-body">
+          <tr><td colspan='4'>Cargando ranking global...</td></tr>
+        </tbody>
       </table>
     </div>
 
     <button class="action-btn" onclick="restartActivity()">Intentar de Nuevo / Nuevo Estudiante</button>
-    <button class="action-btn" style="background-color: #d32f2f; margin-left: 10px;" onclick="clearLeaderboard()">Borrar Ranking</button>
   </div>
 </div>
 
 <script>
+  // CONFIGURACIÓN DE TU PROYECTO FIREBASE
+  const firebaseConfig = {
+    apiKey: "AIzaSyD6au5DwvcsJqd-AVZGh2VrigBK3rcW39s",
+    authDomain: "acento-ortografico.firebaseapp.com",
+    databaseURL: "https://acento-ortografico-default-rtdb.firebaseio.com",
+    projectId: "acento-ortografico",
+    storageBucket: "acento-ortografico.firebasestorage.app",
+    messagingSenderId: "992822183733",
+    appId: "1:992822183733:web:472513a0bdd187a19a6e7c",
+    measurementId: "G-VDFW8GYLBH"
+  };
+
+  // Inicializar Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
   // BANCO DE PALABRAS
-  // type coincide directamente con la categoría seleccionada por la columna
   const masterWordBank = [
-    // Agudas
     { raw: ["li", "mon"], type: "Aguda", hasAccent: true, accentVowelChar: "o", rule: "es Aguda y termina en N." },
     { raw: ["ca", "mion"], type: "Aguda", hasAccent: true, accentVowelChar: "o", rule: "es Aguda y termina en N." },
     { raw: ["ca", "fe"], type: "Aguda", hasAccent: true, accentVowelChar: "e", rule: "es Aguda y termina en Vocal." },
     { raw: ["pa", "pel"], type: "Aguda", hasAccent: false, accentVowelChar: null, rule: "es Aguda y termina en L (no N, S o Vocal)." },
     { raw: ["re", "loj"], type: "Aguda", hasAccent: false, accentVowelChar: null, rule: "es Aguda y termina en J." },
     { raw: ["co", "ra", "zon"], type: "Aguda", hasAccent: true, accentVowelChar: "o", rule: "es Aguda y termina en N." },
-    { raw: ["com", "pa", "nias"], type: "Aguda", hasAccent: true, accentVowelChar: "a", rule: "es Aguda y termina en S." },
-    
-    // Graves
     { raw: ["ga", "to"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "es Grave y termina en Vocal." },
     { raw: ["ar", "bol"], type: "Grave", hasAccent: true, accentVowelChar: "a", rule: "es Grave y NO termina en N, S o Vocal." },
     { raw: ["la", "piz"], type: "Grave", hasAccent: true, accentVowelChar: "a", rule: "es Grave y NO termina en N, S o Vocal." },
     { raw: ["me", "sa"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "es Grave y termina en Vocal." },
     { raw: ["ca", "mi", "sa"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "es Grave y termina en Vocal." },
-    { raw: ["al", "bum"], type: "Grave", hasAccent: true, accentVowelChar: "a", rule: "es Grave y NO termina en N, S o Vocal." },
-    { raw: ["a", "zu", "car"], type: "Grave", hasAccent: true, accentVowelChar: "u", rule: "es Grave y NO termina en N, S o Vocal." },
-    { raw: ["jo", "ven"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "es Grave y termina en N." },
-
-    // Esdrújulas
     { raw: ["me", "di", "co"], type: "Esdrújula", hasAccent: true, accentVowelChar: "e", rule: "es Esdrújula y TODAS llevan tilde." },
     { raw: ["mu", "si", "ca"], type: "Esdrújula", hasAccent: true, accentVowelChar: "u", rule: "es Esdrújula y TODAS llevan tilde." },
     { raw: ["pa", "ja", "ro"], type: "Esdrújula", hasAccent: true, accentVowelChar: "a", rule: "es Esdrújula y TODAS llevan tilde." },
-    { raw: ["la", "gri", "ma"], type: "Esdrújula", hasAccent: true, accentVowelChar: "a", rule: "es Esdrújula y TODAS llevan tilde." },
-    { raw: ["si", "la", "ba"], type: "Esdrújula", hasAccent: true, accentVowelChar: "i", rule: "es Esdrújula y TODAS llevan tilde." },
     { raw: ["bru", "ju", "la"], type: "Esdrújula", hasAccent: true, accentVowelChar: "u", rule: "es Esdrújula y TODAS llevan tilde." },
-
-    // Sobresdrújulas
     { raw: ["di", "ga", "me", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "i", rule: "es Sobresdrújula y TODAS llevan tilde." },
-    { raw: ["com", "pra", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "a", rule: "es Sobresdrújula y TODAS llevan tilde." },
-    { raw: ["ga", "na", "te", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "a", rule: "es Sobresdrújula y TODAS llevan tilde." },
-    { raw: ["ven", "de", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "e", rule: "es Sobresdrújula y TODAS llevan tilde." },
-    { raw: ["ex", "pli", "ca", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "i", rule: "es Sobresdrújula y TODAS llevan tilde." }
+    { raw: ["com", "pra", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "a", rule: "es Sobresdrújula y TODAS llevan tilde." }
   ];
 
   let currentStudent = "";
@@ -475,7 +480,6 @@
     const word = sessionWords[currentWordIndex];
     let isCorrect = true;
 
-    // Validación por tipo de categoría
     if (selectedCategory !== word.type) isCorrect = false;
     if (selectedAccentChoice !== word.hasAccent) isCorrect = false;
     if (word.hasAccent && selectedVowelChar !== word.accentVowelChar) isCorrect = false;
@@ -509,61 +513,63 @@
     document.getElementById("screen-game").style.display = "none";
     document.getElementById("screen-results").style.display = "block";
 
-    const grade = (correctAnswersCount * 0.5).toFixed(1);
+    const grade = parseFloat((correctAnswersCount * 0.5).toFixed(1));
 
     document.getElementById("final-student-name").innerText = currentStudent;
-    document.getElementById("final-grade").innerText = `${grade} / 5.0`;
+    document.getElementById("final-grade").innerText = `${grade.toFixed(1)} / 5.0`;
     document.getElementById("grade-details").innerText = `Respondiste correctamente ${correctAnswersCount} de 10 palabras.`;
 
-    saveToLeaderboard(currentStudent, grade, correctAnswersCount);
-    renderLeaderboard();
+    saveToFirebase(currentStudent, grade, correctAnswersCount);
+    listenToGlobalLeaderboard();
   }
 
-  function saveToLeaderboard(name, grade, correct) {
-    let leaderboard = JSON.parse(localStorage.getItem("sega_leaderboard") || "[]");
-    
-    leaderboard.push({
+  // GUARDAR EN FIREBASE
+  function saveToFirebase(name, grade, correct) {
+    const scoresRef = db.ref("leaderboard");
+    scoresRef.push({
       name: name,
-      grade: parseFloat(grade),
+      grade: grade,
       correct: correct,
-      date: new Date().toLocaleDateString()
+      timestamp: Date.now()
     });
-
-    leaderboard.sort((a, b) => b.grade - a.grade || b.correct - a.correct);
-    localStorage.setItem("sega_leaderboard", JSON.stringify(leaderboard));
   }
 
-  function renderLeaderboard() {
-    let leaderboard = JSON.parse(localStorage.getItem("sega_leaderboard") || "[]");
-    const tbody = document.getElementById("leaderboard-body");
-    tbody.innerHTML = "";
+  // ESCUCHAR CLASIFICACIÓN EN TIEMPO REAL
+  function listenToGlobalLeaderboard() {
+    const scoresRef = db.ref("leaderboard");
+    
+    scoresRef.on("value", (snapshot) => {
+      const tbody = document.getElementById("leaderboard-body");
+      tbody.innerHTML = "";
 
-    if (leaderboard.length === 0) {
-      tbody.innerHTML = "<tr><td colspan='4'>Aún no hay registros en la clasificación.</td></tr>";
-      return;
-    }
-
-    leaderboard.forEach((entry, idx) => {
-      const tr = document.createElement("tr");
-      if (entry.name === currentStudent && entry.grade === parseFloat((correctAnswersCount * 0.5).toFixed(1))) {
-        tr.className = "highlight-user";
+      if (!snapshot.exists()) {
+        tbody.innerHTML = "<tr><td colspan='4'>Aún no hay registros en la clasificación.</td></tr>";
+        return;
       }
 
-      tr.innerHTML = `
-        <td>${idx + 1}°</td>
-        <td>${entry.name}</td>
-        <td><b>${entry.grade.toFixed(1)}</b> / 5.0</td>
-        <td>${entry.correct} / 10</td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
+      let leaderboard = [];
+      snapshot.forEach((childSnapshot) => {
+        leaderboard.push(childSnapshot.val());
+      });
 
-  function clearLeaderboard() {
-    if (confirm("¿Estás seguro de que deseas borrar toda la tabla de clasificación?")) {
-      localStorage.removeItem("sega_leaderboard");
-      renderLeaderboard();
-    }
+      // Ordenar de mayor a menor puntaje
+      leaderboard.sort((a, b) => b.grade - a.grade || b.correct - a.correct);
+
+      leaderboard.forEach((entry, idx) => {
+        const tr = document.createElement("tr");
+        if (entry.name === currentStudent && entry.grade === parseFloat((correctAnswersCount * 0.5).toFixed(1))) {
+          tr.className = "highlight-user";
+        }
+
+        tr.innerHTML = `
+          <td>${idx + 1}°</td>
+          <td>${entry.name}</td>
+          <td><b>${entry.grade.toFixed(1)}</b> / 5.0</td>
+          <td>${entry.correct} / 10</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    });
   }
 
   function restartActivity() {
