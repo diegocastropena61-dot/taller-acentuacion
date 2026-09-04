@@ -351,12 +351,12 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // Banco de palabras con división silábica rigurosamente correcta
+        // Banco de palabras limpio de tildes previas en el arreglo silábico
         const wordBank = [
-            { syllables: ["cá", "ma", "ra"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "á" },
-            { syllables: ["lá", "piz"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "á" },
-            { syllables: ["ár", "bol"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "á" },
-            { syllables: ["so", "fá"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "á" },
+            { syllables: ["ca", "ma", "ra"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "a" },
+            { syllables: ["la", "piz"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "a" },
+            { syllables: ["ar", "bol"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "a" },
+            { syllables: ["so", "fa"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "a" },
             { syllables: ["me", "sa"], tonicIndex: 1, category: "Grave", tilde: false },
             { syllables: ["si", "lla"], tonicIndex: 1, category: "Grave", tilde: false },
             { syllables: ["vi", "drio"], tonicIndex: 1, category: "Grave", tilde: false },
@@ -369,10 +369,10 @@
             { syllables: ["cua", "der", "no"], tonicIndex: 1, category: "Grave", tilde: false },
             { syllables: ["re", "loj"], tonicIndex: 0, category: "Aguda", tilde: false },
             { syllables: ["es", "pon", "ja"], tonicIndex: 1, category: "Grave", tilde: false },
-            { syllables: ["te", "lé", "fo", "no"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "ó" },
+            { syllables: ["te", "le", "fo", "no"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "o" },
             { syllables: ["a", "mor"], tonicIndex: 0, category: "Aguda", tilde: false },
             { syllables: ["tri", "ste", "za"], tonicIndex: 1, category: "Grave", tilde: false },
-            { syllables: ["pa", "sión"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "ó" },
+            { syllables: ["pa", "sion"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "o" },
             { syllables: ["te", "mor"], tonicIndex: 0, category: "Aguda", tilde: false },
             { syllables: ["cal", "ma"], tonicIndex: 1, category: "Grave", tilde: false },
             { syllables: ["i", "ra"], tonicIndex: 1, category: "Grave", tilde: false },
@@ -389,6 +389,7 @@
         let userSelectedTilde = null;
         let userSelectedVowel = "";
 
+        // Orden estricto de derecha a izquierda: 0=Aguda, 1=Grave, 2=Esdrújula, 3=Sobresdrújula
         const categoryNames = ["Aguda", "Grave", "Esdrújula", "Sobresdrújula"];
 
         function startGame() {
@@ -478,8 +479,7 @@
             
             let isVowelCorrect = true;
             if (currentItem.tilde) {
-                const cleanVowel = currentItem.vowel.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                isVowelCorrect = (userSelectedVowel === cleanVowel);
+                isVowelCorrect = (userSelectedVowel === currentItem.vowel);
             }
 
             const isTotallyCorrect = isColCorrect && isTildeCorrect && isVowelCorrect;
