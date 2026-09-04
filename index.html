@@ -322,7 +322,7 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
-  // BANCO EXTENDIDO DE 120 PALABRAS (30 por categoría para evitar copias entre 30+ alumnos)
+  // BANCO EXTENDIDO DE 120 PALABRAS (Sintaxis limpia)
   const masterWordBank = [
     // --- AGUDAS (30) ---
     { raw: ["li", "mon"], type: "Aguda", hasAccent: true, accentVowelChar: "o", rule: "termina en N." },
@@ -342,7 +342,7 @@
     { raw: ["se", "gur"], type: "Aguda", hasAccent: false, accentVowelChar: null, rule: "NO termina en N, S o Vocal." },
     { raw: ["ba", "ron"], type: "Aguda", hasAccent: true, accentVowelChar: "o", rule: "termina en N." },
     { raw: ["a", "mor"], type: "Aguda", hasAccent: false, accentVowelChar: null, rule: "NO termina en N, S o Vocal." },
-    { raw: ["pa", me", "la"], type: "Aguda", hasAccent: true, accentVowelChar: "a", rule: "termina en Vocal." },
+    { raw: ["pa", "me", "la"], type: "Aguda", hasAccent: true, accentVowelChar: "a", rule: "termina en Vocal." },
     { raw: ["com", "pas"], type: "Aguda", hasAccent: true, accentVowelChar: "a", rule: "termina en S." },
     { raw: ["in", "gles"], type: "Aguda", hasAccent: true, accentVowelChar: "e", rule: "termina en S." },
     { raw: ["ja", "guar"], type: "Aguda", hasAccent: false, accentVowelChar: null, rule: "NO termina en N, S o Vocal." },
@@ -373,19 +373,19 @@
     { raw: ["di", "fi", "cil"], type: "Grave", hasAccent: true, accentVowelChar: "i", rule: "NO termina en N, S o Vocal." },
     { raw: ["za", "pa", "to"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
     { raw: ["pe", "lo", "ta"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
-    { raw: ["li", me", "ro"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
+    { raw: ["li", "me", "ro"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
     { raw: ["con", "dor"], type: "Grave", hasAccent: true, accentVowelChar: "o", rule: "NO termina en N, S o Vocal." },
     { raw: ["al", "bu", "men"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en N." },
-    { raw: ["ca", me", "llo"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
+    { raw: ["ca", "me", "llo"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
     { raw: ["ca", "rac", "ter"], type: "Grave", hasAccent: true, accentVowelChar: "a", rule: "NO termina en N, S o Vocal." },
-    { raw: ["plu", me", "ro"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
+    { raw: ["plu", "me", "ro"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
     { raw: ["fra", "gil"], type: "Grave", hasAccent: true, accentVowelChar: "a", rule: "NO termina en N, S o Vocal." },
     { raw: ["es", "tu", "dian", "te"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
     { raw: ["do", "lar"], type: "Grave", hasAccent: true, accentVowelChar: "o", rule: "NO termina en N, S o Vocal." },
     { raw: ["tre", "bol"], type: "Grave", hasAccent: true, accentVowelChar: "e", rule: "NO termina en N, S o Vocal." },
     { raw: ["mar", "mol"], type: "Grave", hasAccent: true, accentVowelChar: "a", rule: "NO termina en N, S o Vocal." },
     { raw: ["a", "mi", "go"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
-    { raw: ["pe", me", "ra"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
+    { raw: ["pe", "me", "ra"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
     { raw: ["se", "cro"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
 
     // --- ESDRÚJULAS (30) ---
@@ -418,7 +418,7 @@
     { raw: ["e", "co", "no", "mi", "co"], type: "Esdrújula", hasAccent: true, accentVowelChar: "o", rule: "todas las esdrújulas llevan tilde." },
     { raw: ["o", "ce", "a", "no"], type: "Esdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las esdrújulas llevan tilde." },
     { raw: ["am", "bi", "to"], type: "Esdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las esdrújulas llevan tilde." },
-    { raw: ["ca", "ti", me", "ro"], type: "Esdrújula", hasAccent: true, accentVowelChar: "i", rule: "todas las esdrújulas llevan tilde." },
+    { raw: ["ca", "ti", "me", "ro"], type: "Esdrújula", hasAccent: true, accentVowelChar: "i", rule: "todas las esdrújulas llevan tilde." },
 
     // --- SOBRESDRÚJULAS (30) ---
     { raw: ["di", "ga", "me", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "i", rule: "todas las sobresdrújulas llevan tilde." },
@@ -429,25 +429,25 @@
     { raw: ["pien", "sa", "te", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las sobresdrújulas llevan tilde." },
     { raw: ["can", "ta", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las sobresdrújulas llevan tilde." },
     { raw: ["es", "cri", "be", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "i", rule: "todas las sobresdrújulas llevan tilde." },
-    { raw: ["ll e", "va", "te", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las sobresdrújulas llevan tilde." },
+    { raw: ["lle", "va", "te", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las sobresdrújulas llevan tilde." },
     { raw: ["pre", "pa", "ra", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las sobresdrújulas llevan tilde." },
-    { raw: ["mu es", "tra", "me", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las sobresdrújulas llevan tilde." },
+    { raw: ["mues", "tra", "me", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las sobresdrújulas llevan tilde." },
     { raw: ["or", "de", "na", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las sobresdrújulas llevan tilde." },
     { raw: ["re", "cor", "da", "te", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "o", rule: "todas las sobresdrújulas llevan tilde." },
     { raw: ["fir", "ma", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "i", rule: "todas las sobresdrújulas llevan tilde." },
     { raw: ["bus", "ca", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "u", rule: "todas las sobresdrújulas llevan tilde." },
     { raw: ["ven", "de", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las sobresdrújulas llevan tilde." },
-    { raw: ["co", "re", "gi", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las sobresdrújulas llevan tilde." },
+    { raw: ["co", "rre", "gi", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las sobresdrújulas llevan tilde." },
     { raw: ["dem", "ues", "tra", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las sobresdrújulas llevan tilde." },
-    { raw: ["reg", "a", "la", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las sobresdrújulas llevan tilde." },
+    { raw: ["re", "ga", "la", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las sobresdrújulas llevan tilde." },
     { raw: ["pres", "ta", "me", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las sobresdrújulas llevan tilde." },
     { raw: ["cal", "cu", "la", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "u", rule: "todas las sobresdrújulas llevan tilde." },
-    { raw: ["ar", "ru e", "ga", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las sobresdrújulas llevan tilde." },
+    { raw: ["ar", "rue", "ga", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las sobresdrújulas llevan tilde." },
     { raw: ["cam", "bi", "a", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las sobresdrújulas llevan tilde." },
-    { raw: ["con", "fi me", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "i", rule: "todas las sobresdrújulas llevan tilde." },
+    { raw: ["con", "fi", "a", "me", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "i", rule: "todas las sobresdrújulas llevan tilde." },
     { raw: ["de", "bui", "ta", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "u", rule: "todas las sobresdrújulas llevan tilde." },
     { raw: ["de", "bui", "te", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "u", rule: "todas las sobresdrújulas llevan tilde." },
-    { raw: ["dibu", "ja", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "u", rule: "todas las sobresdrújulas llevan tilde." },
+    { raw: ["di", "bu", "ja", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "u", rule: "todas las sobresdrújulas llevan tilde." },
     { raw: ["or", "ga", "ni", "za", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "i", rule: "todas las sobresdrújulas llevan tilde." },
     { raw: ["se", "ña", "la", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las sobresdrújulas llevan tilde." },
     { raw: ["ter", "mi", "na", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "i", rule: "todas las sobresdrújulas llevan tilde." }
@@ -473,7 +473,6 @@
     currentStudent = nameInput;
     document.getElementById("display-student-name").innerText = currentStudent;
 
-    // Barajar aleatoriamente el banco entero de 120 palabras y elegir 10
     sessionWords = [...masterWordBank].sort(() => 0.5 - Math.random()).slice(0, 10);
     
     currentWordIndex = 0;
@@ -634,7 +633,6 @@
     listenToGlobalLeaderboard();
   }
 
-  // GUARDAR EN FIREBASE
   function saveToFirebase(name, grade, correct) {
     const scoresRef = db.ref("leaderboard");
     scoresRef.push({
@@ -645,7 +643,6 @@
     });
   }
 
-  // ESCUCHAR CLASIFICACIÓN EN TIEMPO REAL
   function listenToGlobalLeaderboard() {
     const scoresRef = db.ref("leaderboard");
     
@@ -663,7 +660,6 @@
         leaderboard.push(childSnapshot.val());
       });
 
-      // Ordenar de mayor a menor puntaje
       leaderboard.sort((a, b) => b.grade - a.grade || b.correct - a.correct);
 
       leaderboard.forEach((entry, idx) => {
