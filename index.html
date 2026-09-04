@@ -14,6 +14,8 @@
             --text-muted: #9ca3af;
             --border-color: #374151;
             --yellow-text: #fbbf24;
+            --btn-gray: #374151;
+            --btn-gray-hover: #4b5563;
         }
 
         * {
@@ -90,6 +92,24 @@
 
         .btn-green:hover {
             background-color: var(--accent-green-hover);
+        }
+
+        .btn-secondary {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--btn-gray);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--btn-gray-hover);
         }
 
         .header-game {
@@ -254,6 +274,7 @@
                 <input type="text" id="app-user-name" placeholder="Ej. Juan Pérez" autocomplete="off">
             </div>
             <button class="btn-green" onclick="startGame()">Comenzar Evaluación</button>
+            <button class="btn-secondary" onclick="showLeaderboardDirect()">Ver Tabla de Posiciones General</button>
         </div>
 
         <!-- PANTALLA DEL EXAMEN -->
@@ -316,10 +337,10 @@
         <!-- PANTALLA DE RESULTADOS -->
         <div id="screen-results" class="hidden">
             <h2>Resultados de la Evaluación</h2>
-            <p style="text-align: center; font-size: 18px; margin: 15px 0;">
+            <p style="text-align: center; font-size: 18px; margin: 15px 0;" id="result-user-container">
                 Estudiante: <b id="result-name" style="color: var(--yellow-text);"></b>
             </p>
-            <p style="text-align: center; font-size: 22px; font-weight: bold; margin-bottom: 25px;">
+            <p style="text-align: center; font-size: 22px; font-weight: bold; margin-bottom: 25px;" id="result-grade-container">
                 Calificación Final: <span id="result-grade" style="color: var(--accent-green);">0.0</span> / 5.0
             </p>
 
@@ -336,7 +357,7 @@
                 <tbody id="leaderboard-body"></tbody>
             </table>
             <br>
-            <button class="btn-green" onclick="restartActivity()">Realizar Otro Intento</button>
+            <button class="btn-green" onclick="restartActivity()">Volver al Inicio</button>
         </div>
     </div>
 
@@ -351,7 +372,6 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // Banco de palabras limpio de tildes previas en el arreglo silábico
         const wordBank = [
             { syllables: ["ca", "ma", "ra"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "a" },
             { syllables: ["la", "piz"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "a" },
@@ -389,7 +409,6 @@
         let userSelectedTilde = null;
         let userSelectedVowel = "";
 
-        // Orden estricto de derecha a izquierda: 0=Aguda, 1=Grave, 2=Esdrújula, 3=Sobresdrújula
         const categoryNames = ["Aguda", "Grave", "Esdrújula", "Sobresdrújula"];
 
         function startGame() {
@@ -410,6 +429,18 @@
             document.getElementById("screen-results").classList.add("hidden");
 
             loadQuestion();
+        }
+
+        function showLeaderboardDirect() {
+            document.getElementById("screen-welcome").classList.add("hidden");
+            document.getElementById("screen-game").classList.add("hidden");
+            document.getElementById("screen-results").classList.remove("hidden");
+
+            // Ocultar la sección de nota individual ya que se accede de forma general
+            document.getElementById("result-user-container").style.display = "none";
+            document.getElementById("result-grade-container").style.display = "none";
+
+            loadLeaderboard();
         }
 
         function loadQuestion() {
@@ -510,6 +541,10 @@
 
             document.getElementById("screen-game").classList.add("hidden");
             document.getElementById("screen-results").classList.remove("hidden");
+
+            // Mostrar contenedores individuales al terminar la prueba
+            document.getElementById("result-user-container").style.display = "block";
+            document.getElementById("result-grade-container").style.display = "block";
 
             document.getElementById("result-name").innerText = currentStudent;
             document.getElementById("result-grade").innerText = finalGrade.toFixed(1);
