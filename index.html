@@ -430,6 +430,9 @@
             document.getElementById("step-2-container").classList.add("hidden");
             document.getElementById("step-3-container").classList.add("hidden");
 
+            // Reactivar todos los botones en caso de haber sido deshabilitados previamente
+            document.querySelectorAll(".btn-option, .syllable-btn, .vowel-btn").forEach(b => b.disabled = false);
+
             document.getElementById("current-index").innerText = currentWordIndex + 1;
             const currentItem = selectedWords[currentWordIndex];
 
@@ -443,16 +446,18 @@
                 if (posFromEnd < 4) {
                     const sylText = currentItem.syllables[i];
                     document.getElementById(`cell-${posFromEnd}`).innerHTML = 
-                        `<button class="syllable-btn" onclick="selectSyllable(${posFromEnd}, ${i})">${sylText}</button>`;
+                        `<button class="syllable-btn" onclick="selectSyllable(event, ${posFromEnd}, ${i})">${sylText}</button>`;
                 }
             }
         }
 
-        function selectSyllable(posFromEnd, originalIdx) {
+        function selectSyllable(e, posFromEnd, originalIdx) {
             selectedSyllableIndex = posFromEnd;
 
             document.querySelectorAll(".syllable-btn").forEach(b => b.classList.remove("selected"));
-            event.target.classList.add("selected");
+            if (e && e.target) {
+                e.target.classList.add("selected");
+            }
 
             const colNames = ["Aguda", "Grave", "Esdrújula", "Sobresdrújula"];
             const colName = colNames[posFromEnd];
