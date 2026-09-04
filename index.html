@@ -6,14 +6,14 @@
     <title>Taller de Acentuación Ortográfica</title>
     <style>
         :root {
-            --primary: #4f46e5;
-            --primary-hover: #4338ca;
-            --bg: #f8fafc;
-            --card: #ffffff;
-            --text: #1e293b;
-            --border: #e2e8f0;
-            --correct: #16a34a;
-            --wrong: #dc2626;
+            --primary: #16a34a;
+            --primary-hover: #15803d;
+            --bg: #09090b;
+            --card: #18181b;
+            --text: #f4f4f5;
+            --border: #27272a;
+            --correct: #22c55e;
+            --wrong: #ef4444;
         }
 
         * {
@@ -37,9 +37,10 @@
             background-color: var(--card);
             padding: 30px;
             border-radius: 16px;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5);
             width: 100%;
             max-width: 700px;
+            border: 1px solid var(--border);
         }
 
         h1, h2, h3 {
@@ -56,6 +57,7 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
+            color: #e4e4e7;
         }
 
         input[type="text"], select {
@@ -65,6 +67,8 @@
             border-radius: 8px;
             font-size: 16px;
             margin-bottom: 15px;
+            background-color: #09090b;
+            color: #ffffff;
         }
 
         input[type="text"]:focus, select:focus {
@@ -117,7 +121,7 @@
         }
 
         .syllable-btn {
-            background-color: #f1f5f9;
+            background-color: #27272a;
             border: 2px solid var(--border);
             padding: 12px 20px;
             border-radius: 8px;
@@ -125,7 +129,7 @@
             font-weight: bold;
             cursor: pointer;
             width: auto;
-            color: var(--text);
+            color: #ffffff;
         }
 
         .syllable-btn.selected {
@@ -135,7 +139,7 @@
         }
 
         .form-section {
-            background: #f8fafc;
+            background: #09090b;
             padding: 20px;
             border-radius: 12px;
             border: 1px solid var(--border);
@@ -166,12 +170,12 @@
         }
 
         th {
-            background-color: #f1f5f9;
+            background-color: #27272a;
             color: var(--primary);
         }
 
         .highlight-user {
-            background-color: #e0e7ff;
+            background-color: #14532d;
             font-weight: bold;
         }
 
@@ -184,7 +188,7 @@
         <!-- PANTALLA INICIAL -->
         <div id="screen-welcome">
             <h1>Taller de Acentuación Ortográfica</h1>
-            <p style="text-align: center; color: #64748b; margin-bottom: 20px;">
+            <p style="text-align: center; color: #a1a1aa; margin-bottom: 20px;">
                 Identifica la sílaba tónica y aplica las reglas de acentuación.
             </p>
             <div class="input-group">
@@ -378,7 +382,6 @@
             currentStudent = nameInput;
             document.getElementById("player-display").innerText = currentStudent;
 
-            // Seleccionar 10 palabras al azar de las 90
             selectedWords = [...wordBank].sort(() => 0.5 - Math.random()).slice(0, 10);
             currentWordIndex = 0;
             correctAnswersCount = 0;
@@ -404,7 +407,6 @@
             document.getElementById("current-index").innerText = currentWordIndex + 1;
             document.getElementById("word-target").innerText = current.word;
 
-            // Generar botones de sílabas
             const box = document.getElementById("syllables-box");
             box.innerHTML = "";
             current.syllables.forEach((syl, idx) => {
@@ -495,7 +497,6 @@
             document.getElementById("result-name").innerText = currentStudent;
             document.getElementById("result-grade").innerText = finalGrade.toFixed(1);
 
-            // Enviar nota a Firebase Realtime Database
             const record = {
                 name: currentStudent,
                 grade: finalGrade,
@@ -522,7 +523,6 @@
                         leaderboard.push(child.val());
                     });
 
-                    // Ordenar de mayor a menor nota
                     leaderboard.sort((a, b) => b.grade - a.grade || b.correct - a.correct);
 
                     leaderboard.forEach((entry, idx) => {
