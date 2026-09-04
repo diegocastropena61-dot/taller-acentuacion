@@ -1,592 +1,424 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Acentuación Ortográfica - Cuadro SEGA</title>
-  
-  <!-- SDKs de Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego del Acento Ortográfico</title>
+    <style>
+        :root {
+            --primary: #4338ca;
+            --primary-hover: #3730a3;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --correct: #16a34a;
+            --wrong: #dc2626;
+            --border: #e2e8f0;
+        }
 
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #121212;
-      color: #ffffff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 15px;
-      box-sizing: border-box;
-    }
-    .card {
-      background-color: #1e1e1e;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
-      text-align: center;
-      max-width: 750px;
-      width: 100%;
-    }
-    h1 { color: #4CAF50; margin-bottom: 10px; font-size: 1.8em; }
-    p { font-size: 1em; line-height: 1.4; color: #ddd; }
-    
-    input[type="text"] {
-      padding: 12px;
-      font-size: 1.1em;
-      border-radius: 6px;
-      border: 2px solid #555;
-      background-color: #2a2a2a;
-      color: white;
-      width: 80%;
-      max-width: 300px;
-      margin-bottom: 15px;
-      text-align: center;
-    }
-    input[type="text"]:focus {
-      outline: none;
-      border-color: #4CAF50;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
 
-    .table-container {
-      margin: 20px 0;
-      overflow-x: auto;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background-color: #2a2a2a;
-      border-radius: 8px;
-      overflow: hidden;
-      font-size: 0.9em;
-    }
-    th, td {
-      border: 1px solid #444;
-      padding: 12px 6px;
-      text-align: center;
-      width: 25%;
-    }
-    th { background-color: #333; color: #FFC107; }
-    th.rule-header { background-color: #222; color: #aaa; font-size: 0.8em; font-weight: normal; }
-    th.pos-header { background-color: #2c2c2c; color: #4CAF50; font-size: 0.85em; }
-    td.active-column { background-color: #1b4332 !important; border: 2px solid #4CAF50; }
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
 
-    .syllable-btn {
-      background-color: #333;
-      color: #fff;
-      border: 2px solid #555;
-      padding: 10px 14px;
-      font-size: 1.1em;
-      border-radius: 6px;
-      cursor: pointer;
-      width: 90%;
-      transition: all 0.2s;
-    }
-    .syllable-btn:hover { background-color: #444; border-color: #FFC107; }
-    .syllable-btn.selected { border-color: #4CAF50 !important; background-color: #2e7d32 !important; font-weight: bold; }
+        .container {
+            background-color: var(--card);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 600px;
+        }
 
-    .vowel-container { display: flex; justify-content: center; gap: 10px; margin: 15px 0; }
-    .option-btn, .vowel-btn {
-      background-color: #333;
-      color: #fff;
-      border: 2px solid #555;
-      padding: 10px 18px;
-      font-size: 1em;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .option-btn:hover, .vowel-btn:hover { background-color: #444; border-color: #4CAF50; }
-    .option-btn.selected, .vowel-btn.selected { border-color: #4CAF50 !important; background-color: #2e7d32 !important; }
+        h1, h2 {
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
 
-    .action-btn {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      font-size: 1.1em;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-top: 15px;
-      font-weight: bold;
-    }
-    .action-btn:hover { background-color: #45a049; }
-    
-    .feedback { margin-top: 15px; font-weight: bold; min-height: 24px; font-size: 1.05em; }
-    .status-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-      background-color: #2a2a2a;
-      padding: 8px 15px;
-      border-radius: 6px;
-      font-size: 0.95em;
-    }
-    .status-item { color: #FFC107; font-weight: bold; }
+        p.description {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 24px;
+        }
 
-    .leaderboard-table { width: 100%; margin-top: 15px; border-collapse: collapse; }
-    .leaderboard-table th { background-color: #333; color: #4CAF50; padding: 10px; }
-    .leaderboard-table td { padding: 10px; border-bottom: 1px solid #444; }
-    .highlight-user { background-color: #1b4332 !important; font-weight: bold; }
-  </style>
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px 20px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .header-game {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+            font-weight: 600;
+        }
+
+        .word-display {
+            font-size: 36px;
+            font-weight: 800;
+            text-align: center;
+            letter-spacing: 2px;
+            margin: 30px 0;
+            color: var(--primary);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            background-color: #f1f5f9;
+            color: var(--text);
+            border: 2px solid var(--border);
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .option-btn:hover {
+            background-color: #e2e8f0;
+        }
+
+        .option-btn.correct {
+            background-color: var(--correct) !important;
+            color: white !important;
+            border-color: var(--correct) !important;
+        }
+
+        .option-btn.wrong {
+            background-color: var(--wrong) !important;
+            color: white !important;
+            border-color: var(--wrong) !important;
+        }
+
+        .feedback {
+            text-align: center;
+            font-weight: 600;
+            min-height: 24px;
+            margin-bottom: 16px;
+        }
+
+        .feedback.correct-text {
+            color: var(--correct);
+        }
+
+        .feedback.wrong-text {
+            color: var(--wrong);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background-color: #f1f5f9;
+            color: var(--primary);
+        }
+
+        .highlight-user {
+            background-color: #e0e7ff;
+            font-weight: bold;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
 </head>
 <body>
 
-<div class="card">
-  <!-- PANTALLA 1: INICIO -->
-  <div id="screen-welcome">
-    <h1>Acentuación Ortográfica - Cuadro SEGA</h1>
-    <p>¡Bienvenido a la actividad interactiva de acentuación!</p>
-    <p>Escribe tu nombre o apodo para comenzar la evaluación (10 palabras aleatorias):</p>
-    <br>
-    <input type="text" id="app-user-name" placeholder="Tu nombre o apodo" maxlength="20" autocomplete="off">
-    <br>
-    <button class="action-btn" id="start-game-btn">Comenzar Actividad</button>
-  </div>
+    <div class="container">
+        <!-- PANTALLA INICIAL -->
+        <div id="screen-welcome">
+            <h1>Acento Ortográfico</h1>
+            <p class="description">Selecciona la clasificación correcta para cada palabra.</p>
+            <div class="input-group">
+                <label for="app-user-name">Ingresa tu Nombre Completo:</label>
+                <input type="text" id="app-user-name" placeholder="Ej. Juan Pérez" autocomplete="off">
+            </div>
+            <button onclick="startGame()">Iniciar Juego</button>
+        </div>
 
-  <!-- PANTALLA 2: EVALUACIÓN -->
-  <div id="screen-game" style="display:none;">
-    <div class="status-bar">
-      <div>Estudiante: <span id="display-student-name" class="status-item"></span></div>
-      <div>Palabra: <span id="word-counter" class="status-item">1 / 10</span></div>
-      <div>Aciertos: <span id="correct-counter" class="status-item">0</span></div>
+        <!-- PANTALLA DEL JUEGO -->
+        <div id="screen-game" class="hidden">
+            <div class="header-game">
+                <span id="player-display"></span>
+                <span>Palabra: <span id="current-index">1</span>/10</span>
+            </div>
+            <div class="word-display" id="word-target">CÁMARA</div>
+            <div class="options-grid">
+                <button class="option-btn" onclick="checkAnswer('Aguda')">Aguda</button>
+                <button class="option-btn" onclick="checkAnswer('Grave')">Grave</button>
+                <button class="option-btn" onclick="checkAnswer('Esdrújula')">Esdrújula</button>
+                <button class="option-btn" onclick="checkAnswer('Sobresdrújula')">Sobresdrújula</button>
+            </div>
+            <div class="feedback" id="feedback-message"></div>
+            <button id="btn-next" class="hidden" onclick="nextQuestion()">Siguiente Palabra</button>
+        </div>
+
+        <!-- PANTALLA DE RESULTADOS -->
+        <div id="screen-results" class="hidden">
+            <h2>Resultados</h2>
+            <p style="text-align: center; font-size: 18px; margin-bottom: 10px;">
+                Estudiante: <b id="result-name"></b>
+            </p>
+            <p style="text-align: center; font-size: 20px; font-weight: bold; color: var(--primary); margin-bottom: 20px;">
+                Calificación Final: <span id="result-grade">0.0</span> / 5.0
+            </p>
+            
+            <h3>Tabla de Posiciones</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Pos.</th>
+                        <th>Nombre</th>
+                        <th>Nota</th>
+                        <th>Aciertos</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-body">
+                </tbody>
+            </table>
+            <br>
+            <button onclick="restartActivity()">Volver a Jugar</button>
+        </div>
     </div>
 
-    <p id="instruction"><b>Paso 1:</b> Toca la sílaba tónica para ubicar la palabra en la columna correspondiente:</p>
-    
-    <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>Sobresdrújula</th>
-            <th>Esdrújula</th>
-            <th>Grave</th>
-            <th>Aguda</th>
-          </tr>
-          <tr>
-            <th class="rule-header">Todas llevan tilde</th>
-            <th class="rule-header">Todas llevan tilde</th>
-            <th class="rule-header">No termina en N, S o Vocal</th>
-            <th class="rule-header">Termina en N, S o Vocal</th>
-          </tr>
-          <tr>
-            <th class="pos-header">Trasantepenúltima</th>
-            <th class="pos-header">Antepenúltima</th>
-            <th class="pos-header">Penúltima</th>
-            <th class="pos-header">Última</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td id="col-3">—</td>
-            <td id="col-2">—</td>
-            <td id="col-1">—</td>
-            <td id="col-0">—</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <!-- FIREBASE SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-    <div id="step-accent" style="display:none;">
-      <p id="rule-hint"></p>
-      <p><b>Paso 2:</b> ¿Lleva tilde según la regla de esa columna?</p>
-      <div style="display: flex; justify-content: center; gap: 15px;">
-        <button class="option-btn" id="btn-yes">Sí lleva tilde</button>
-        <button class="option-btn" id="btn-no">No lleva tilde</button>
-      </div>
-    </div>
-
-    <div id="step-vowel" style="display:none;">
-      <p><b>Paso 3:</b> Toca la vocal que lleva la tilde en esa sílaba:</p>
-      <div class="vowel-container" id="vowels"></div>
-    </div>
-
-    <div id="step-submit" style="display:none; margin-top: 15px;">
-      <button class="action-btn" id="validate-btn">Comprobar Respuesta</button>
-    </div>
-
-    <div class="feedback" id="feedback"></div>
-    <button class="action-btn" id="next-btn" style="display:none;">Siguiente Palabra</button>
-  </div>
-
-  <!-- PANTALLA 3: RESULTADOS -->
-  <div id="screen-results" style="display:none;">
-    <h1>¡Actividad Finalizada!</h1>
-    <p>Excelente esfuerzo, <b id="final-student-name" style="color:#FFC107;"></b>.</p>
-    
-    <div style="background-color: #2a2a2a; padding: 15px; border-radius: 8px; margin: 20px 0;">
-      <h2 style="margin: 0; color: #4CAF50;">Tu Calificación Final</h2>
-      <div style="font-size: 3em; font-weight: bold; color: #FFC107; margin: 10px 0;" id="final-grade">0.0 / 5.0</div>
-      <p id="grade-details" style="margin: 0; color: #aaa;"></p>
-    </div>
-
-    <h2>Tabla de Clasificación General</h2>
-    <div class="table-container">
-      <table class="leaderboard-table">
-        <thead>
-          <tr>
-            <th>Posición</th>
-            <th>Estudiante</th>
-            <th>Calificación</th>
-            <th>Aciertos</th>
-          </tr>
-        </thead>
-        <tbody id="leaderboard-body">
-          <tr><td colspan='4'>Cargando clasificación...</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <button class="action-btn" id="restart-btn">Intentar de Nuevo / Nuevo Estudiante</button>
-  </div>
-</div>
-
-<script>
-  // BANCO DE PALABRAS DEPURADO Y SINTÁCTICAMENTE VALIDADOS
-  const masterWordBank = [
-    // AGUDAS
-    { raw: ["li", "mon"], type: "Aguda", hasAccent: true, accentVowelChar: "o", rule: "termina en N." },
-    { raw: ["ca", "mion"], type: "Aguda", hasAccent: true, accentVowelChar: "o", rule: "termina en N." },
-    { raw: ["ca", "fe"], type: "Aguda", hasAccent: true, accentVowelChar: "e", rule: "termina en Vocal." },
-    { raw: ["co", "ra", "zon"], type: "Aguda", hasAccent: true, accentVowelChar: "o", rule: "termina en N." },
-    { raw: ["ja", "bon"], type: "Aguda", hasAccent: true, accentVowelChar: "o", rule: "termina en N." },
-    { raw: ["so", "nar"], type: "Aguda", hasAccent: false, accentVowelChar: null, rule: "NO termina en N, S o Vocal." },
-    { raw: ["pa", "pel"], type: "Aguda", hasAccent: false, accentVowelChar: null, rule: "NO termina en N, S o Vocal." },
-    { raw: ["re", "loj"], type: "Aguda", hasAccent: false, accentVowelChar: null, rule: "NO termina en N, S o Vocal." },
-    { raw: ["ciu", "dad"], type: "Aguda", hasAccent: false, accentVowelChar: null, rule: "NO termina en N, S o Vocal." },
-    { raw: ["can", "tar"], type: "Aguda", hasAccent: false, accentVowelChar: null, rule: "NO termina en N, S o Vocal." },
-    { raw: ["ma", "ni"], type: "Aguda", hasAccent: true, accentVowelChar: "i", rule: "termina en Vocal." },
-    { raw: ["so", "fa"], type: "Aguda", hasAccent: true, accentVowelChar: "a", rule: "termina en Vocal." },
-    { raw: ["com", "pas"], type: "Aguda", hasAccent: true, accentVowelChar: "a", rule: "termina en S." },
-    { raw: ["in", "gles"], type: "Aguda", hasAccent: true, accentVowelChar: "e", rule: "termina en S." },
-    { raw: ["jar", "din"], type: "Aguda", hasAccent: true, accentVowelChar: "i", rule: "termina en N." },
-    { raw: ["vol", "can"], type: "Aguda", hasAccent: true, accentVowelChar: "a", rule: "termina en N." },
-    { raw: ["ha", "cer"], type: "Aguda", hasAccent: false, accentVowelChar: null, rule: "NO termina en N, S o Vocal." },
-    { raw: ["a", "zul"], type: "Aguda", hasAccent: false, accentVowelChar: null, rule: "NO termina en N, S o Vocal." },
-    { raw: ["pa", "red"], type: "Aguda", hasAccent: false, accentVowelChar: null, rule: "NO termina en N, S o Vocal." },
-    { raw: ["a", "mor"], type: "Aguda", hasAccent: false, accentVowelChar: null, rule: "NO termina en N, S o Vocal." },
-
-    // GRAVES
-    { raw: ["ga", "to"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
-    { raw: ["ar", "bol"], type: "Grave", hasAccent: true, accentVowelChar: "a", rule: "NO termina en N, S o Vocal." },
-    { raw: ["la", "piz"], type: "Grave", hasAccent: true, accentVowelChar: "a", rule: "NO termina en N, S o Vocal." },
-    { raw: ["me", "sa"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
-    { raw: ["car", "cel"], type: "Grave", hasAccent: true, accentVowelChar: "a", rule: "NO termina en N, S o Vocal." },
-    { raw: ["fa", "cil"], type: "Grave", hasAccent: true, accentVowelChar: "a", rule: "NO termina en N, S o Vocal." },
-    { raw: ["az", "u", "car"], type: "Grave", hasAccent: true, accentVowelChar: "u", rule: "NO termina en N, S o Vocal." },
-    { raw: ["ce", "sper"], type: "Grave", hasAccent: true, accentVowelChar: "e", rule: "NO termina en N, S o Vocal." },
-    { raw: ["an", "gel"], type: "Grave", hasAccent: true, accentVowelChar: "a", rule: "NO termina en N, S o Vocal." },
-    { raw: ["di", "fi", "cil"], type: "Grave", hasAccent: true, accentVowelChar: "i", rule: "NO termina en N, S o Vocal." },
-    { raw: ["li", "bro"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
-    { raw: ["ca", "sa"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
-    { raw: ["si", "lla"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
-    { raw: ["ven", "ta", "na"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
-    { raw: ["cam", "pa", "na"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
-    { raw: ["fo", "der"], type: "Grave", hasAccent: true, accentVowelChar: "o", rule: "NO termina en N, S o Vocal." },
-    { raw: ["li", "der"], type: "Grave", hasAccent: true, accentVowelChar: "i", rule: "NO termina en N, S o Vocal." },
-    { raw: ["tre", "bol"], type: "Grave", hasAccent: true, accentVowelChar: "e", rule: "NO termina en N, S o Vocal." },
-    { raw: ["co", "mic"], type: "Grave", hasAccent: true, accentVowelChar: "o", rule: "NO termina en N, S o Vocal." },
-    { raw: ["plu", "ma"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
-
-    // ESDRÚJULAS
-    { raw: ["me", "di", "co"], type: "Esdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las esdrújulas llevan tilde." },
-    { raw: ["mu", "si", "ca"], type: "Esdrújula", hasAccent: true, accentVowelChar: "u", rule: "todas las esdrújulas llevan tilde." },
-    { raw: ["pa", "ja", "ro"], type: "Esdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las esdrújulas llevan tilde." },
-    { raw: ["bru", "ju", "la"], type: "Esdrújula", hasAccent: true, accentVowelChar: "u", rule: "todas las esdrújulas llevan tilde." },
-    { raw: ["nu", "me", "ro"], type: "Esdrújula", hasAccent: true, accentVowelChar: "u", rule: "todas las esdrújulas llevan tilde." },
-    { raw: ["co", "mi", "co"], type: "Esdrújula", hasAccent: true, accentVowelChar: "o", rule: "todas las esdrújulas llevan tilde." },
-    { raw: ["ma", "gi", "co"], type: "Esdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las esdrújulas llevan tilde." },
-    { raw: ["sa", "ba", "do"], type: "Esdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las esdrújulas llevan tilde." },
-    { raw: ["cli", "ni", "ca"], type: "Esdrújula", hasAccent: true, accentVowelChar: "i", rule: "todas las esdrújulas llevan tilde." },
-    { raw: ["lam", "pa", "ra"], type: "Esdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las esdrújulas llevan tilde." },
-    { raw: ["mier", "co", "les"], type: "Esdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las esdrújulas llevan tilde." },
-    { raw: ["pa", "gi", "na"], type: "Esdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las esdrújulas llevan tilde." },
-    { raw: ["te", "le", "fo", "no"], type: "Esdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las esdrújulas llevan tilde." },
-    { raw: ["fa", "bri", "ca"], type: "Esdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las esdrújulas llevan tilde." },
-
-    // SOBRESDRÚJULAS
-    { raw: ["di", "ga", "me", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "i", rule: "todas las sobresdrújulas llevan tilde." },
-    { raw: ["com", "pra", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las sobresdrújulas llevan tilde." },
-    { raw: ["en", "tre", "ga", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las sobresdrújulas llevan tilde." },
-    { raw: ["guar", "da", "te", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las sobresdrújulas llevan tilde." },
-    { raw: ["ex", "pli", "ca", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "i", rule: "todas las sobresdrújulas llevan tilde." },
-    { raw: ["lle", "va", "te", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las sobresdrújulas llevan tilde." },
-    { raw: ["bus", "ca", "me", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "u", rule: "todas las sobresdrújulas llevan tilde." }
-  ];
-
-  let db = null;
-  try {
-    const firebaseConfig = {
-      apiKey: "AIzaSyD6au5DwvcsJqd-AVZGh2VrigBK3rcW39s",
-      authDomain: "acento-ortografico.firebaseapp.com",
-      databaseURL: "https://acento-ortografico-default-rtdb.firebaseio.com",
-      projectId: "acento-ortografico",
-      storageBucket: "acento-ortografico.firebasestorage.app",
-      messagingSenderId: "992822183733",
-      appId: "1:992822183733:web:472513a0bdd187a19a6e7c",
-      measurementId: "G-VDFW8GYLBH"
-    };
-    if (typeof firebase !== "undefined") {
-      firebase.initializeApp(firebaseConfig);
-      db = firebase.database();
-    }
-  } catch (e) {
-    console.warn("Firebase no activo:", e);
-  }
-
-  let currentStudent = "";
-  let sessionWords = [];
-  let currentWordIndex = 0;
-  let correctAnswersCount = 0;
-
-  let selectedCategory = null;
-  let selectedSyllableText = "";
-  let selectedAccentChoice = null;
-  let selectedVowelChar = null;
-
-  document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("start-game-btn").addEventListener("click", startGame);
-    document.getElementById("btn-yes").addEventListener("click", () => setAccentChoice(true));
-    document.getElementById("btn-no").addEventListener("click", () => setAccentChoice(false));
-    document.getElementById("validate-btn").addEventListener("click", validateAnswer);
-    document.getElementById("next-btn").addEventListener("click", nextWord);
-    document.getElementById("restart-btn").addEventListener("click", restartActivity);
-  });
-
-  function startGame() {
-    const nameInput = document.getElementById("app-user-name").value.trim();
-    if (!nameInput) {
-      alert("Por favor, ingresa tu nombre o apodo para comenzar.");
-      return;
-    }
-
-    currentStudent = nameInput;
-    document.getElementById("display-student-name").innerText = currentStudent;
-
-    // Selecciona 10 palabras al azar del banco
-    sessionWords = [...masterWordBank].sort(() => 0.5 - Math.random()).slice(0, 10);
-    
-    currentWordIndex = 0;
-    correctAnswersCount = 0;
-
-    document.getElementById("screen-welcome").style.display = "none";
-    document.getElementById("screen-results").style.display = "none";
-    document.getElementById("screen-game").style.display = "block";
-
-    loadWord();
-  }
-
-  function loadWord() {
-    const word = sessionWords[currentWordIndex];
-    selectedCategory = null;
-    selectedSyllableText = "";
-    selectedAccentChoice = null;
-    selectedVowelChar = null;
-
-    document.getElementById("word-counter").innerText = `${currentWordIndex + 1} / 10`;
-    document.getElementById("correct-counter").innerText = correctAnswersCount;
-
-    document.getElementById("step-accent").style.display = "none";
-    document.getElementById("step-vowel").style.display = "none";
-    document.getElementById("step-submit").style.display = "none";
-    document.getElementById("feedback").innerText = "";
-    document.getElementById("next-btn").style.display = "none";
-
-    [0, 1, 2, 3].forEach(col => {
-      const cell = document.getElementById(`col-${col}`);
-      cell.innerHTML = "—";
-      cell.classList.remove("active-column");
-    });
-
-    const categories = ["Aguda", "Grave", "Esdrújula", "Sobresdrújula"];
-    const totalSyllables = word.raw.length;
-    
-    word.raw.forEach((syllable, index) => {
-      const cleanSyllable = syllable.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-      const posFromRight = totalSyllables - 1 - index; 
-      const cell = document.getElementById(`col-${posFromRight}`);
-      
-      if (cell) {
-        const btn = document.createElement("button");
-        btn.className = "syllable-btn";
-        btn.innerText = cleanSyllable;
-        btn.onclick = () => selectTonic(categories[posFromRight], cleanSyllable, posFromRight, btn);
-        cell.innerHTML = "";
-        cell.appendChild(btn);
-      }
-    });
-  }
-
-  function selectTonic(categoryName, syllableText, posFromRight, btnElement) {
-    selectedCategory = categoryName;
-    selectedSyllableText = syllableText;
-    
-    document.querySelectorAll(".syllable-btn").forEach(b => b.classList.remove("selected"));
-    btnElement.classList.add("selected");
-
-    [0, 1, 2, 3].forEach(col => {
-      const cell = document.getElementById(`col-${col}`);
-      cell.classList.toggle("active-column", col === posFromRight);
-    });
-
-    document.getElementById("rule-hint").innerText = `Has ubicado la sílaba tónica en la columna: ${categoryName}.`;
-    document.getElementById("step-accent").style.display = "block";
-    
-    selectedAccentChoice = null;
-    document.getElementById("btn-yes").classList.remove("selected");
-    document.getElementById("btn-no").classList.remove("selected");
-    document.getElementById("step-vowel").style.display = "none";
-    document.getElementById("step-submit").style.display = "none";
-  }
-
-  function setAccentChoice(choice) {
-    selectedAccentChoice = choice;
-    
-    document.getElementById("btn-yes").classList.toggle("selected", choice === true);
-    document.getElementById("btn-no").classList.toggle("selected", choice === false);
-
-    if (choice === true) {
-      renderVowels();
-      document.getElementById("step-vowel").style.display = "block";
-      document.getElementById("step-submit").style.display = "none";
-    } else {
-      document.getElementById("step-vowel").style.display = "none";
-      document.getElementById("step-submit").style.display = "block";
-    }
-  }
-
-  function renderVowels() {
-    const vowelsContainer = document.getElementById("vowels");
-    vowelsContainer.innerHTML = "";
-    selectedVowelChar = null;
-
-    for (let i = 0; i < selectedSyllableText.length; i++) {
-      const char = selectedSyllableText[i].toLowerCase();
-      if ("aeiou".includes(char)) {
-        const btn = document.createElement("button");
-        btn.className = "vowel-btn";
-        btn.innerText = char;
-        btn.onclick = () => {
-          selectedVowelChar = char;
-          document.querySelectorAll("#vowels .vowel-btn").forEach(b => b.classList.remove("selected"));
-          btn.classList.add("selected");
-          document.getElementById("step-submit").style.display = "block";
+    <script>
+        // Configuración de Firebase Realtime Database
+        const firebaseConfig = {
+            databaseURL: "https://acento-ortografico-8ed2d-default-rtdb.firebaseio.com/"
         };
-        vowelsContainer.appendChild(btn);
-      }
-    }
-  }
+        
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
-  function validateAnswer() {
-    const word = sessionWords[currentWordIndex];
-    let isCorrect = true;
+        // Banco de palabras
+        const wordBank = [
+            { word: "CANCION", category: "Aguda" },
+            { word: "ARBOL", category: "Grave" },
+            { word: "CAMARA", category: "Esdrújula" },
+            { word: "DIGASELO", category: "Sobresdrújula" },
+            { word: "CAFE", category: "Aguda" },
+            { word: "LAPIZ", category: "Grave" },
+            { word: "MUSICA", category: "Esdrújula" },
+            { word: "ENTREGASELO", category: "Sobresdrújula" },
+            { word: "CORAZON", category: "Aguda" },
+            { word: "MESA", category: "Grave" }
+        ];
 
-    if (selectedCategory !== word.type) isCorrect = false;
-    if (selectedAccentChoice !== word.hasAccent) isCorrect = false;
-    if (word.hasAccent && selectedVowelChar !== word.accentVowelChar) isCorrect = false;
+        let currentStudent = "";
+        let currentWordIndex = 0;
+        let correctAnswersCount = 0;
+        let selectedWords = [];
 
-    const feedbackEl = document.getElementById("feedback");
+        function startGame() {
+            const nameInput = document.getElementById("app-user-name").value.trim();
+            if (!nameInput) {
+                alert("Por favor, ingresa tu nombre para comenzar.");
+                return;
+            }
+            currentStudent = nameInput;
+            document.getElementById("player-display").innerText = currentStudent;
 
-    if (isCorrect) {
-      correctAnswersCount++;
-      document.getElementById("correct-counter").innerText = correctAnswersCount;
-      feedbackEl.innerText = `¡Correcto! La palabra es ${word.type} y ${word.rule}`;
-      feedbackEl.style.color = "#4CAF50";
-    } else {
-      feedbackEl.innerText = `Incorrecto. La palabra es ${word.type} y ${word.rule}`;
-      feedbackEl.style.color = "#F44336";
-    }
+            // Seleccionar 10 palabras al azar
+            selectedWords = [...wordBank].sort(() => 0.5 - Math.random()).slice(0, 10);
+            currentWordIndex = 0;
+            correctAnswersCount = 0;
 
-    document.getElementById("step-submit").style.display = "none";
-    document.getElementById("next-btn").style.display = "inline-block";
-  }
+            document.getElementById("screen-welcome").classList.add("hidden");
+            document.getElementById("screen-game").classList.remove("hidden");
+            document.getElementById("screen-results").classList.add("hidden");
 
-  function nextWord() {
-    currentWordIndex++;
-    if (currentWordIndex < sessionWords.length) {
-      loadWord();
-    } else {
-      finishGame();
-    }
-  }
-
-  function finishGame() {
-    document.getElementById("screen-game").style.display = "none";
-    document.getElementById("screen-results").style.display = "block";
-
-    const grade = parseFloat((correctAnswersCount * 0.5).toFixed(1));
-
-    document.getElementById("final-student-name").innerText = currentStudent;
-    document.getElementById("final-grade").innerText = `${grade.toFixed(1)} / 5.0`;
-    document.getElementById("grade-details").innerText = `Respondiste correctamente ${correctAnswersCount} de 10 palabras.`;
-
-    saveToFirebase(currentStudent, grade, correctAnswersCount);
-    listenToGlobalLeaderboard();
-  }
-
-  function saveToFirebase(name, grade, correct) {
-    if (!db) return;
-    try {
-      db.ref("leaderboard").push({
-        name: name,
-        grade: grade,
-        correct: correct,
-        timestamp: Date.now()
-      });
-    } catch (e) {
-      console.warn("Error Firebase:", e);
-    }
-  }
-
-  function listenToGlobalLeaderboard() {
-    const tbody = document.getElementById("leaderboard-body");
-    if (!db) {
-      tbody.innerHTML = `<tr><td colspan='4'>${currentStudent} - ${(correctAnswersCount * 0.5).toFixed(1)} / 5.0</td></tr>`;
-      return;
-    }
-
-    try {
-      db.ref("leaderboard").on("value", (snapshot) => {
-        tbody.innerHTML = "";
-        if (!snapshot.exists()) {
-          tbody.innerHTML = "<tr><td colspan='4'>Sin registros aún.</td></tr>";
-          return;
+            showWord();
         }
 
-        let leaderboard = [];
-        snapshot.forEach((child) => leaderboard.push(child.val()));
-        leaderboard.sort((a, b) => b.grade - a.grade || b.correct - a.correct);
+        function showWord() {
+            document.getElementById("feedback-message").innerText = "";
+            document.getElementById("feedback-message").className = "feedback";
+            document.getElementById("btn-next").classList.add("hidden");
+            
+            const buttons = document.querySelectorAll(".option-btn");
+            buttons.forEach(btn => {
+                btn.disabled = false;
+                btn.classList.remove("correct", "wrong");
+            });
 
-        leaderboard.forEach((entry, idx) => {
-          const tr = document.createElement("tr");
-          if (entry.name === currentStudent && entry.grade === parseFloat((correctAnswersCount * 0.5).toFixed(1))) {
-            tr.className = "highlight-user";
-          }
-          tr.innerHTML = `
-            <td>${idx + 1}°</td>
-            <td>${entry.name}</td>
-            <td><b>${entry.grade.toFixed(1)}</b> / 5.0</td>
-            <td>${entry.correct} / 10</td>
-          `;
-          tbody.appendChild(tr);
-        });
-      });
-    } catch(e) {
-      tbody.innerHTML = `<tr><td colspan='4'>${currentStudent} - ${(correctAnswersCount * 0.5).toFixed(1)} / 5.0</td></tr>`;
-    }
-  }
+            document.getElementById("current-index").innerText = currentWordIndex + 1;
+            document.getElementById("word-target").innerText = selectedWords[currentWordIndex].word;
+        }
 
-  function restartActivity() {
-    document.getElementById("app-user-name").value = "";
-    document.getElementById("screen-results").style.display = "none";
-    document.getElementById("screen-welcome").style.display = "block";
-  }
-</script>
+        function checkAnswer(userChoice) {
+            const currentItem = selectedWords[currentWordIndex];
+            const buttons = document.querySelectorAll(".option-btn");
+            const feedbackEl = document.getElementById("feedback-message");
 
+            buttons.forEach(btn => btn.disabled = true);
+
+            if (userChoice === currentItem.category) {
+                correctAnswersCount++;
+                feedbackEl.innerText = "¡Correcto!";
+                feedbackEl.className = "feedback correct-text";
+            } else {
+                feedbackEl.innerText = `Incorrecto. Era ${currentItem.category}.`;
+                feedbackEl.className = "feedback wrong-text";
+            }
+
+            buttons.forEach(btn => {
+                if (btn.innerText === currentItem.category) {
+                    btn.classList.add("correct");
+                } else if (btn.innerText === userChoice && userChoice !== currentItem.category) {
+                    btn.classList.add("wrong");
+                }
+            });
+
+            document.getElementById("btn-next").classList.remove("hidden");
+        }
+
+        function nextQuestion() {
+            currentWordIndex++;
+            if (currentWordIndex < selectedWords.length) {
+                showWord();
+            } else {
+                finishGame();
+            }
+        }
+
+        function finishGame() {
+            const finalGrade = parseFloat((correctAnswersCount * 0.5).toFixed(1));
+
+            document.getElementById("screen-game").classList.add("hidden");
+            document.getElementById("screen-results").classList.remove("hidden");
+
+            document.getElementById("result-name").innerText = currentStudent;
+            document.getElementById("result-grade").innerText = finalGrade.toFixed(1);
+
+            // Guardar en Firebase
+            const record = {
+                name: currentStudent,
+                grade: finalGrade,
+                correct: correctAnswersCount,
+                timestamp: Date.now()
+            };
+
+            database.ref("leaderboard").push(record)
+                .then(() => loadLeaderboard())
+                .catch(err => {
+                    console.error("Error guardando datos:", err);
+                    loadLeaderboard();
+                });
+        }
+
+        function loadLeaderboard() {
+            const tbody = document.getElementById("leaderboard-body");
+            tbody.innerHTML = "";
+
+            database.ref("leaderboard").once("value")
+                .then(snapshot => {
+                    let leaderboard = [];
+                    snapshot.forEach(child => {
+                        leaderboard.push(child.val());
+                    });
+
+                    // Ordenar por nota descendente y aciertos
+                    leaderboard.sort((a, b) => b.grade - a.grade || b.correct - a.correct);
+
+                    leaderboard.forEach((entry, idx) => {
+                        const tr = document.createElement("tr");
+                        if (entry.name === currentStudent && entry.grade === parseFloat((correctAnswersCount * 0.5).toFixed(1))) {
+                            tr.className = "highlight-user";
+                        }
+                        tr.innerHTML = `
+                            <td>${idx + 1}°</td>
+                            <td>${entry.name}</td>
+                            <td><b>${entry.grade.toFixed(1)}</b> / 5.0</td>
+                            <td>${entry.correct} / 10</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                })
+                .catch(e => {
+                    tbody.innerHTML = `<tr><td colspan='4'>${currentStudent} - ${(correctAnswersCount * 0.5).toFixed(1)} / 5.0</td></tr>`;
+                });
+        }
+
+        function restartActivity() {
+            document.getElementById("app-user-name").value = "";
+            document.getElementById("screen-results").classList.add("hidden");
+            document.getElementById("screen-welcome").classList.remove("hidden");
+        }
+    </script>
 </body>
 </html>
