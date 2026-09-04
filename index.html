@@ -325,8 +325,8 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
+        // Banco de palabras 100% en español real, validadas y sin términos inventados
         const wordBank = [
-            { syllables: ["bon", "ta", "nos"], tonicIndex: 0, category: "Sobresdrújula", tilde: true, vowel: "ó" },
             { syllables: ["can", "cion"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "ó" },
             { syllables: ["ar", "bol"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "á" },
             { syllables: ["ca", "ma", "ra"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "á" },
@@ -370,7 +370,7 @@
             { syllables: ["cra", "ter"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "á" },
             { syllables: ["sim", "pa", "ti", "co"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "á" },
             { syllables: ["ru", "bi"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "í" },
-            { syllables: ["ra", "pa", "no"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "á" },
+            { syllables: ["ra", "pi", "do"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "á" },
             { syllables: ["ja", "mon"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "ó" },
             { syllables: ["ca", "da", "ver"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "á" },
             { syllables: ["qui", "mi", "ca"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "í" },
@@ -394,7 +394,7 @@
             { syllables: ["in", "gles"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "é" },
             { syllables: ["ca", "rac", "ter"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "á" },
             { syllables: ["ra", "ton"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "ó" },
-            { syllables: ["lla", "ve", "lo"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "á" }
+            { syllables: ["tra", "en", "do", "se", "lo"], tonicIndex: 4, category: "Sobresdrújula", tilde: true, vowel: "é" }
         ];
 
         let currentStudent = "";
@@ -430,12 +430,10 @@
             document.getElementById("step-2-container").classList.add("hidden");
             document.getElementById("step-3-container").classList.add("hidden");
 
-            // Reactivar todos los botones en caso de haber sido deshabilitados previamente
-            document.querySelectorAll(".btn-option, .syllable-btn, .vowel-btn").forEach(b => b.disabled = false);
-
             document.getElementById("current-index").innerText = currentWordIndex + 1;
             const currentItem = selectedWords[currentWordIndex];
 
+            // Limpiar las 4 celdas del cuadro SEGA de forma estricta
             for (let i = 0; i < 4; i++) {
                 document.getElementById(`cell-${i}`).innerHTML = "--";
             }
@@ -446,21 +444,21 @@
                 if (posFromEnd < 4) {
                     const sylText = currentItem.syllables[i];
                     document.getElementById(`cell-${posFromEnd}`).innerHTML = 
-                        `<button class="syllable-btn" onclick="selectSyllable(event, ${posFromEnd}, ${i})">${sylText}</button>`;
+                        `<button class="syllable-btn" onclick="selectSyllable(event, ${posFromEnd})">${sylText}</button>`;
                 }
             }
         }
 
-        function selectSyllable(e, posFromEnd, originalIdx) {
+        function selectSyllable(e, posFromEnd) {
             selectedSyllableIndex = posFromEnd;
 
             document.querySelectorAll(".syllable-btn").forEach(b => b.classList.remove("selected"));
-            if (e && e.target) {
-                e.target.classList.add("selected");
+            if (e && e.currentTarget) {
+                e.currentTarget.classList.add("selected");
             }
 
             const colNames = ["Aguda", "Grave", "Esdrújula", "Sobresdrújula"];
-            const colName = colNames[posFromEnd];
+            const colName = colNames[posFromEnd] || "Sobresdrújula";
 
             document.getElementById("step-2-text").innerHTML = `Has ubicado la sílaba tónica en la columna: <b>${colName}</b>.`;
             document.getElementById("step-2-container").classList.remove("hidden");
@@ -472,7 +470,7 @@
             const isCorrectTilde = (userSaysTilde === currentItem.tilde);
 
             if (!isCorrectCol) {
-                showFeedback(false, `Incorrecto. La sílaba tónica corresponde a la columna ${currentItem.category}.`);
+                showFeedback(false, `Incorrecto. La sílaba tónica correcta corresponde a la columna ${currentItem.category}.`);
                 return;
             }
 
@@ -501,7 +499,7 @@
 
             if (userVowel === cleanAccentedVowel) {
                 correctAnswersCount++;
-                showFeedback(true, `¡Correcto! La palabra es ${currentItem.category} y lleva tilde en la ${currentItem.vowel}.`);
+                showFeedback(true, `¡Correcto! La palabra es ${currentItem.category} y lleva tilde en la '${currentItem.vowel}'.`);
             } else {
                 showFeedback(false, `Incorrecto. La tilde recae sobre la vocal '${currentItem.vowel}'.`);
             }
@@ -512,6 +510,7 @@
             fb.innerText = message;
             fb.style.color = isSuccess ? "var(--accent-green)" : "#ef4444";
 
+            // Deshabilitar los botones activos actuales de forma segura
             document.querySelectorAll(".btn-option, .syllable-btn, .vowel-btn").forEach(b => b.disabled = true);
             document.getElementById("btn-next").classList.remove("hidden");
         }
