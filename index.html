@@ -220,7 +220,6 @@
             font-weight: bold;
             margin: 15px 0;
             min-height: 24px;
-            color: var(--accent-green);
         }
 
         table.results-table {
@@ -306,7 +305,7 @@
                 <button class="btn-option" id="btn-tilde-no" onclick="setTildeChoice(false)">No lleva tilde</button>
             </div>
 
-            <p class="step-title"><b>Paso 3:</b> Toca la vocal que lleva la tilde en esa sílaba:</p>
+            <p class="step-title"><b>Paso 3:</b> Toca la vocal que lleva la tilde en esa sílaba (si aplica):</p>
             <div class="vowel-container" id="vowels-box"></div>
 
             <div class="feedback-box" id="feedback-msg"></div>
@@ -352,7 +351,7 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // Banco de palabras enfocado exclusivamente en Objetos y Sentimientos
+        // Banco de palabras limpio de objetos y sentimientos
         const wordBank = [
             { syllables: ["ca", "ma", "ra"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "á" },
             { syllables: ["la", "piz"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "á" },
@@ -371,7 +370,6 @@
             { syllables: ["re", "loj"], tonicIndex: 0, category: "Aguda", tilde: false },
             { syllables: ["es", "pon", "ja"], tonicIndex: 1, category: "Grave", tilde: false },
             { syllables: ["te", "le", "fo", "no"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "ó" },
-            { syllables: ["can", "ti", "plor", "a"], tonicIndex: 1, category: "Grave", tilde: false },
             { syllables: ["a", "mor"], tonicIndex: 0, category: "Aguda", tilde: false },
             { syllables: ["tri", "ste", "za"], tonicIndex: 1, category: "Grave", tilde: false },
             { syllables: ["pa", "sio", "n"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "ó" },
@@ -379,8 +377,7 @@
             { syllables: ["cal", "ma"], tonicIndex: 1, category: "Grave", tilde: false },
             { syllables: ["i", "ra"], tonicIndex: 1, category: "Grave", tilde: false },
             { syllables: ["du", "da"], tonicIndex: 1, category: "Grave", tilde: false },
-            { syllables: ["go", "zo"], tonicIndex: 1, category: "Grave", tilde: false },
-            { syllables: ["en", "vi", "dia"], tonicIndex: 1, category: "Grave", tilde: false }
+            { syllables: ["go", "zo"], tonicIndex: 1, category: "Grave", tilde: false }
         ];
 
         let currentStudent = "";
@@ -471,6 +468,13 @@
         function nextQuestion() {
             const currentItem = selectedWords[currentWordIndex];
 
+            // 1. Validar que el usuario haya seleccionado algo
+            if (userSelectedSyllable === -1 || userSelectedTilde === null) {
+                alert("Por favor completa los pasos antes de continuar.");
+                return;
+            }
+
+            // 2. Validación lógica coherente
             const isColCorrect = (userSelectedSyllable === currentItem.tonicIndex);
             const isTildeCorrect = (userSelectedTilde === currentItem.tilde);
             
@@ -480,13 +484,15 @@
                 isVowelCorrect = (userSelectedVowel === cleanVowel);
             }
 
-            if (isColCorrect && isTildeCorrect && isVowelCorrect) {
+            const isTotallyCorrect = isColCorrect && isTildeCorrect && isVowelCorrect;
+
+            if (isTotallyCorrect) {
                 correctAnswersCount++;
                 document.getElementById("feedback-msg").style.color = "var(--accent-green)";
-                document.getElementById("feedback-msg").innerText = `¡Correcto! La palabra es ${currentItem.category}.`;
+                document.getElementById("feedback-msg").innerText = `¡Correcto! Es una palabra ${currentItem.category}.`;
             } else {
                 document.getElementById("feedback-msg").style.color = "#ef4444";
-                document.getElementById("feedback-msg").innerText = `Incorrecto. Era ${currentItem.category}.`;
+                document.getElementById("feedback-msg").innerText = `Incorrecto. La clasificación correcta era ${currentItem.category}.`;
             }
 
             document.getElementById("score-display").innerText = correctAnswersCount;
@@ -498,7 +504,7 @@
                 } else {
                     finishGame();
                 }
-            }, 1000);
+            }, 1200);
         }
 
         function finishGame() {
