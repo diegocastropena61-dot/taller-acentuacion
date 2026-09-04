@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Acento Ortográfico - Tabla Interactiva SEGA</title>
+  <title>Acento Ortográfico - Juego SEGA</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background-color: #121212;
       color: #ffffff;
       display: flex;
@@ -20,16 +20,33 @@
     }
     .card {
       background-color: #1e1e1e;
-      padding: 20px;
+      padding: 25px;
       border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
       text-align: center;
-      max-width: 700px;
+      max-width: 750px;
       width: 100%;
     }
     h1 { color: #4CAF50; margin-bottom: 10px; font-size: 1.8em; }
     p { font-size: 1em; line-height: 1.4; color: #ddd; }
     
+    input[type="text"] {
+      padding: 12px;
+      font-size: 1.1em;
+      border-radius: 6px;
+      border: 2px solid #555;
+      background-color: #2a2a2a;
+      color: white;
+      width: 80%;
+      max-width: 300px;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #4CAF50;
+    }
+
     /* Tabla SEGA Interactiva */
     .table-container {
       margin: 20px 0;
@@ -122,11 +139,12 @@
       color: white;
       border: none;
       padding: 12px 24px;
-      font-size: 1em;
+      font-size: 1.1em;
       border-radius: 6px;
       cursor: pointer;
       margin-top: 15px;
       font-weight: bold;
+      transition: background-color 0.2s;
     }
     .action-btn:hover { background-color: #45a049; }
     
@@ -136,143 +154,239 @@
       min-height: 24px;
       font-size: 1.05em;
     }
-    .score {
-      font-size: 1.1em;
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      background-color: #2a2a2a;
+      padding: 8px 15px;
+      border-radius: 6px;
+      font-size: 0.95em;
+    }
+    .status-item {
       color: #FFC107;
+      font-weight: bold;
+    }
+
+    /* Tabla de Clasificación */
+    .leaderboard-table {
+      width: 100%;
       margin-top: 15px;
+      border-collapse: collapse;
+    }
+    .leaderboard-table th {
+      background-color: #333;
+      color: #4CAF50;
+      padding: 10px;
+    }
+    .leaderboard-table td {
+      padding: 10px;
+      border-bottom: 1px solid #444;
+    }
+    .leaderboard-table tr:nth-child(even) {
+      background-color: #2a2a2a;
+    }
+    .highlight-user {
+      background-color: #1b4332 !important;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
 
 <div class="card">
-  <h1>Acentuación en el Cuadro SEGA</h1>
-  <p id="instruction"><b>Paso 1:</b> Toca la sílaba tónica para ubicar la palabra en la columna correcta del cuadro:</p>
-  
-  <!-- TABLA INTERACTIVA -->
-  <div class="table-container">
-    <table>
-      <thead>
-        <tr>
-          <th>Sobresdrújula</th>
-          <th>Esdrújula</th>
-          <th>Grave</th>
-          <th>Aguda</th>
-        </tr>
-        <tr>
-          <th class="rule-header">Todas llevan tilde</th>
-          <th class="rule-header">Todas llevan tilde</th>
-          <th class="rule-header">No termina en N, S o Vocal</th>
-          <th class="rule-header">Termina en N, S o Vocal</th>
-        </tr>
-        <tr>
-          <th class="pos-header">Trasantepenúltima</th>
-          <th class="pos-header">Antepenúltima</th>
-          <th class="pos-header">Penúltima</th>
-          <th class="pos-header">Última</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr id="interactive-row">
-          <td id="col-3">—</td>
-          <td id="col-2">—</td>
-          <td id="col-1">—</td>
-          <td id="col-0">—</td>
-        </tr>
-      </tbody>
-    </table>
+  <!-- PANTALLA 1: REGISTRO DEL ESTUDIANTE -->
+  <div id="screen-welcome">
+    <h1>Acentuación Ortográfica - Cuadro SEGA</h1>
+    <p>¡Bienvenido a la actividad interactiva de acentuación!</p>
+    <p>Escribe tu nombre o apodo para comenzar la evaluación (10 palabras):</p>
+    <br>
+    <input type="text" id="student-name" placeholder="Tu nombre o apodo" maxlength="20" autocomplete="off">
+    <br>
+    <button class="action-btn" onclick="startGame()">Comenzar Actividad</button>
   </div>
 
-  <!-- PASO 2: Decision de tilde -->
-  <div id="step-accent" style="display:none;">
-    <p id="rule-hint"></p>
-    <p><b>Paso 2:</b> ¿Lleva tilde según la regla de esa columna?</p>
-    <div style="display: flex; justify-content: center; gap: 15px;">
-      <button class="option-btn" id="btn-yes" onclick="setAccentChoice(true)">Sí lleva tilde</button>
-      <button class="option-btn" id="btn-no" onclick="setAccentChoice(false)">No lleva tilde</button>
+  <!-- PANTALLA 2: JUEGO / ACTIVIDAD -->
+  <div id="screen-game" style="display:none;">
+    <div class="status-bar">
+      <div>Estudiante: <span id="display-student-name" class="status-item"></span></div>
+      <div>Palabra: <span id="word-counter" class="status-item">1 / 10</span></div>
+      <div>Aciertos: <span id="correct-counter" class="status-item">0</span></div>
     </div>
+
+    <p id="instruction"><b>Paso 1:</b> Toca la sílaba tónica para ubicar la palabra en la columna correcta del cuadro SEGA:</p>
+    
+    <!-- TABLA SEGA INTERACTIVA -->
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Sobresdrújula</th>
+            <th>Esdrújula</th>
+            <th>Grave</th>
+            <th>Aguda</th>
+          </tr>
+          <tr>
+            <th class="rule-header">Todas llevan tilde</th>
+            <th class="rule-header">Todas llevan tilde</th>
+            <th class="rule-header">No termina en N, S o Vocal</th>
+            <th class="rule-header">Termina en N, S o Vocal</th>
+          </tr>
+          <tr>
+            <th class="pos-header">Trasantepenúltima</th>
+            <th class="pos-header">Antepenúltima</th>
+            <th class="pos-header">Penúltima</th>
+            <th class="pos-header">Última</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr id="interactive-row">
+            <td id="col-3">—</td>
+            <td id="col-2">—</td>
+            <td id="col-1">—</td>
+            <td id="col-0">—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- PASO 2: Decisión de tilde -->
+    <div id="step-accent" style="display:none;">
+      <p id="rule-hint"></p>
+      <p><b>Paso 2:</b> ¿Lleva tilde según la regla de esa columna?</p>
+      <div style="display: flex; justify-content: center; gap: 15px;">
+        <button class="option-btn" id="btn-yes" onclick="setAccentChoice(true)">Sí lleva tilde</button>
+        <button class="option-btn" id="btn-no" onclick="setAccentChoice(false)">No lleva tilde</button>
+      </div>
+    </div>
+
+    <!-- PASO 3: Selección de vocal -->
+    <div id="step-vowel" style="display:none;">
+      <p><b>Paso 3:</b> Toca la vocal que lleva la tilde en esa sílaba:</p>
+      <div class="vowel-container" id="vowels"></div>
+    </div>
+
+    <!-- BOTÓN VALIDAR -->
+    <div id="step-submit" style="display:none; margin-top: 15px;">
+      <button class="action-btn" onclick="validateAnswer()">Comprobar Respuesta</button>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+    <button class="action-btn" id="next-btn" style="display:none;" onclick="nextWord()">Siguiente Palabra</button>
   </div>
 
-  <!-- PASO 3: Selección de vocal -->
-  <div id="step-vowel" style="display:none;">
-    <p><b>Paso 3:</b> Toca la vocal que lleva la tilde en esa sílaba:</p>
-    <div class="vowel-container" id="vowels"></div>
-  </div>
+  <!-- PANTALLA 3: RESULTADOS Y CLASIFICACIÓN -->
+  <div id="screen-results" style="display:none;">
+    <h1>¡Actividad Finalizada!</h1>
+    <p>Excelente esfuerzo, <b id="final-student-name" style="color:#FFC107;"></b>.</p>
+    
+    <div style="background-color: #2a2a2a; padding: 15px; border-radius: 8px; margin: 20px 0;">
+      <h2 style="margin: 0; color: #4CAF50;">Tu Calificación Final</h2>
+      <div style="font-size: 3em; font-weight: bold; color: #FFC107; margin: 10px 0;" id="final-grade">0.0 / 5.0</div>
+      <p id="grade-details" style="margin: 0; color: #aaa;"></p>
+    </div>
 
-  <!-- BOTÓN VALIDAR -->
-  <div id="step-submit" style="display:none; margin-top: 15px;">
-    <button class="action-btn" onclick="validateAnswer()">Comprobar Respuesta</button>
-  </div>
+    <h2>Tabla de Clasificación (Ranking)</h2>
+    <div class="table-container">
+      <table class="leaderboard-table">
+        <thead>
+          <tr>
+            <th>Posición</th>
+            <th>Estudiante</th>
+            <th>Calificación</th>
+            <th>Aciertos</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboard-body">
+          <!-- Se llena dinámicamente -->
+        </tbody>
+      </table>
+    </div>
 
-  <div class="feedback" id="feedback"></div>
-  <button class="action-btn" id="next-btn" style="display:none;" onclick="nextWord()">Siguiente Palabra</button>
-  <div class="score">Puntos: <span id="score">0</span></div>
+    <button class="action-btn" onclick="restartActivity()">Intentar de Nuevo / Nuevo Estudiante</button>
+    <button class="action-btn" style="background-color: #d32f2f; margin-left: 10px;" onclick="clearLeaderboard()">Borrar Ranking</button>
+  </div>
 </div>
 
 <script>
-  const words = [
-    { 
-      raw: ["ga", "to"], 
-      tonicIndex: 0, 
-      type: "Grave", 
-      hasAccent: false, 
-      accentVowelIndex: null,
-      rule: "es Grave y termina en Vocal, por lo que NO lleva tilde." 
-    },
-    { 
-      raw: ["li", "mon"], 
-      tonicIndex: 1, 
-      type: "Aguda", 
-      hasAccent: true, 
-      accentVowelIndex: 1,
-      rule: "es Aguda y termina en N, por lo que lleva tilde en la 'ó'." 
-    },
-    { 
-      raw: ["Ca", "mion"], 
-      tonicIndex: 1, 
-      type: "Aguda", 
-      hasAccent: true, 
-      accentVowelIndex: 1,
-      rule: "es Aguda y termina en N, por lo que lleva tilde en la 'ó'." 
-    },
-    { 
-      raw: ["ar", "bol"], 
-      tonicIndex: 0, 
-      type: "Grave", 
-      hasAccent: true, 
-      accentVowelIndex: 0,
-      rule: "es Grave y NO termina en N, S o Vocal, por lo que lleva tilde en la 'á'." 
-    },
-    { 
-      raw: ["me", "di", "co"], 
-      tonicIndex: 0, 
-      type: "Esdrújula", 
-      hasAccent: true, 
-      accentVowelIndex: 0,
-      rule: "es Esdrújula y TODAS las esdrújulas llevan tilde." 
-    },
-    { 
-      raw: ["la", "piz"], 
-      tonicIndex: 0, 
-      type: "Grave", 
-      hasAccent: true, 
-      accentVowelIndex: 0,
-      rule: "es Grave y NO termina en N, S o Vocal, por lo que lleva tilde en la 'á'." 
-    }
+  // BANCO AMPLIO DE PALABRAS (30 PALABRAS VARIADAS SEGA)
+  const masterWordBank = [
+    // Agudas
+    { raw: ["li", "mon"], tonicIndex: 1, type: "Aguda", hasAccent: true, accentVowelIndex: 1, rule: "es Aguda y termina en N." },
+    { raw: ["ca", "mion"], tonicIndex: 1, type: "Aguda", hasAccent: true, accentVowelIndex: 1, rule: "es Aguda y termina en N." },
+    { raw: ["ca", "fe"], tonicIndex: 1, type: "Aguda", hasAccent: true, accentVowelIndex: 1, rule: "es Aguda y termina en Vocal." },
+    { raw: ["pa", "pel"], tonicIndex: 1, type: "Aguda", hasAccent: false, accentVowelIndex: null, rule: "es Aguda y termina en L (no N, S o Vocal)." },
+    { raw: ["re", "loj"], tonicIndex: 1, type: "Aguda", hasAccent: false, accentVowelIndex: null, rule: "es Aguda y termina en J." },
+    { raw: ["co", "ra", "zon"], tonicIndex: 2, type: "Aguda", hasAccent: true, accentVowelIndex: 1, rule: "es Aguda y termina en N." },
+    { raw: ["com", "pa", "nias"], tonicIndex: 2, type: "Aguda", hasAccent: true, accentVowelIndex: 1, rule: "es Aguda y termina en S." },
+    
+    // Graves
+    { raw: ["ga", "to"], tonicIndex: 0, type: "Grave", hasAccent: false, accentVowelIndex: null, rule: "es Grave y termina en Vocal." },
+    { raw: ["ar", "bol"], tonicIndex: 0, type: "Grave", hasAccent: true, accentVowelIndex: 0, rule: "es Grave y NO termina en N, S o Vocal." },
+    { raw: ["la", "piz"], tonicIndex: 0, type: "Grave", hasAccent: true, accentVowelIndex: 0, rule: "es Grave y NO termina en N, S o Vocal." },
+    { raw: ["me", "sa"], tonicIndex: 0, type: "Grave", hasAccent: false, accentVowelIndex: null, rule: "es Grave y termina en Vocal." },
+    { raw: ["ca", "mi", "sa"], tonicIndex: 1, type: "Grave", hasAccent: false, accentVowelIndex: null, rule: "es Grave y termina en Vocal." },
+    { raw: ["al", "bum"], tonicIndex: 0, type: "Grave", hasAccent: true, accentVowelIndex: 0, rule: "es Grave y NO termina en N, S o Vocal." },
+    { raw: ["a", "zu", "car"], tonicIndex: 1, type: "Grave", hasAccent: true, accentVowelIndex: 0, rule: "es Grave y NO termina en N, S o Vocal." },
+    { raw: ["jo", "ven"], tonicIndex: 0, type: "Grave", hasAccent: false, accentVowelIndex: null, rule: "es Grave y termina en N." },
+
+    // Esdrújulas (Todas llevan tilde)
+    { raw: ["me", "di", "co"], tonicIndex: 0, type: "Esdrújula", hasAccent: true, accentVowelIndex: 0, rule: "es Esdrújula y TODAS llevan tilde." },
+    { raw: ["mu", "si", "ca"], tonicIndex: 0, type: "Esdrújula", hasAccent: true, accentVowelIndex: 0, rule: "es Esdrújula y TODAS llevan tilde." },
+    { raw: ["pa", "ja", "ro"], tonicIndex: 0, type: "Esdrújula", hasAccent: true, accentVowelIndex: 0, rule: "es Esdrújula y TODAS llevan tilde." },
+    { raw: ["la", "gri", "ma"], tonicIndex: 0, type: "Esdrújula", hasAccent: true, accentVowelIndex: 0, rule: "es Esdrújula y TODAS llevan tilde." },
+    { raw: ["si", "la", "ba"], tonicIndex: 0, type: "Esdrújula", hasAccent: true, accentVowelIndex: 0, rule: "es Esdrújula y TODAS llevan tilde." },
+    { raw: ["bru", "ju", "la"], tonicIndex: 0, type: "Esdrújula", hasAccent: true, accentVowelIndex: 0, rule: "es Esdrújula y TODAS llevan tilde." },
+
+    // Sobresdrújulas (Todas llevan tilde)
+    { raw: ["di", "ga", "me", "lo"], tonicIndex: 0, type: "Sobresdrújula", hasAccent: true, accentVowelIndex: 1, rule: "es Sobresdrújula y TODAS llevan tilde." },
+    { raw: ["com", "pra", "se", "lo"], tonicIndex: 0, type: "Sobresdrújula", hasAccent: true, accentVowelIndex: 1, rule: "es Sobresdrújula y TODAS llevan tilde." },
+    { raw: ["ga", "na", "te", "lo"], tonicIndex: 0, type: "Sobresdrújula", hasAccent: true, accentVowelIndex: 1, rule: "es Sobresdrújula y TODAS llevan tilde." },
+    { raw: ["ven", "de", "se", "lo"], tonicIndex: 0, type: "Sobresdrújula", hasAccent: true, accentVowelIndex: 1, rule: "es Sobresdrújula y TODAS llevan tilde." },
+    { raw: ["ex", "pli", "ca", "se", "lo"], tonicIndex: 0, type: "Sobresdrújula", hasAccent: true, accentVowelIndex: 1, rule: "es Sobresdrújula y TODAS llevan tilde." }
   ];
 
+  let currentStudent = "";
+  let sessionWords = [];
   let currentWordIndex = 0;
-  let score = 0;
-  
+  let correctAnswersCount = 0;
+
   let selectedTonic = null;
   let selectedAccentChoice = null;
   let selectedVowelIndex = null;
 
+  function startGame() {
+    const nameInput = document.getElementById("student-name").value.trim();
+    if (!nameInput) {
+      alert("Por favor, ingresa tu nombre o apodo para comenzar.");
+      return;
+    }
+
+    currentStudent = nameInput;
+    document.getElementById("display-student-name").innerText = currentStudent;
+
+    // Seleccionar 10 palabras al azar del banco principal
+    sessionWords = [...masterWordBank].sort(() => 0.5 - Math.random()).slice(0, 10);
+    
+    currentWordIndex = 0;
+    correctAnswersCount = 0;
+
+    document.getElementById("screen-welcome").style.display = "none";
+    document.getElementById("screen-results").style.display = "none";
+    document.getElementById("screen-game").style.display = "block";
+
+    loadWord();
+  }
+
   function loadWord() {
-    const word = words[currentWordIndex];
+    const word = sessionWords[currentWordIndex];
     selectedTonic = null;
     selectedAccentChoice = null;
     selectedVowelIndex = null;
+
+    document.getElementById("word-counter").innerText = `${currentWordIndex + 1} / 10`;
+    document.getElementById("correct-counter").innerText = correctAnswersCount;
 
     document.getElementById("step-accent").style.display = "none";
     document.getElementById("step-vowel").style.display = "none";
@@ -287,16 +401,16 @@
       cell.classList.remove("active-column");
     });
 
-    // Colocar las sílabas de la palabra actual alineadas a la derecha (Última -> Aguda, Penúltima -> Grave, etc.)
+    // Colocar sílabas alineadas a la derecha
     const totalSyllables = word.raw.length;
     word.raw.forEach((syllable, index) => {
-      // Posición relativa desde el final (0: última, 1: penúltima, etc.)
+      const cleanSyllable = syllable.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
       const posFromRight = totalSyllables - 1 - index; 
       const cell = document.getElementById(`col-${posFromRight}`);
       if (cell) {
         const btn = document.createElement("button");
         btn.className = "syllable-btn";
-        btn.innerText = syllable;
+        btn.innerText = cleanSyllable;
         btn.onclick = () => selectTonic(index, posFromRight, btn);
         cell.innerHTML = "";
         cell.appendChild(btn);
@@ -307,17 +421,14 @@
   function selectTonic(sylIndex, posFromRight, btnElement) {
     selectedTonic = sylIndex;
     
-    // Resaltar botón seleccionado y limpiar otros
     document.querySelectorAll(".syllable-btn").forEach(b => b.classList.remove("selected"));
     btnElement.classList.add("selected");
 
-    // Resaltar columna activa en el cuadro
     [0, 1, 2, 3].forEach(col => {
       const cell = document.getElementById(`col-${col}`);
       cell.classList.toggle("active-column", col === posFromRight);
     });
 
-    // Determinar categoría elegida
     const categories = ["Aguda", "Grave", "Esdrújula", "Sobresdrújula"];
     const chosenType = categories[posFromRight];
 
@@ -348,14 +459,16 @@
   }
 
   function renderVowels() {
-    const word = words[currentWordIndex];
-    const syllableText = word.raw[selectedTonic];
+    const word = sessionWords[currentWordIndex];
+    const rawSyllable = word.raw[selectedTonic];
+    const cleanSyllable = rawSyllable.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    
     const vowelsContainer = document.getElementById("vowels");
     vowelsContainer.innerHTML = "";
     selectedVowelIndex = null;
 
-    for (let i = 0; i < syllableText.length; i++) {
-      const char = syllableText[i];
+    for (let i = 0; i < cleanSyllable.length; i++) {
+      const char = cleanSyllable[i];
       if ("aeiouAEIOU".includes(char)) {
         const btn = document.createElement("button");
         btn.className = "vowel-btn";
@@ -372,26 +485,18 @@
   }
 
   function validateAnswer() {
-    const word = words[currentWordIndex];
+    const word = sessionWords[currentWordIndex];
     let isCorrect = true;
 
-    if (selectedTonic !== word.tonicIndex) {
-      isCorrect = false;
-    }
-
-    if (selectedAccentChoice !== word.hasAccent) {
-      isCorrect = false;
-    }
-
-    if (word.hasAccent && selectedVowelIndex !== word.accentVowelIndex) {
-      isCorrect = false;
-    }
+    if (selectedTonic !== word.tonicIndex) isCorrect = false;
+    if (selectedAccentChoice !== word.hasAccent) isCorrect = false;
+    if (word.hasAccent && selectedVowelIndex !== word.accentVowelIndex) isCorrect = false;
 
     const feedbackEl = document.getElementById("feedback");
 
     if (isCorrect) {
-      score += 10;
-      document.getElementById("score").innerText = score;
+      correctAnswersCount++;
+      document.getElementById("correct-counter").innerText = correctAnswersCount;
       feedbackEl.innerText = `¡Correcto! La palabra es ${word.type} y ${word.rule}`;
       feedbackEl.style.color = "#4CAF50";
     } else {
@@ -404,12 +509,87 @@
   }
 
   function nextWord() {
-    currentWordIndex = (currentWordIndex + 1) % words.length;
-    loadWord();
+    currentWordIndex++;
+    if (currentWordIndex < sessionWords.length) {
+      loadWord();
+    } else {
+      finishGame();
+    }
   }
 
-  loadWord();
+  function finishGame() {
+    document.getElementById("screen-game").style.display = "none";
+    document.getElementById("screen-results").style.display = "block";
+
+    // Calificación de 0 a 5.0 (Cada acierto vale 0.5 puntos)
+    const grade = (correctAnswersCount * 0.5).toFixed(1);
+
+    document.getElementById("final-student-name").innerText = currentStudent;
+    document.getElementById("final-grade").innerText = `${grade} / 5.0`;
+    document.getElementById("grade-details").innerText = `Respondiste correctamente ${correctAnswersCount} de 10 palabras.`;
+
+    saveToLeaderboard(currentStudent, grade, correctAnswersCount);
+    renderLeaderboard();
+  }
+
+  function saveToLeaderboard(name, grade, correct) {
+    let leaderboard = JSON.parse(localStorage.getItem("sega_leaderboard") || "[]");
+    
+    leaderboard.push({
+      name: name,
+      grade: parseFloat(grade),
+      correct: correct,
+      date: new Date().toLocaleDateString()
+    });
+
+    // Ordenar de mayor a menor calificación
+    leaderboard.sort((a, b) => b.grade - a.grade || b.correct - a.correct);
+
+    localStorage.setItem("sega_leaderboard", JSON.stringify(leaderboard));
+  }
+
+  function renderLeaderboard() {
+    let leaderboard = JSON.parse(localStorage.getItem("sega_leaderboard") || "[]");
+    const tbody = document.getElementById("leaderboard-body");
+    tbody.innerHTML = "";
+
+    if (leaderboard.length === 0) {
+      tbody.innerHTML = "<tr><td colspan='4'>Aún no hay registros en la clasificación.</td></tr>";
+      return;
+    }
+
+    leaderboard.forEach((entry, idx) => {
+      const tr = document.createElement("tr");
+      if (entry.name === currentStudent && entry.grade === parseFloat((correctAnswersCount * 0.5).toFixed(1))) {
+        tr.className = "highlight-user";
+      }
+
+      tr.innerHTML = `
+        <td>${idx + 1}°</td>
+        <td>${entry.name}</td>
+        <td><b>${entry.grade.toFixed(1)}</b> / 5.0</td>
+        <td>${entry.correct} / 10</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function clearLeaderboard() {
+    if (confirm("¿Estás seguro de que deseas borrar toda la tabla de clasificación?")) {
+      localStorage.removeItem("sega_leaderboard");
+      renderLeaderboard();
+    }
+  }
+
+  function restartActivity() {
+    document.getElementById("student-name").value = "";
+    document.getElementById("screen-results").style.display = "none";
+    document.getElementById("screen-welcome").style.display = "block";
+  }
 </script>
+
+</body>
+</html>
 
 </body>
 </html>
