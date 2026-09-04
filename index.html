@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Acento Ortográfico - Modo Acentúa</title>
+  <title>Acento Ortográfico - Reto con Cuadro</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -24,18 +24,65 @@
       border-radius: 12px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.5);
       text-align: center;
-      max-width: 500px;
+      max-width: 600px;
       width: 100%;
     }
     h1 { color: #4CAF50; margin-bottom: 10px; }
-    p { font-size: 1.1em; }
-    .syllable-container {
+    p { font-size: 1.1em; line-height: 1.4; }
+    
+    /* Botón para alternar el cuadro */
+    .toggle-table-btn {
+      background-color: #0288d1;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.9em;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+    .toggle-table-btn:hover { background-color: #0277bd; }
+
+    /* Estilos de la Tabla Ortográfica */
+    .table-container {
+      display: none;
+      margin: 15px 0 25px 0;
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #2a2a2a;
+      border-radius: 8px;
+      overflow: hidden;
+      font-size: 0.95em;
+    }
+    th, td {
+      border: 1px solid #444;
+      padding: 10px 6px;
+      text-align: center;
+    }
+    th {
+      background-color: #333;
+      color: #4CAF50;
+    }
+    .sub-header {
+      font-size: 0.8em;
+      color: #bbb;
+      font-weight: normal;
+      display: block;
+    }
+
+    /* Estilos del Juego */
+    .syllable-container, .vowel-container {
       display: flex;
       justify-content: center;
       gap: 10px;
       margin: 20px 0;
+      flex-wrap: wrap;
     }
-    .syllable-btn, .option-btn {
+    .syllable-btn, .option-btn, .vowel-btn {
       background-color: #333;
       color: #fff;
       border: 2px solid #555;
@@ -43,113 +90,295 @@
       font-size: 1.2em;
       border-radius: 8px;
       cursor: pointer;
-      transition: background-color 0.2s, border-color 0.2s;
+      transition: all 0.2s;
     }
-    .syllable-btn:hover, .option-btn:hover {
+    .syllable-btn:hover, .option-btn:hover, .vowel-btn:hover {
       background-color: #444;
       border-color: #4CAF50;
     }
-    .feedback {
-      margin-top: 15px;
-      font-weight: bold;
-      min-height: 24px;
+    .selected {
+      border-color: #4CAF50 !important;
+      background-color: #1b4332 !important;
     }
-    .score {
-      font-size: 1.2em;
-      color: #FFC107;
-      margin-top: 15px;
-    }
-    .next-btn {
+    .action-btn {
       background-color: #4CAF50;
       color: white;
       border: none;
-      padding: 10px 20px;
+      padding: 12px 24px;
       font-size: 1em;
       border-radius: 6px;
       cursor: pointer;
       margin-top: 15px;
-      display: none;
+      font-weight: bold;
+    }
+    .action-btn:hover { background-color: #45a049; }
+    .feedback {
+      margin-top: 15px;
+      font-weight: bold;
+      min-height: 24px;
+      font-size: 1.1em;
+    }
+    .score {
+      font-size: 1.2em;
+      color: #FFC107;
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
 
 <div class="card">
-  <h1>Modo Acentúa</h1>
-  <p id="instruction">Toca la sílaba tónica (la que suena más fuerte):</p>
+  <h1>Reto Ortográfico</h1>
+  
+  <button class="toggle-table-btn" onclick="toggleTable()">📋 Ver / Ocultar Cuadro de Reglas</button>
+
+  <!-- Tabla de Consulta (Basada en la libreta) -->
+  <div class="table-container" id="rule-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Sobre esdrújula</th>
+          <th>Esdrújula</th>
+          <th>Grave <span class="sub-header">No termina n - s - voc.</span></th>
+          <th>Aguda <span class="sub-header">Termina n - s - voc.</span></th>
+        </tr>
+        <tr>
+          <th>Trasantepenúltima</th>
+          <th>Antepenúltima</th>
+          <th>Penúltima</th>
+          <th>Última</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>—</td>
+          <td>—</td>
+          <td>ga</td>
+          <td>to</td>
+        </tr>
+        <tr>
+          <td>—</td>
+          <td>—</td>
+          <td>li</td>
+          <td>món</td>
+        </tr>
+        <tr>
+          <td>—</td>
+          <td>—</td>
+          <td>Ca</td>
+          <td>mión</td>
+        </tr>
+        <tr>
+          <td>—</td>
+          <td>—</td>
+          <td>ár</td>
+          <td>bol</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p id="instruction"><b>Paso 1:</b> Toca la sílaba donde recae la fuerza de voz (sílaba tónica):</p>
   
   <div class="syllable-container" id="syllables"></div>
 
-  <div id="step2" style="display:none;">
-    <p id="rule-question"></p>
-    <div>
-      <button class="option-btn" onclick="checkAccent(true)">Sí lleva tilde</button>
-      <button class="option-btn" onclick="checkAccent(false)">No lleva tilde</button>
+  <div id="step-accent" style="display:none;">
+    <p><b>Paso 2:</b> ¿Esta palabra debe llevar tilde según las reglas?</p>
+    <div style="display: flex; justify-content: center; gap: 15px;">
+      <button class="option-btn" id="btn-yes" onclick="setAccentChoice(true)">Sí lleva tilde</button>
+      <button class="option-btn" id="btn-no" onclick="setAccentChoice(false)">No lleva tilde</button>
     </div>
   </div>
 
+  <div id="step-vowel" style="display:none;">
+    <p><b>Paso 3:</b> Toca la vocal que debe llevar la tilde:</p>
+    <div class="vowel-container" id="vowels"></div>
+  </div>
+
+  <div id="step-submit" style="display:none; margin-top: 15px;">
+    <button class="action-btn" onclick="validateAnswer()">Comprobar Respuesta</button>
+  </div>
+
   <div class="feedback" id="feedback"></div>
-  <button class="next-btn" id="next-btn" onclick="nextWord()">Siguiente palabra</button>
+  <button class="action-btn" id="next-btn" style="display:none;" onclick="nextWord()">Siguiente Palabra</button>
   <div class="score">Puntos: <span id="score">0</span></div>
 </div>
 
 <script>
   const words = [
-    { text: ["ga", "to"], tonicIndex: 0, type: "Grave", accent: false, rule: "es Grave y termina en Vocal" },
-    { text: ["li", "món"], tonicIndex: 1, type: "Aguda", accent: true, rule: "es Aguda y termina en N" },
-    { text: ["Ca", "mión"], tonicIndex: 1, type: "Aguda", accent: true, rule: "es Aguda y termina en N" },
-    { text: ["ár", "bol"], tonicIndex: 0, type: "Grave", accent: true, rule: "es Grave y NO termina en N, S o Vocal" },
-    { text: ["mé", "di", "co"], tonicIndex: 0, type: "Esdrújula", accent: true, rule: "es Esdrújula (todas llevan tilde)" },
-    { text: ["lá", "piz"], tonicIndex: 0, type: "Grave", accent: true, rule: "es Grave y NO termina en N, S o Vocal" }
+    { 
+      raw: ["gan", "ga"], 
+      tonicIndex: 0, 
+      type: "Grave", 
+      hasAccent: false, 
+      accentVowelIndex: null,
+      rule: "es Grave y termina en Vocal, por lo que NO lleva tilde." 
+    },
+    { 
+      raw: ["ca", "mion"], 
+      tonicIndex: 1, 
+      type: "Aguda", 
+      hasAccent: true, 
+      accentVowelIndex: 1,
+      rule: "es Aguda y termina en N, por lo que lleva tilde en la 'ó'." 
+    },
+    { 
+      raw: ["li", "mon"], 
+      tonicIndex: 1, 
+      type: "Aguda", 
+      hasAccent: true, 
+      accentVowelIndex: 1,
+      rule: "es Aguda y termina en N, por lo que lleva tilde en la 'ó'." 
+    },
+    { 
+      raw: ["ar", "bol"], 
+      tonicIndex: 0, 
+      type: "Grave", 
+      hasAccent: true, 
+      accentVowelIndex: 0,
+      rule: "es Grave y NO termina en N, S o Vocal, por lo que lleva tilde en la 'á'." 
+    },
+    { 
+      raw: ["me", "di", "co"], 
+      tonicIndex: 0, 
+      type: "Esdrújula", 
+      hasAccent: true, 
+      accentVowelIndex: 0,
+      rule: "es Esdrújula y TODAS las esdrújulas llevan tilde." 
+    },
+    { 
+      raw: ["la", "piz"], 
+      tonicIndex: 0, 
+      type: "Grave", 
+      hasAccent: true, 
+      accentVowelIndex: 0,
+      rule: "es Grave y NO termina en N, S o Vocal, por lo que lleva tilde en la 'á'." 
+    }
   ];
 
   let currentWordIndex = 0;
   let score = 0;
+  
+  let selectedTonic = null;
+  let selectedAccentChoice = null;
+  let selectedVowelIndex = null;
+
+  function toggleTable() {
+    const table = document.getElementById("rule-table");
+    table.style.display = table.style.display === "block" ? "none" : "block";
+  }
 
   function loadWord() {
     const word = words[currentWordIndex];
-    const container = document.getElementById("syllables");
-    container.innerHTML = "";
-    document.getElementById("step2").style.display = "none";
+    selectedTonic = null;
+    selectedAccentChoice = null;
+    selectedVowelIndex = null;
+
+    document.getElementById("instruction").style.display = "block";
+    document.getElementById("step-accent").style.display = "none";
+    document.getElementById("step-vowel").style.display = "none";
+    document.getElementById("step-submit").style.display = "none";
     document.getElementById("feedback").innerText = "";
     document.getElementById("next-btn").style.display = "none";
-    document.getElementById("instruction").innerText = "Toca la sílaba tónica (la que suena más fuerte):";
 
-    word.text.forEach((syllable, index) => {
+    const container = document.getElementById("syllables");
+    container.innerHTML = "";
+
+    word.raw.forEach((syllable, index) => {
       const btn = document.createElement("button");
       btn.className = "syllable-btn";
       btn.innerText = syllable;
-      btn.onclick = () => selectTonic(index);
+      btn.onclick = () => selectTonic(index, btn);
       container.appendChild(btn);
     });
   }
 
-  function selectTonic(index) {
-    const word = words[currentWordIndex];
-    if (index === word.tonicIndex) {
-      document.getElementById("feedback").innerText = `¡Correcto! Es una palabra ${word.type}.`;
-      document.getElementById("feedback").style.color = "#4CAF50";
-      document.getElementById("step2").style.display = "block";
-      document.getElementById("rule-question").innerText = `¿Lleva tilde según las reglas del cuadro?`;
+  function selectTonic(index, element) {
+    selectedTonic = index;
+    
+    const buttons = document.querySelectorAll("#syllables .syllable-btn");
+    buttons.forEach(b => b.classList.remove("selected"));
+    element.classList.add("selected");
+
+    document.getElementById("step-accent").style.display = "block";
+    
+    selectedAccentChoice = null;
+    document.getElementById("btn-yes").classList.remove("selected");
+    document.getElementById("btn-no").classList.remove("selected");
+    document.getElementById("step-vowel").style.display = "none";
+    document.getElementById("step-submit").style.display = "none";
+  }
+
+  function setAccentChoice(choice) {
+    selectedAccentChoice = choice;
+    
+    document.getElementById("btn-yes").classList.toggle("selected", choice === true);
+    document.getElementById("btn-no").classList.toggle("selected", choice === false);
+
+    if (choice === true) {
+      renderVowels();
+      document.getElementById("step-vowel").style.display = "block";
+      document.getElementById("step-submit").style.display = "none";
     } else {
-      document.getElementById("feedback").innerText = "Inténtalo de nuevo. Esa no es la sílaba tónica.";
-      document.getElementById("feedback").style.color = "#F44336";
+      document.getElementById("step-vowel").style.display = "none";
+      document.getElementById("step-submit").style.display = "block";
     }
   }
 
-  function checkAccent(userChoice) {
+  function renderVowels() {
     const word = words[currentWordIndex];
-    if (userChoice === word.accent) {
+    const syllableText = word.raw[selectedTonic];
+    const vowelsContainer = document.getElementById("vowels");
+    vowelsContainer.innerHTML = "";
+    selectedVowelIndex = null;
+
+    for (let i = 0; i < syllableText.length; i++) {
+      const char = syllableText[i];
+      if ("aeiouAEIOU".includes(char)) {
+        const btn = document.createElement("button");
+        btn.className = "vowel-btn";
+        btn.innerText = char;
+        btn.onclick = () => {
+          selectedVowelIndex = i;
+          document.querySelectorAll("#vowels .vowel-btn").forEach(b => b.classList.remove("selected"));
+          btn.classList.add("selected");
+          document.getElementById("step-submit").style.display = "block";
+        };
+        vowelsContainer.appendChild(btn);
+      }
+    }
+  }
+
+  function validateAnswer() {
+    const word = words[currentWordIndex];
+    let isCorrect = true;
+
+    if (selectedTonic !== word.tonicIndex) {
+      isCorrect = false;
+    }
+
+    if (selectedAccentChoice !== word.hasAccent) {
+      isCorrect = false;
+    }
+
+    if (word.hasAccent && selectedVowelIndex !== word.accentVowelIndex) {
+      isCorrect = false;
+    }
+
+    const feedbackEl = document.getElementById("feedback");
+
+    if (isCorrect) {
       score += 10;
       document.getElementById("score").innerText = score;
-      document.getElementById("feedback").innerText = `¡Excelente! No/Lleva tilde porque ${word.rule}.`;
-      document.getElementById("feedback").style.color = "#4CAF50";
-      document.getElementById("next-btn").style.display = "inline-block";
-      document.getElementById("step2").style.display = "none";
+      feedbackEl.innerText = `¡Correcto! La palabra es ${word.type} y ${word.rule}`;
+      feedbackEl.style.color = "#4CAF50";
     } else {
-      document.getElementById("feedback").innerText = `Incorrecto. Recuerda que ${word.rule}.`;
-      document.getElementById("feedback").style.color = "#F44336";
+      feedbackEl.innerText = `Incorrecto. La palabra es ${word.type} (sílaba tónica: "${word.raw[word.tonicIndex]}") y ${word.rule}`;
+      feedbackEl.style.color = "#F44336";
     }
+
+    document.getElementById("step-submit").style.display = "none";
+    document.getElementById("next-btn").style.display = "inline-block";
   }
 
   function nextWord() {
