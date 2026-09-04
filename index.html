@@ -337,12 +337,14 @@
         <!-- PANTALLA DE RESULTADOS -->
         <div id="screen-results" class="hidden">
             <h2>Resultados de la Evaluación</h2>
-            <p style="text-align: center; font-size: 18px; margin: 15px 0;" id="result-user-container">
-                Estudiante: <b id="result-name" style="color: var(--yellow-text);"></b>
-            </p>
-            <p style="text-align: center; font-size: 22px; font-weight: bold; margin-bottom: 25px;" id="result-grade-container">
-                Calificación Final: <span id="result-grade" style="color: var(--accent-green);">0.0</span> / 5.0
-            </p>
+            <div id="result-user-container">
+                <p style="text-align: center; font-size: 18px; margin: 15px 0;">
+                    Estudiante: <b id="result-name" style="color: var(--yellow-text);"></b>
+                </p>
+                <p style="text-align: center; font-size: 22px; font-weight: bold; margin-bottom: 25px;">
+                    Calificación Final: <span id="result-grade" style="color: var(--accent-green);">0.0</span> / 5.0
+                </p>
+            </div>
 
             <h3>Tabla de Posiciones</h3>
             <table class="results-table">
@@ -369,7 +371,9 @@
         const firebaseConfig = {
             databaseURL: "https://acento-ortografico-8ed2d-default-rtdb.firebaseio.com/"
         };
-        firebase.initializeApp(firebaseConfig);
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
         const database = firebase.database();
 
         const wordBank = [
@@ -412,9 +416,11 @@
         const categoryNames = ["Aguda", "Grave", "Esdrújula", "Sobresdrújula"];
 
         function startGame() {
-            const name = document.getElementById("app-user-name").value.trim();
+            const nameField = document.getElementById("app-user-name");
+            const name = nameField.value.trim();
             if (!name) {
                 alert("Por favor ingresa tu nombre");
+                nameField.focus();
                 return;
             }
             currentStudent = name;
@@ -425,8 +431,8 @@
             correctAnswersCount = 0;
 
             document.getElementById("screen-welcome").classList.add("hidden");
-            document.getElementById("screen-game").classList.remove("hidden");
             document.getElementById("screen-results").classList.add("hidden");
+            document.getElementById("screen-game").classList.remove("hidden");
 
             loadQuestion();
         }
@@ -436,9 +442,8 @@
             document.getElementById("screen-game").classList.add("hidden");
             document.getElementById("screen-results").classList.remove("hidden");
 
-            // Ocultar la sección de nota individual ya que se accede de forma general
+            // Ocultar los datos de calificación individual cuando se entra a ver la tabla general
             document.getElementById("result-user-container").style.display = "none";
-            document.getElementById("result-grade-container").style.display = "none";
 
             loadLeaderboard();
         }
@@ -540,11 +545,11 @@
             const finalGrade = parseFloat((correctAnswersCount * 0.5).toFixed(1));
 
             document.getElementById("screen-game").classList.add("hidden");
+            document.getElementById("screen-welcome").classList.add("hidden");
             document.getElementById("screen-results").classList.remove("hidden");
 
-            // Mostrar contenedores individuales al terminar la prueba
+            // Mostrar los datos individuales cuando el estudiante termina su examen
             document.getElementById("result-user-container").style.display = "block";
-            document.getElementById("result-grade-container").style.display = "block";
 
             document.getElementById("result-name").innerText = currentStudent;
             document.getElementById("result-grade").innerText = finalGrade.toFixed(1);
@@ -563,7 +568,7 @@
 
         function loadLeaderboard() {
             const tbody = document.getElementById("leaderboard-body");
-            tbody.innerHTML = "";
+            tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Cargando puntajes...</td></tr>";
 
             database.ref("leaderboard").once("value").then(snapshot => {
                 let leaderboard = [];
@@ -571,22 +576,31 @@
 
                 leaderboard.sort((a, b) => b.grade - a.grade || b.correct - a.correct);
 
+                tbody.innerHTML = "";
+                if(leaderboard.length === 0) {
+                    tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>No hay registros aún.</td></tr>";
+                    return;
+                }
+
                 leaderboard.forEach((entry, idx) => {
                     const tr = document.createElement("tr");
                     tr.innerHTML = `
                         <td>${idx + 1}°</td>
                         <td>${entry.name}</td>
-                        <td><b style="color:var(--accent-green)">${entry.grade.toFixed(1)}</b> / 5.0</td>
+                        <td><b style="color:var(--accent-green)">${Number(entry.grade).toFixed(1)}</b> / 5.0</td>
                         <td>${entry.correct} / 10</td>
                     `;
                     tbody.appendChild(tr);
                 });
+            }).catch(error => {
+                tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:#ef4444;'>Error al cargar los datos.</td></tr>";
             });
         }
 
         function restartActivity() {
             document.getElementById("app-user-name").value = "";
             document.getElementById("screen-results").classList.add("hidden");
+            document.getElementById("screen-game").classList.add("hidden");
             document.getElementById("screen-welcome").classList.remove("hidden");
         }
     </script>
