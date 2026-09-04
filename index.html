@@ -8,12 +8,12 @@
         :root {
             --bg-dark: #121212;
             --card-dark: #1e1e24;
-            --accent-green: #10b981;
-            --accent-green-hover: #059669;
+            --accent-green: #22c55e;
+            --accent-green-hover: #16a34a;
             --text-light: #f3f4f6;
             --text-muted: #9ca3af;
             --border-color: #374151;
-            --yellow-text: #f59e0b;
+            --yellow-text: #fbbf24;
         }
 
         * {
@@ -38,7 +38,7 @@
             padding: 30px;
             border-radius: 12px;
             width: 100%;
-            max-width: 850px;
+            max-width: 900px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
 
@@ -97,7 +97,11 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            font-size: 18px;
+            font-size: 16px;
+            background: #121212;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
         }
 
         .header-game span b {
@@ -106,102 +110,117 @@
 
         .step-title {
             text-align: center;
-            font-size: 18px;
-            margin: 15px 0;
+            font-size: 15px;
+            margin: 15px 0 10px 0;
+            color: var(--text-light);
         }
 
         .sega-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             text-align: center;
         }
 
         .sega-table th, .sega-table td {
             border: 1px solid var(--border-color);
-            padding: 12px 5px;
+            padding: 10px 5px;
             width: 25%;
         }
 
         .sega-table th {
             color: var(--yellow-text);
-            font-size: 18px;
+            font-size: 16px;
         }
 
         .rule-text {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-muted);
         }
 
         .pos-text {
             color: var(--accent-green);
             font-weight: bold;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .syllable-btn {
             background-color: #2a2a32;
             color: white;
             border: 1px solid var(--border-color);
-            padding: 10px 15px;
+            padding: 8px 12px;
             border-radius: 6px;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
             min-width: 50px;
         }
 
         .syllable-btn.selected {
-            background-color: #1e7e34;
-            border-color: var(--accent-green);
+            background-color: #16a34a;
+            border-color: #22c55e;
+        }
+
+        .step-info-text {
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-muted);
+            margin: 10px 0;
         }
 
         .tilde-options {
             display: flex;
             justify-content: center;
             gap: 15px;
-            margin: 15px 0;
+            margin: 10px 0;
         }
 
         .btn-option {
             background-color: #2a2a32;
             color: white;
             border: 1px solid var(--border-color);
-            padding: 12px 24px;
+            padding: 10px 20px;
             border-radius: 6px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             cursor: pointer;
         }
 
         .btn-option.selected {
-            background-color: #1e7e34;
-            border-color: var(--accent-green);
+            background-color: #16a34a;
+            border-color: #22c55e;
+        }
+
+        .vowel-container {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 10px 0;
         }
 
         .vowel-btn {
             background-color: #2a2a32;
             color: white;
             border: 1px solid var(--border-color);
-            padding: 10px 20px;
+            padding: 8px 14px;
             border-radius: 6px;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            margin: 5px;
         }
 
         .vowel-btn.selected {
-            background-color: #1e7e34;
-            border-color: var(--accent-green);
+            background-color: #16a34a;
+            border-color: #22c55e;
         }
 
         .feedback-box {
             text-align: center;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             margin: 15px 0;
             min-height: 24px;
+            color: var(--accent-green);
         }
 
         table.results-table {
@@ -238,14 +257,15 @@
             <button class="btn-green" onclick="startGame()">Comenzar Evaluación</button>
         </div>
 
-        <!-- PANTALLA DEL EXAMEN CON TABLA SEGA (Diseño Original de 4 columnas) -->
+        <!-- PANTALLA DEL EXAMEN -->
         <div id="screen-game" class="hidden">
             <div class="header-game">
                 <span>Estudiante: <b id="player-display"></b></span>
-                <span>Pregunta: <b id="current-index">1</b> / 10</span>
+                <span>Palabra: <b id="current-index">1</b> / 10</span>
+                <span>Aciertos: <b id="score-display">0</b></span>
             </div>
 
-            <p class="step-title"><b>Paso 1:</b> Toca la sílaba tónica:</p>
+            <p class="step-title"><b>Paso 1:</b> Toca la sílaba tónica para ubicar la palabra en la columna correcta del cuadro SEGA:</p>
 
             <table class="sega-table">
                 <thead>
@@ -278,14 +298,16 @@
                 </tbody>
             </table>
 
-            <div class="step-title"><b>Paso 2:</b> ¿Lleva tilde?</div>
+            <div class="step-info-text" id="step1-info">Has ubicado la sílaba tónica en la columna: --</div>
+
+            <p class="step-title"><b>Paso 2:</b> ¿Lleva tilde según la regla de esa columna?</p>
             <div class="tilde-options">
                 <button class="btn-option" id="btn-tilde-yes" onclick="setTildeChoice(true)">Sí lleva tilde</button>
                 <button class="btn-option" id="btn-tilde-no" onclick="setTildeChoice(false)">No lleva tilde</button>
             </div>
 
-            <div class="step-title"><b>Paso 3:</b> Vocal con tilde (si aplica):</div>
-            <div id="vowels-box" style="text-align: center;"></div>
+            <p class="step-title"><b>Paso 3:</b> Toca la vocal que lleva la tilde en esa sílaba:</p>
+            <div class="vowel-container" id="vowels-box"></div>
 
             <div class="feedback-box" id="feedback-msg"></div>
 
@@ -330,9 +352,8 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // Banco de palabras enfocado estrictamente en Objetos y Sentimientos
+        // Banco de palabras enfocado exclusivamente en Objetos y Sentimientos
         const wordBank = [
-            // Objetos (Agudas, Graves, Esdrújulas)
             { syllables: ["ca", "ma", "ra"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "á" },
             { syllables: ["la", "piz"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "á" },
             { syllables: ["ar", "bol"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "á" },
@@ -351,12 +372,9 @@
             { syllables: ["es", "pon", "ja"], tonicIndex: 1, category: "Grave", tilde: false },
             { syllables: ["te", "le", "fo", "no"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "ó" },
             { syllables: ["can", "ti", "plor", "a"], tonicIndex: 1, category: "Grave", tilde: false },
-            
-            // Sentimientos / Emociones (Agudas, Graves, Esdrújulas)
             { syllables: ["a", "mor"], tonicIndex: 0, category: "Aguda", tilde: false },
             { syllables: ["tri", "ste", "za"], tonicIndex: 1, category: "Grave", tilde: false },
             { syllables: ["pa", "sio", "n"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "ó" },
-            { syllables: ["ie", "la", "do"], tonicIndex: 1, category: "Grave", tilde: false }, // Alegría o ilusión
             { syllables: ["te", "mor"], tonicIndex: 0, category: "Aguda", tilde: false },
             { syllables: ["cal", "ma"], tonicIndex: 1, category: "Grave", tilde: false },
             { syllables: ["i", "ra"], tonicIndex: 1, category: "Grave", tilde: false },
@@ -373,6 +391,8 @@
         let userSelectedSyllable = -1;
         let userSelectedTilde = null;
         let userSelectedVowel = "";
+
+        const categoryNames = ["Aguda", "Grave", "Esdrújula", "Sobresdrújula"];
 
         function startGame() {
             const name = document.getElementById("app-user-name").value.trim();
@@ -399,8 +419,10 @@
             userSelectedTilde = null;
             userSelectedVowel = "";
             document.getElementById("feedback-msg").innerText = "";
+            document.getElementById("step1-info").innerText = "Has ubicado la sílaba tónica en la columna: --";
             document.getElementById("btn-tilde-yes").classList.remove("selected");
             document.getElementById("btn-tilde-no").classList.remove("selected");
+            document.getElementById("score-display").innerText = correctAnswersCount;
 
             document.getElementById("current-index").innerText = currentWordIndex + 1;
             const currentItem = selectedWords[currentWordIndex];
@@ -430,6 +452,8 @@
             document.querySelectorAll(".syllable-btn").forEach(b => b.classList.remove("selected"));
             btn.classList.add("selected");
             userSelectedSyllable = posFromEnd;
+            const colName = categoryNames[posFromEnd] || "--";
+            document.getElementById("step1-info").innerText = `Has ubicado la sílaba tónica en la columna: ${colName}.`;
         }
 
         function setTildeChoice(hasTilde) {
@@ -458,14 +482,23 @@
 
             if (isColCorrect && isTildeCorrect && isVowelCorrect) {
                 correctAnswersCount++;
+                document.getElementById("feedback-msg").style.color = "var(--accent-green)";
+                document.getElementById("feedback-msg").innerText = `¡Correcto! La palabra es ${currentItem.category}.`;
+            } else {
+                document.getElementById("feedback-msg").style.color = "#ef4444";
+                document.getElementById("feedback-msg").innerText = `Incorrecto. Era ${currentItem.category}.`;
             }
 
-            currentWordIndex++;
-            if (currentWordIndex < selectedWords.length) {
-                loadQuestion();
-            } else {
-                finishGame();
-            }
+            document.getElementById("score-display").innerText = correctAnswersCount;
+
+            setTimeout(() => {
+                currentWordIndex++;
+                if (currentWordIndex < selectedWords.length) {
+                    loadQuestion();
+                } else {
+                    finishGame();
+                }
+            }, 1000);
         }
 
         function finishGame() {
