@@ -259,14 +259,15 @@
             color: var(--yellow-text);
         }
 
-        .hidden { display: none !important; }
+        .screen { display: none; }
+        .screen.active { display: block; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <!-- PANTALLA INICIAL -->
-        <div id="screen-welcome">
+        <div id="screen-welcome" class="screen active">
             <h1>Taller de Acentuación Ortográfica</h1>
             <p class="description">Evaluación de acentuación y clasificación de objetos y sentimientos.</p>
             <div class="input-group">
@@ -274,11 +275,11 @@
                 <input type="text" id="app-user-name" placeholder="Ej. Juan Pérez" autocomplete="off">
             </div>
             <button class="btn-green" onclick="startGame()">Comenzar Evaluación</button>
-            <button class="btn-secondary" onclick="showLeaderboardDirect()">Ver Tabla de Posiciones General</button>
+            <button class="btn-secondary" onclick="showLeaderboardView()">Ver Tabla de Posiciones General</button>
         </div>
 
         <!-- PANTALLA DEL EXAMEN -->
-        <div id="screen-game" class="hidden">
+        <div id="screen-game" class="screen">
             <div class="header-game">
                 <span>Estudiante: <b id="player-display"></b></span>
                 <span>Palabra: <b id="current-index">1</b> / 10</span>
@@ -335,7 +336,7 @@
         </div>
 
         <!-- PANTALLA DE RESULTADOS -->
-        <div id="screen-results" class="hidden">
+        <div id="screen-results" class="screen">
             <h2>Resultados de la Evaluación</h2>
             <div id="result-user-container">
                 <p style="text-align: center; font-size: 18px; margin: 15px 0;">
@@ -415,6 +416,12 @@
 
         const categoryNames = ["Aguda", "Grave", "Esdrújula", "Sobresdrújula"];
 
+        // Función centralizada para mostrar pantallas de forma limpia
+        function switchScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
         function startGame() {
             const nameField = document.getElementById("app-user-name");
             const name = nameField.value.trim();
@@ -430,21 +437,13 @@
             currentWordIndex = 0;
             correctAnswersCount = 0;
 
-            document.getElementById("screen-welcome").classList.add("hidden");
-            document.getElementById("screen-results").classList.add("hidden");
-            document.getElementById("screen-game").classList.remove("hidden");
-
+            switchScreen('screen-game');
             loadQuestion();
         }
 
-        function showLeaderboardDirect() {
-            document.getElementById("screen-welcome").classList.add("hidden");
-            document.getElementById("screen-game").classList.add("hidden");
-            document.getElementById("screen-results").classList.remove("hidden");
-
-            // Ocultar los datos de calificación individual cuando se entra a ver la tabla general
+        function showLeaderboardView() {
+            switchScreen('screen-results');
             document.getElementById("result-user-container").style.display = "none";
-
             loadLeaderboard();
         }
 
@@ -544,13 +543,8 @@
         function finishGame() {
             const finalGrade = parseFloat((correctAnswersCount * 0.5).toFixed(1));
 
-            document.getElementById("screen-game").classList.add("hidden");
-            document.getElementById("screen-welcome").classList.add("hidden");
-            document.getElementById("screen-results").classList.remove("hidden");
-
-            // Mostrar los datos individuales cuando el estudiante termina su examen
+            switchScreen('screen-results');
             document.getElementById("result-user-container").style.display = "block";
-
             document.getElementById("result-name").innerText = currentStudent;
             document.getElementById("result-grade").innerText = finalGrade.toFixed(1);
 
@@ -592,16 +586,14 @@
                     `;
                     tbody.appendChild(tr);
                 });
-            }).catch(error => {
+            }).catch(() => {
                 tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:#ef4444;'>Error al cargar los datos.</td></tr>";
             });
         }
 
         function restartActivity() {
             document.getElementById("app-user-name").value = "";
-            document.getElementById("screen-results").classList.add("hidden");
-            document.getElementById("screen-game").classList.add("hidden");
-            document.getElementById("screen-welcome").classList.remove("hidden");
+            switchScreen('screen-welcome');
         }
     </script>
 </body>
