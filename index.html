@@ -220,19 +220,19 @@
         <!-- PANTALLA INICIAL -->
         <div id="screen-welcome">
             <h1>Taller de Acentuación Ortográfica</h1>
-            <p class="description">Identifica la sílaba tónica y aplica las reglas de acentuación.</p>
+            <p class="description">Evaluación de acentuación y clasificación de palabras.</p>
             <div class="input-group">
                 <label for="app-user-name">Nombre Completo del Estudiante:</label>
                 <input type="text" id="app-user-name" placeholder="Ej. Juan Pérez" autocomplete="off">
             </div>
-            <button class="btn-green" onclick="startGame()">Comenzar Actividad</button>
+            <button class="btn-green" onclick="startGame()">Comenzar Evaluación</button>
         </div>
 
-        <!-- PANTALLA DEL JUEGO CON TABLA SEGA -->
+        <!-- PANTALLA DEL EXAMEN CON TABLA SEGA -->
         <div id="screen-game" class="hidden">
             <div class="header-game">
                 <span>Estudiante: <b id="player-display"></b></span>
-                <span>Palabra: <b id="current-index">1</b> / 10</span>
+                <span>Pregunta: <b id="current-index">1</b> / 10</span>
             </div>
 
             <p class="step-title"><b>Paso 1:</b> Toca la sílaba tónica para ubicar la palabra en la columna correcta del cuadro SEGA:</p>
@@ -289,7 +289,7 @@
 
         <!-- PANTALLA DE RESULTADOS -->
         <div id="screen-results" class="hidden">
-            <h2>Resultados Finales</h2>
+            <h2>Resultados de la Evaluación</h2>
             <p style="text-align: center; font-size: 18px; margin: 15px 0;">
                 Estudiante: <b id="result-name" style="color: var(--yellow-text);"></b>
             </p>
@@ -310,7 +310,7 @@
                 <tbody id="leaderboard-body"></tbody>
             </table>
             <br>
-            <button class="btn-green" onclick="restartActivity()">Volver a Intentar</button>
+            <button class="btn-green" onclick="restartActivity()">Realizar Otro Intento</button>
         </div>
     </div>
 
@@ -433,7 +433,6 @@
             document.getElementById("current-index").innerText = currentWordIndex + 1;
             const currentItem = selectedWords[currentWordIndex];
 
-            // Limpiar las 4 celdas del cuadro SEGA de forma estricta
             for (let i = 0; i < 4; i++) {
                 document.getElementById(`cell-${i}`).innerHTML = "--";
             }
@@ -469,13 +468,9 @@
             const isCorrectCol = (selectedSyllableIndex === currentItem.tonicIndex);
             const isCorrectTilde = (userSaysTilde === currentItem.tilde);
 
-            if (!isCorrectCol) {
-                showFeedback(false, `Incorrecto. La sílaba tónica correcta corresponde a la columna ${currentItem.category}.`);
-                return;
-            }
-
-            if (!isCorrectTilde) {
-                showFeedback(false, `Incorrecto. La palabra ${currentItem.tilde ? "SÍ" : "NO"} lleva tilde.`);
+            // Si falla la columna o la tilde, guardamos como incorrecto y mostramos el botón para continuar directamente
+            if (!isCorrectCol || !isCorrectTilde) {
+                showExamResult(false, "Incorrecto.");
                 return;
             }
 
@@ -489,7 +484,7 @@
                 });
             } else {
                 correctAnswersCount++;
-                showFeedback(true, `¡Correcto! La palabra es ${currentItem.category} y NO lleva tilde.`);
+                showExamResult(true, "¡Correcto!");
             }
         }
 
@@ -499,19 +494,21 @@
 
             if (userVowel === cleanAccentedVowel) {
                 correctAnswersCount++;
-                showFeedback(true, `¡Correcto! La palabra es ${currentItem.category} y lleva tilde en la '${currentItem.vowel}'.`);
+                showExamResult(true, "¡Correcto!");
             } else {
-                showFeedback(false, `Incorrecto. La tilde recae sobre la vocal '${currentItem.vowel}'.`);
+                showExamResult(false, "Incorrecto.");
             }
         }
 
-        function showFeedback(isSuccess, message) {
+        function showExamResult(isSuccess, message) {
             const fb = document.getElementById("feedback-msg");
             fb.innerText = message;
             fb.style.color = isSuccess ? "var(--accent-green)" : "#ef4444";
 
-            // Deshabilitar los botones activos actuales de forma segura
+            // Deshabilitar los botones actuales para registrar la respuesta
             document.querySelectorAll(".btn-option, .syllable-btn, .vowel-btn").forEach(b => b.disabled = true);
+            
+            // Mostrar directamente el botón para avanzar a la siguiente palabra sin bloquear el flujo del examen
             document.getElementById("btn-next").classList.remove("hidden");
         }
 
