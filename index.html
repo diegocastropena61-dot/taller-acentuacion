@@ -3,24 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taller de Acentuación Ortográfica</title>
+    <title>Juego del Acento Ortográfico</title>
     <style>
         :root {
-            --primary: #16a34a;
-            --primary-hover: #15803d;
-            --bg: #09090b;
-            --card: #18181b;
-            --text: #f4f4f5;
-            --border: #27272a;
-            --correct: #22c55e;
-            --wrong: #ef4444;
+            --primary: #4338ca;
+            --primary-hover: #3730a3;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --correct: #16a34a;
+            --wrong: #dc2626;
+            --border: #e2e8f0;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
         }
 
         body {
@@ -37,16 +37,21 @@
             background-color: var(--card);
             padding: 30px;
             border-radius: 16px;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
             width: 100%;
-            max-width: 700px;
-            border: 1px solid var(--border);
+            max-width: 600px;
         }
 
         h1, h2, h3 {
             text-align: center;
             color: var(--primary);
             margin-bottom: 20px;
+        }
+
+        p.description {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 24px;
         }
 
         .input-group {
@@ -57,21 +62,18 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #e4e4e7;
         }
 
-        input[type="text"], select {
+        input[type="text"] {
             width: 100%;
             padding: 12px 16px;
             border: 2px solid var(--border);
             border-radius: 8px;
             font-size: 16px;
-            margin-bottom: 15px;
-            background-color: #09090b;
-            color: #ffffff;
+            transition: border-color 0.2s;
         }
 
-        input[type="text"]:focus, select:focus {
+        input[type="text"]:focus {
             outline: none;
             border-color: var(--primary);
         }
@@ -86,11 +88,15 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: background-color 0.2s, transform 0.1s;
         }
 
         button:hover {
             background-color: var(--primary-hover);
+        }
+
+        button:active {
+            transform: scale(0.98);
         }
 
         .header-game {
@@ -103,64 +109,67 @@
             font-weight: 600;
         }
 
-        .word-title {
-            font-size: 28px;
+        .word-display {
+            font-size: 36px;
             font-weight: 800;
             text-align: center;
-            color: var(--primary);
-            margin-bottom: 20px;
             letter-spacing: 2px;
+            margin: 30px 0;
+            color: var(--primary);
         }
 
-        .syllables-container {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-        }
-
-        .syllable-btn {
-            background-color: #27272a;
-            border: 2px solid var(--border);
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            width: auto;
-            color: #ffffff;
-        }
-
-        .syllable-btn.selected {
-            background-color: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .form-section {
-            background: #09090b;
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
             margin-bottom: 20px;
+        }
+
+        .option-btn {
+            background-color: #f1f5f9;
+            color: var(--text);
+            border: 2px solid var(--border);
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .option-btn:hover {
+            background-color: #e2e8f0;
+        }
+
+        .option-btn.correct {
+            background-color: var(--correct) !important;
+            color: white !important;
+            border-color: var(--correct) !important;
+        }
+
+        .option-btn.wrong {
+            background-color: var(--wrong) !important;
+            color: white !important;
+            border-color: var(--wrong) !important;
         }
 
         .feedback {
             text-align: center;
-            font-weight: bold;
-            font-size: 18px;
-            margin-bottom: 15px;
-            min-height: 27px;
+            font-weight: 600;
+            min-height: 24px;
+            margin-bottom: 16px;
         }
 
-        .feedback.correct { color: var(--correct); }
-        .feedback.wrong { color: var(--wrong); }
+        .feedback.correct-text {
+            color: var(--correct);
+        }
+
+        .feedback.wrong-text {
+            color: var(--wrong);
+        }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
+            margin-top: 20px;
         }
 
         th, td {
@@ -170,16 +179,18 @@
         }
 
         th {
-            background-color: #27272a;
+            background-color: #f1f5f9;
             color: var(--primary);
         }
 
         .highlight-user {
-            background-color: #14532d;
+            background-color: #e0e7ff;
             font-weight: bold;
         }
 
-        .hidden { display: none !important; }
+        .hidden {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -187,64 +198,43 @@
     <div class="container">
         <!-- PANTALLA INICIAL -->
         <div id="screen-welcome">
-            <h1>Taller de Acentuación Ortográfica</h1>
-            <p style="text-align: center; color: #a1a1aa; margin-bottom: 20px;">
-                Identifica la sílaba tónica y aplica las reglas de acentuación.
-            </p>
+            <h1>Acento Ortográfico</h1>
+            <p class="description">Selecciona la clasificación correcta para cada palabra.</p>
             <div class="input-group">
-                <label for="app-user-name">Nombre Completo del Estudiante:</label>
+                <label for="app-user-name">Ingresa tu Nombre Completo:</label>
                 <input type="text" id="app-user-name" placeholder="Ej. Juan Pérez" autocomplete="off">
             </div>
-            <button onclick="startGame()">Comenzar Actividad</button>
+            <button onclick="startGame()">Iniciar Juego</button>
         </div>
 
-        <!-- PANTALLA DE PREGUNTAS -->
+        <!-- PANTALLA DEL JUEGO -->
         <div id="screen-game" class="hidden">
             <div class="header-game">
                 <span id="player-display"></span>
-                <span>Palabra <span id="current-index">1</span> de 10</span>
+                <span>Palabra: <span id="current-index">1</span>/10</span>
             </div>
-
-            <div class="word-title" id="word-target">PALABRA</div>
-
-            <label style="text-align: center; margin-bottom: 10px;">1. Selecciona la sílaba tónica:</label>
-            <div class="syllables-container" id="syllables-box"></div>
-
-            <div class="form-section">
-                <label for="select-tilde">2. ¿Lleva tilde (acento ortográfico)?</label>
-                <select id="select-tilde" onchange="toggleVowelSelect()">
-                    <option value="">-- Selecciona --</option>
-                    <option value="SI">Sí lleva tilde</option>
-                    <option value="NO">No lleva tilde</option>
-                </select>
-
-                <div id="vowel-container" class="hidden">
-                    <label for="select-vowel">3. ¿En qué vocal recae la tilde?</label>
-                    <select id="select-vowel">
-                        <option value="">-- Selecciona la vocal --</option>
-                        <option value="Á">Á</option>
-                        <option value="É">É</option>
-                        <option value="Í">Í</option>
-                        <option value="Ó">Ó</option>
-                        <option value="Ú">Ú</option>
-                    </select>
-                </div>
+            <div class="word-display" id="word-target">CANCION</div>
+            <div class="options-grid">
+                <button class="option-btn" onclick="checkAnswer('Aguda')">Aguda</button>
+                <button class="option-btn" onclick="checkAnswer('Grave')">Grave</button>
+                <button class="option-btn" onclick="checkAnswer('Esdrújula')">Esdrújula</button>
+                <button class="option-btn" onclick="checkAnswer('Sobresdrújula')">Sobresdrújula</button>
             </div>
-
             <div class="feedback" id="feedback-message"></div>
-            <button id="btn-submit" onclick="checkAnswer()">Comprobar Respuesta</button>
             <button id="btn-next" class="hidden" onclick="nextQuestion()">Siguiente Palabra</button>
         </div>
 
         <!-- PANTALLA DE RESULTADOS -->
         <div id="screen-results" class="hidden">
-            <h2>Resultados Finales</h2>
-            <p style="text-align: center; font-size: 18px;">Estudiante: <b id="result-name"></b></p>
-            <p style="text-align: center; font-size: 22px; font-weight: bold; color: var(--primary); margin: 15px 0;">
-                Nota Final: <span id="result-grade">0.0</span> / 5.0
+            <h2>Resultados</h2>
+            <p style="text-align: center; font-size: 18px; margin-bottom: 10px;">
+                Estudiante: <b id="result-name"></b>
             </p>
-
-            <h3>Tabla de Registro de Notas</h3>
+            <p style="text-align: center; font-size: 20px; font-weight: bold; color: var(--primary); margin-bottom: 20px;">
+                Calificación Final: <span id="result-grade">0.0</span> / 5.0
+            </p>
+            
+            <h3>Tabla de Posiciones</h3>
             <table>
                 <thead>
                     <tr>
@@ -254,129 +244,130 @@
                         <th>Aciertos</th>
                     </tr>
                 </thead>
-                <tbody id="leaderboard-body"></tbody>
+                <tbody id="leaderboard-body">
+                </tbody>
             </table>
             <br>
-            <button onclick="restartActivity()">Volver a Intentar</button>
+            <button onclick="restartActivity()">Volver a Jugar</button>
         </div>
     </div>
 
-    <!-- FIREBASE SDK -->
+    <!-- SDK FIREBASE -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // Configuración de Firebase
+        // CONFIGURACIÓN DE FIREBASE
         const firebaseConfig = {
             databaseURL: "https://acento-ortografico-8ed2d-default-rtdb.firebaseio.com/"
         };
+        
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // Banco de 90 palabras
+        // BANCO DE 90 PALABRAS
         const wordBank = [
-            { word: "CANCION", syllables: ["CAN", "CION"], tonic: 1, tilde: "SI", vowel: "Ó" },
-            { word: "ARBOL", syllables: ["AR", "BOL"], tonic: 0, tilde: "SI", vowel: "Á" },
-            { word: "CAMARA", syllables: ["CA", "MA", "RA"], tonic: 0, tilde: "SI", vowel: "Á" },
-            { word: "DIGASELO", syllables: ["DI", "GA", "SE", "LO"], tonic: 0, tilde: "SI", vowel: "Í" },
-            { word: "CAFE", syllables: ["CA", "FE"], tonic: 1, tilde: "SI", vowel: "É" },
-            { word: "LAPIZ", syllables: ["LA", "PIZ"], tonic: 0, tilde: "SI", vowel: "Á" },
-            { word: "MUSICA", syllables: ["MU", "SI", "CA"], tonic: 0, tilde: "SI", vowel: "Ú" },
-            { word: "ENTREGASELO", syllables: ["EN", "TRE", "GA", "SE", "LO"], tonic: 1, tilde: "SI", vowel: "É" },
-            { word: "CORAZON", syllables: ["CO", "RA", "ZON"], tonic: 2, tilde: "SI", vowel: "Ó" },
-            { word: "MESA", syllables: ["ME", "SA"], tonic: 0, tilde: "NO", vowel: "" },
-            { word: "CATEDRA", syllables: ["CA", "TE", "DRA"], tonic: 1, tilde: "SI", vowel: "É" },
-            { word: "JARDIN", syllables: ["JAR", "DIN"], tonic: 1, tilde: "SI", vowel: "Í" },
-            { word: "SITIO", syllables: ["SI", "TIO"], tonic: 0, tilde: "NO", vowel: "" },
-            { word: "COMPUTADOR", syllables: ["COM", "PU", "TA", "DOR"], tonic: 3, tilde: "NO", vowel: "" },
-            { word: "ANGEL", syllables: ["AN", "GEL"], tonic: 0, tilde: "SI", vowel: "Á" },
-            { word: "PAGINA", syllables: ["PA", "GI", "NA"], tonic: 0, tilde: "SI", vowel: "Á" },
-            { word: "LAGO", syllables: ["LA", "GO"], tonic: 0, tilde: "NO", vowel: "" },
-            { word: "PERU", syllables: ["PE", "RU"], tonic: 1, tilde: "SI", vowel: "Ú" },
-            { word: "CEPES", syllables: ["CE", "PES"], tonic: 0, tilde: "SI", vowel: "É" },
-            { word: "EXAMEN", syllables: ["E", "XA", "MEN"], tonic: 1, tilde: "NO", vowel: "" },
-            { word: "EXAMENES", syllables: ["E", "XA", "ME", "NES"], tonic: 1, tilde: "SI", vowel: "Á" },
-            { word: "SOFA", syllables: ["SO", "FA"], tonic: 1, tilde: "SI", vowel: "Á" },
-            { word: "FACIL", syllables: ["FA", "CIL"], tonic: 0, tilde: "SI", vowel: "Á" },
-            { word: "LIBRO", syllables: ["LI", "BRO"], tonic: 0, tilde: "NO", vowel: "" },
-            { word: "MEDICO", syllables: ["ME", "DI", "CO"], tonic: 0, tilde: "SI", vowel: "É" },
-            { word: "PARED", syllables: ["PA", "RED"], tonic: 1, tilde: "NO", vowel: "" },
-            { word: "RELICARIO", syllables: ["RE", "LI", "CA", "RIO"], tonic: 2, tilde: "NO", vowel: "" },
-            { word: "TELEFONO", syllables: ["TE", "LE", "FO", "NO"], tonic: 1, tilde: "SI", vowel: "É" },
-            { word: "CELULAR", syllables: ["CE", "LU", "LAR"], tonic: 2, tilde: "NO", vowel: "" },
-            { word: "AZUCAR", syllables: ["A", "ZU", "CAR"], tonic: 1, tilde: "SI", vowel: "Ú" },
-            { word: "PANTALON", syllables: ["PAN", "TA", "LON"], tonic: 2, tilde: "SI", vowel: "Ó" },
-            { word: "MARMOL", syllables: ["MAR", "MOL"], tonic: 0, tilde: "SI", vowel: "Á" },
-            { word: "GRAFICA", syllables: ["GRA", "FI", "CA"], tonic: 0, tilde: "SI", vowel: "Á" },
-            { word: "PELOTA", syllables: ["PE", "LO", "TA"], tonic: 1, tilde: "NO", vowel: "" },
-            { word: "RELOJ", syllables: ["RE", "LOJ"], tonic: 1, tilde: "NO", vowel: "" },
-            { word: "LIDER", syllables: ["LI", "DER"], tonic: 0, tilde: "SI", vowel: "Í" },
-            { word: "SEMANA", syllables: ["SE", "MA", "NA"], tonic: 1, tilde: "NO", vowel: "" },
-            { word: "AMERICA", syllables: ["A", "ME", "RI", "CA"], tonic: 1, tilde: "SI", vowel: "É" },
-            { word: "CUADERNO", syllables: ["CUA", "DER", "NO"], tonic: 1, tilde: "NO", vowel: "" },
-            { word: "VOLCAN", syllables: ["VOL", "CAN"], tonic: 1, tilde: "SI", vowel: "Á" },
-            { word: "DIFICIL", syllables: ["DI", "FI", "CIL"], tonic: 1, tilde: "SI", vowel: "Í" },
-            { word: "NUMERO", syllables: ["NU", "ME", "RO"], tonic: 0, tilde: "SI", vowel: "Ú" },
-            { word: "CAMION", syllables: ["CA", "MION"], tonic: 1, tilde: "SI", vowel: "Ó" },
-            { word: "UTIL", syllables: ["U", "TIL"], tonic: 0, tilde: "SI", vowel: "Ú" },
-            { word: "SABADO", syllables: ["SA", "BA", "DO"], tonic: 0, tilde: "SI", vowel: "Á" },
-            { word: "VENTANA", syllables: ["VEN", "TA", "NA"], tonic: 1, tilde: "NO", vowel: "" },
-            { word: "COMPAS", syllables: ["COM", "PAS"], tonic: 1, tilde: "SI", vowel: "Á" },
-            { word: "CESPED", syllables: ["CES", "PED"], tonic: 0, tilde: "SI", vowel: "É" },
-            { word: "BRUJULAS", syllables: ["BRU", "JU", "LAS"], tonic: 0, tilde: "SI", vowel: "Ú" },
-            { word: "CEMENTO", syllables: ["CE", "MEN", "TO"], tonic: 1, tilde: "NO", vowel: "" },
-            { word: "PAPA", syllables: ["PA", "PA"], tonic: 1, tilde: "SI", vowel: "Á" },
-            { word: "CRATER", syllables: ["CRA", "TER"], tonic: 0, tilde: "SI", vowel: "Á" },
-            { word: "SIMPATICO", syllables: ["SIM", "PA", "TI", "CO"], tonic: 1, tilde: "SI", vowel: "Á" },
-            { word: "CAMINO", syllables: ["CA", "MI", "NO"], tonic: 1, tilde: "NO", vowel: "" },
-            { word: "RUBI", syllables: ["RU", "BI"], tonic: 1, tilde: "SI", vowel: "Í" },
-            { word: "CANIBAL", syllables: ["CA", "NI", "BAL"], tonic: 1, tilde: "SI", vowel: "Í" },
-            { word: "TEATRO", syllables: ["TE", "A", "TRO"], tonic: 1, tilde: "NO", vowel: "" },
-            { word: "RABANO", syllables: ["RA", "BA", "NO"], tonic: 0, tilde: "SI", vowel: "Á" },
-            { word: "JAMON", syllables: ["JA", "MON"], tonic: 1, tilde: "SI", vowel: "Ó" },
-            { word: "CADAVER", syllables: ["CA", "DA", "VER"], tonic: 1, tilde: "SI", vowel: "Á" },
-            { word: "QUIMICA", syllables: ["QUI", "MI", "CA"], tonic: 0, tilde: "SI", vowel: "Í" },
-            { word: "AMISTAD", syllables: ["A", "MIS", "TAD"], tonic: 2, tilde: "NO", vowel: "" },
-            { word: "MANI", syllables: ["MA", "NI"], tonic: 1, tilde: "SI", vowel: "Í" },
-            { word: "CONDOR", syllables: ["CON", "DOR"], tonic: 0, tilde: "SI", vowel: "Ó" },
-            { word: "PLASTICO", syllables: ["PLAS", "TI", "CO"], tonic: 0, tilde: "SI", vowel: "Á" },
-            { word: "CIUDAD", syllables: ["CIU", "DAD"], tonic: 1, tilde: "NO", vowel: "" },
-            { word: "BAMBU", syllables: ["BAM", "BU"], tonic: 1, tilde: "SI", vowel: "Ú" },
-            { word: "ALBUM", syllables: ["AL", "BUM"], tonic: 0, tilde: "SI", vowel: "Á" },
-            { word: "LAMPARA", syllables: ["LAM", "PA", "RA"], tonic: 0, tilde: "SI", vowel: "Á" },
-            { word: "MUSEO", syllables: ["MU", "SEO"], tonic: 1, tilde: "NO", vowel: "" },
-            { word: "JAPONES", syllables: ["JA", "PO", "NES"], tonic: 2, tilde: "SI", vowel: "É" },
-            { word: "TREBOL", syllables: ["TRE", "BOL"], tonic: 0, tilde: "SI", vowel: "É" },
-            { word: "TITULO", syllables: ["TI", "TU", "LO"], tonic: 0, tilde: "SI", vowel: "Í" },
-            { word: "ZAPATO", syllables: ["ZA", "PA", "TO"], tonic: 1, tilde: "NO", vowel: "" },
-            { word: "LEON", syllables: ["LE", "ON"], tonic: 1, tilde: "SI", vowel: "Ó" },
-            { word: "TUNEL", syllables: ["TU", "NEL"], tonic: 0, tilde: "SI", vowel: "Ú" },
-            { word: "CANTARO", syllables: ["CAN", "TA", "RO"], tonic: 0, tilde: "SI", vowel: "Á" },
-            { word: "ESCUELA", syllables: ["ES", "CUE", "LA"], tonic: 1, tilde: "NO", vowel: "" },
-            { word: "ANIS", syllables: ["A", "NIS"], tonic: 1, tilde: "SI", vowel: "Í" },
-            { word: "UTIL", syllables: ["U", "TIL"], tonic: 0, tilde: "SI", vowel: "Ú" },
-            { word: "PROXIMO", syllables: ["PRO", "XI", "MO"], tonic: 0, tilde: "SI", vowel: "Ó" },
-            { word: "PERSONA", syllables: ["PER", "SO", "NA"], tonic: 1, tilde: "NO", vowel: "" },
-            { word: "BALCON", syllables: ["BAL", "CON"], tonic: 1, tilde: "SI", vowel: "Ó" },
-            { word: "BENEFICO", syllables: ["BE", "NE", "FI", "CO"], tonic: 2, tilde: "SI", vowel: "Í" },
-            { word: "SARTEN", syllables: ["SAR", "TEN"], tonic: 1, tilde: "SI", vowel: "É" },
-            { word: "TORTUGA", syllables: ["TOR", "TU", "GA"], tonic: 1, tilde: "NO", vowel: "" },
-            { word: "INGLES", syllables: ["IN", "GLES"], tonic: 1, tilde: "SI", vowel: "É" },
-            { word: "CARACTER", syllables: ["CA", "RAC", "TER"], tonic: 1, tilde: "SI", vowel: "Á" },
-            { word: "LIMA", syllables: ["LI", "MA"], tonic: 0, tilde: "NO", vowel: "" },
-            { word: "RATON", syllables: ["RA", "TON"], tonic: 1, tilde: "SI", vowel: "Ó" }
+            { word: "CANCION", category: "Aguda" },
+            { word: "ARBOL", category: "Grave" },
+            { word: "CAMARA", category: "Esdrújula" },
+            { word: "DIGASELO", category: "Sobresdrújula" },
+            { word: "CAFE", category: "Aguda" },
+            { word: "LAPIZ", category: "Grave" },
+            { word: "MUSICA", category: "Esdrújula" },
+            { word: "ENTREGASELO", category: "Sobresdrújula" },
+            { word: "CORAZON", category: "Aguda" },
+            { word: "MESA", category: "Grave" },
+            { word: "CATEDRA", category: "Esdrújula" },
+            { word: "JARDIN", category: "Aguda" },
+            { word: "SITIO", category: "Grave" },
+            { word: "COMPUTADOR", category: "Aguda" },
+            { word: "ANGEL", category: "Grave" },
+            { word: "PAGINA", category: "Esdrújula" },
+            { word: "LAGO", category: "Grave" },
+            { word: "PERU", category: "Aguda" },
+            { word: "CEPES", category: "Grave" },
+            { word: "EXAMEN", category: "Grave" },
+            { word: "EXAMENES", category: "Esdrújula" },
+            { word: "SOFA", category: "Aguda" },
+            { word: "FACIL", category: "Grave" },
+            { word: "LIBRO", category: "Grave" },
+            { word: "MEDICO", category: "Esdrújula" },
+            { word: "PARED", category: "Aguda" },
+            { word: "RELICARIO", category: "Grave" },
+            { word: "TELEFONO", category: "Esdrújula" },
+            { word: "CELULAR", category: "Aguda" },
+            { word: "AZUCAR", category: "Grave" },
+            { word: "PANTALON", category: "Aguda" },
+            { word: "MARMOL", category: "Grave" },
+            { word: "GRAFICA", category: "Esdrújula" },
+            { word: "PELOTA", category: "Grave" },
+            { word: "RELOJ", category: "Aguda" },
+            { word: "LIDER", category: "Grave" },
+            { word: "SEMANA", category: "Grave" },
+            { word: "AMERICA", category: "Esdrújula" },
+            { word: "CUADERNO", category: "Grave" },
+            { word: "VOLCAN", category: "Aguda" },
+            { word: "DIFICIL", category: "Grave" },
+            { word: "NUMERO", category: "Esdrújula" },
+            { word: "CAMION", category: "Aguda" },
+            { word: "UTIL", category: "Grave" },
+            { word: "SABADO", category: "Esdrújula" },
+            { word: "VENTANA", category: "Grave" },
+            { word: "COMPAS", category: "Aguda" },
+            { word: "CESPED", category: "Grave" },
+            { word: "BRUJULAS", category: "Esdrújula" },
+            { word: "CEMENTO", category: "Grave" },
+            { word: "PAPA", category: "Aguda" },
+            { word: "CRATER", category: "Grave" },
+            { word: "SIMPATICO", category: "Esdrújula" },
+            { word: "CAMINO", category: "Grave" },
+            { word: "RUBI", category: "Aguda" },
+            { word: "CANIBAL", category: "Grave" },
+            { word: "TEATRO", category: "Grave" },
+            { word: "RABANO", category: "Esdrújula" },
+            { word: "JAMON", category: "Aguda" },
+            { word: "CADAVER", category: "Grave" },
+            { word: "QUIMICA", category: "Esdrújula" },
+            { word: "AMISTAD", category: "Aguda" },
+            { word: "MANI", category: "Aguda" },
+            { word: "CONDOR", category: "Grave" },
+            { word: "PLASTICO", category: "Esdrújula" },
+            { word: "CIUDAD", category: "Aguda" },
+            { word: "BAMBU", category: "Aguda" },
+            { word: "ALBUM", category: "Grave" },
+            { word: "LAMPARA", category: "Esdrújula" },
+            { word: "MUSEO", category: "Grave" },
+            { word: "JAPONES", category: "Aguda" },
+            { word: "TREBOL", category: "Grave" },
+            { word: "TITULO", category: "Esdrújula" },
+            { word: "ZAPATO", category: "Grave" },
+            { word: "LEON", category: "Aguda" },
+            { word: "TUNEL", category: "Grave" },
+            { word: "CANTARO", category: "Esdrújula" },
+            { word: "ESCUELA", category: "Grave" },
+            { word: "ANIS", category: "Aguda" },
+            { word: "PROXIMO", category: "Esdrújula" },
+            { word: "PERSONA", category: "Grave" },
+            { word: "BALCON", category: "Aguda" },
+            { word: "BENEFICO", category: "Esdrújula" },
+            { word: "SARTEN", category: "Aguda" },
+            { word: "TORTUGA", category: "Grave" },
+            { word: "INGLES", category: "Aguda" },
+            { word: "CARACTER", category: "Grave" },
+            { word: "LIMA", category: "Grave" },
+            { word: "RATON", category: "Aguda" },
+            { word: "LLAVELO", category: "Esdrújula" }
         ];
 
         let currentStudent = "";
         let currentWordIndex = 0;
         let correctAnswersCount = 0;
         let selectedWords = [];
-        let selectedSyllableIndex = null;
 
         function startGame() {
             const nameInput = document.getElementById("app-user-name").value.trim();
             if (!nameInput) {
-                alert("Por favor, ingresa tu nombre completo.");
+                alert("Por favor, ingresa tu nombre para comenzar.");
                 return;
             }
             currentStudent = nameInput;
@@ -394,88 +385,44 @@
         }
 
         function showWord() {
-            selectedSyllableIndex = null;
             document.getElementById("feedback-message").innerText = "";
             document.getElementById("feedback-message").className = "feedback";
-            document.getElementById("select-tilde").value = "";
-            document.getElementById("select-vowel").value = "";
-            document.getElementById("vowel-container").classList.add("hidden");
-            document.getElementById("btn-submit").classList.remove("hidden");
             document.getElementById("btn-next").classList.add("hidden");
-
-            const current = selectedWords[currentWordIndex];
-            document.getElementById("current-index").innerText = currentWordIndex + 1;
-            document.getElementById("word-target").innerText = current.word;
-
-            const box = document.getElementById("syllables-box");
-            box.innerHTML = "";
-            current.syllables.forEach((syl, idx) => {
-                const btn = document.createElement("button");
-                btn.type = "button";
-                btn.className = "syllable-btn";
-                btn.innerText = syl;
-                btn.onclick = () => selectSyllable(idx, btn);
-                box.appendChild(btn);
+            
+            const buttons = document.querySelectorAll(".option-btn");
+            buttons.forEach(btn => {
+                btn.disabled = false;
+                btn.classList.remove("correct", "wrong");
             });
+
+            document.getElementById("current-index").innerText = currentWordIndex + 1;
+            document.getElementById("word-target").innerText = selectedWords[currentWordIndex].word;
         }
 
-        function selectSyllable(index, btnEl) {
-            selectedSyllableIndex = index;
-            document.querySelectorAll(".syllable-btn").forEach(b => b.classList.remove("selected"));
-            btnEl.classList.add("selected");
-        }
-
-        function toggleVowelSelect() {
-            const val = document.getElementById("select-tilde").value;
-            if (val === "SI") {
-                document.getElementById("vowel-container").classList.remove("hidden");
-            } else {
-                document.getElementById("vowel-container").classList.add("hidden");
-                document.getElementById("select-vowel").value = "";
-            }
-        }
-
-        function checkAnswer() {
-            if (selectedSyllableIndex === null) {
-                alert("Debes seleccionar la sílaba tónica.");
-                return;
-            }
-
-            const tildeChoice = document.getElementById("select-tilde").value;
-            if (!tildeChoice) {
-                alert("Debes seleccionar si lleva tilde o no.");
-                return;
-            }
-
-            const vowelChoice = document.getElementById("select-vowel").value;
-            if (tildeChoice === "SI" && !vowelChoice) {
-                alert("Debes indicar en qué vocal recae la tilde.");
-                return;
-            }
-
-            const current = selectedWords[currentWordIndex];
-            const isTonicCorrect = selectedSyllableIndex === current.tonic;
-            const isTildeCorrect = tildeChoice === current.tilde;
-            const isVowelCorrect = current.tilde === "NO" || vowelChoice === current.vowel;
-
+        function checkAnswer(userChoice) {
+            const currentItem = selectedWords[currentWordIndex];
+            const buttons = document.querySelectorAll(".option-btn");
             const feedbackEl = document.getElementById("feedback-message");
 
-            if (isTonicCorrect && isTildeCorrect && isVowelCorrect) {
+            buttons.forEach(btn => btn.disabled = true);
+
+            if (userChoice === currentItem.category) {
                 correctAnswersCount++;
-                feedbackEl.innerText = "¡Excelente! Respuesta Correcta.";
-                feedbackEl.className = "feedback correct";
+                feedbackEl.innerText = "¡Correcto!";
+                feedbackEl.className = "feedback correct-text";
             } else {
-                let msg = `Incorrecto. `;
-                if (current.tilde === "SI") {
-                    msg += `Lleva tilde en la vocal ${current.vowel}.`;
-                } else {
-                    msg += `No lleva tilde.`;
-                }
-                feedbackEl.innerText = msg;
-                feedbackEl.className = "feedback wrong";
+                feedbackEl.innerText = `Incorrecto. Era ${currentItem.category}.`;
+                feedbackEl.className = "feedback wrong-text";
             }
 
-            document.getElementById("btn-submit").classList.add("hidden");
+            buttons.forEach(btn => {
+                if (btn.innerText === currentItem.category) {
+                    btn.classList.add("correct");
+                } else if (btn.innerText === userChoice && userChoice !== currentItem.category) {
+                    btn.classList.add("wrong");
+                }
+            });
+
             document.getElementById("btn-next").classList.remove("hidden");
         }
 
