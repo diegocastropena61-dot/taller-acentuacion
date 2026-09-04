@@ -247,9 +247,9 @@
 </div>
 
 <script>
-  // BANCO DE 90 PALABRAS (SE SELECCIONAN 10 AL AZAR POR JUEGO)
+  // BANCO DE PALABRAS DEPURADO (SELECCIONA 10 ALEATORIAS POR JUEGO)
   const masterWordBank = [
-    // AGUDAS (25)
+    // AGUDAS
     { raw: ["li", "mon"], type: "Aguda", hasAccent: true, accentVowelChar: "o", rule: "termina en N." },
     { raw: ["ca", "mion"], type: "Aguda", hasAccent: true, accentVowelChar: "o", rule: "termina en N." },
     { raw: ["ca", "fe"], type: "Aguda", hasAccent: true, accentVowelChar: "e", rule: "termina en Vocal." },
@@ -267,16 +267,11 @@
     { raw: ["jar", "din"], type: "Aguda", hasAccent: true, accentVowelChar: "i", rule: "termina en N." },
     { raw: ["vol", "can"], type: "Aguda", hasAccent: true, accentVowelChar: "a", rule: "termina en N." },
     { raw: ["ha", "cer"], type: "Aguda", hasAccent: false, accentVowelChar: null, rule: "NO termina en N, S o Vocal." },
-    { raw: ["pa", me", "ran"], type: "Aguda", hasAccent: false, accentVowelChar: null, rule: "NO termina en N, S o Vocal." },
     { raw: ["a", "zul"], type: "Aguda", hasAccent: false, accentVowelChar: null, rule: "NO termina en N, S o Vocal." },
-    { raw: ["pa", "pared"], type: "Aguda", hasAccent: false, accentVowelChar: null, rule: "NO termina en N, S o Vocal." },
+    { raw: ["pa", "red"], type: "Aguda", hasAccent: false, accentVowelChar: null, rule: "NO termina en N, S o Vocal." },
     { raw: ["a", "mor"], type: "Aguda", hasAccent: false, accentVowelChar: null, rule: "NO termina en N, S o Vocal." },
-    { raw: ["ca", "ne", "la"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
-    { raw: ["a", "be", "ja"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
-    { raw: ["bo", "cin"], type: "Aguda", hasAccent: true, accentVowelChar: "i", rule: "termina en N." },
-    { raw: ["pa", "trao"], type: "Aguda", hasAccent: false, accentVowelChar: null, rule: "NO termina en N, S o Vocal." },
 
-    // GRAVES (25)
+    // GRAVES
     { raw: ["ga", "to"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
     { raw: ["ar", "bol"], type: "Grave", hasAccent: true, accentVowelChar: "a", rule: "NO termina en N, S o Vocal." },
     { raw: ["la", "piz"], type: "Grave", hasAccent: true, accentVowelChar: "a", rule: "NO termina en N, S o Vocal." },
@@ -294,16 +289,11 @@
     { raw: ["cam", "pa", "na"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
     { raw: ["fo", "der"], type: "Grave", hasAccent: true, accentVowelChar: "o", rule: "NO termina en N, S o Vocal." },
     { raw: ["li", "der"], type: "Grave", hasAccent: true, accentVowelChar: "i", rule: "NO termina en N, S o Vocal." },
-    { raw: ["tré", "bol"], type: "Grave", hasAccent: true, accentVowelChar: "e", rule: "NO termina en N, S o Vocal." },
-    { raw: ["có", "mic"], type: "Grave", hasAccent: true, accentVowelChar: "o", rule: "NO termina en N, S o Vocal." },
-    { raw: ["fe", "liz"], type: "Aguda", hasAccent: false, accentVowelChar: null, rule: "NO termina en N, S o Vocal." },
+    { raw: ["tre", "bol"], type: "Grave", hasAccent: true, accentVowelChar: "e", rule: "NO termina en N, S o Vocal." },
+    { raw: ["co", "mic"], type: "Grave", hasAccent: true, accentVowelChar: "o", rule: "NO termina en N, S o Vocal." },
     { raw: ["plu", "ma"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
-    { raw: ["cam", "po"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
-    { raw: ["ver", "de"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
-    { raw: ["jo", "ven"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en N." },
-    { raw: ["cri", "sis"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en S." },
 
-    // ESDRÚJULAS (20)
+    // ESDRÚJULAS
     { raw: ["me", "di", "co"], type: "Esdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las esdrújulas llevan tilde." },
     { raw: ["mu", "si", "ca"], type: "Esdrújula", hasAccent: true, accentVowelChar: "u", rule: "todas las esdrújulas llevan tilde." },
     { raw: ["pa", "ja", "ro"], type: "Esdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las esdrújulas llevan tilde." },
@@ -312,40 +302,21 @@
     { raw: ["co", "mi", "co"], type: "Esdrújula", hasAccent: true, accentVowelChar: "o", rule: "todas las esdrújulas llevan tilde." },
     { raw: ["ma", "gi", "co"], type: "Esdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las esdrújulas llevan tilde." },
     { raw: ["sa", "ba", "do"], type: "Esdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las esdrújulas llevan tilde." },
-    { raw: ["ra", me", "ro"], type: "Esdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las esdrújulas llevan tilde." },
-    { raw: ["cli", "mi", "ca"], type: "Esdrújula", hasAccent: true, accentVowelChar: "i", rule: "todas las esdrújulas llevan tilde." },
+    { raw: ["cli", "ni", "ca"], type: "Esdrújula", hasAccent: true, accentVowelChar: "i", rule: "todas las esdrújulas llevan tilde." },
     { raw: ["lam", "pa", "ra"], type: "Esdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las esdrújulas llevan tilde." },
     { raw: ["mier", "co", "les"], type: "Esdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las esdrújulas llevan tilde." },
-    { raw: ["ti", me", "ro"], type: "Esdrújula", hasAccent: true, accentVowelChar: "i", rule: "todas las esdrújulas llevan tilde." },
     { raw: ["pa", "gi", "na"], type: "Esdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las esdrújulas llevan tilde." },
     { raw: ["te", "le", "fo", "no"], type: "Esdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las esdrújulas llevan tilde." },
-    { raw: ["ca", me", "ra"], type: "Esdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las esdrújulas llevan tilde." },
     { raw: ["fa", "bri", "ca"], type: "Esdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las esdrújulas llevan tilde." },
-    { raw: ["go", me", "ro"], type: "Esdrújula", hasAccent: true, accentVowelChar: "o", rule: "todas las esdrújulas llevan tilde." },
-    { raw: ["la", me", "ro"], type: "Esdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las esdrújulas llevan tilde." },
-    { raw: ["plas", "ti", "co"], type: "Esdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las esdrújulas llevan tilde." },
 
-    // SOBRESDRÚJULAS (20)
+    // SOBRESDRÚJULAS
     { raw: ["di", "ga", "me", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "i", rule: "todas las sobresdrújulas llevan tilde." },
     { raw: ["com", "pra", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las sobresdrújulas llevan tilde." },
     { raw: ["en", "tre", "ga", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las sobresdrújulas llevan tilde." },
     { raw: ["guar", "da", "te", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las sobresdrújulas llevan tilde." },
     { raw: ["ex", "pli", "ca", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "i", rule: "todas las sobresdrújulas llevan tilde." },
-    { raw: ["ca", "ti", "ga", "me", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "i", rule: "todas las sobresdrújulas llevan tilde." },
-    { raw: ["fir", "ma", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "i", rule: "todas las sobresdrújulas llevan tilde." },
-    { raw: ["pín", "ta", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "i", rule: "todas las sobresdrújulas llevan tilde." },
-    { raw: ["vén", "de", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las sobresdrújulas llevan tilde." },
-    { raw: ["can", "ta", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las sobresdrújulas llevan tilde." },
     { raw: ["llé", "va", "te", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las sobresdrújulas llevan tilde." },
-    { raw: ["bús", "ca", "me", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "u", rule: "todas las sobresdrújulas llevan tilde." },
-    { raw: ["ár", "ma", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las sobresdrújulas llevan tilde." },
-    { raw: ["co", "cí", "na", "me", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "i", rule: "todas las sobresdrújulas llevan tilde." },
-    { raw: ["a", "rré", "gla", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las sobresdrújulas llevan tilde." },
-    { raw: ["a", "pún", "ta", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "u", rule: "todas las sobresdrújulas llevan tilde." },
-    { raw: ["a", "pó me", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "o", rule: "todas las sobresdrújulas llevan tilde." },
-    { raw: ["re", "ca me", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las sobresdrújulas llevan tilde." },
-    { raw: ["de", "mues", "tra", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las sobresdrújulas llevan tilde." },
-    { raw: ["de", "bú", me", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "u", rule: "todas las sobresdrújulas llevan tilde." }
+    { raw: ["bús", "ca", "me", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "u", rule: "todas las sobresdrújulas llevan tilde." }
   ];
 
   let db = null;
@@ -397,7 +368,7 @@
     currentStudent = nameInput;
     document.getElementById("display-student-name").innerText = currentStudent;
 
-    // ALGORITMO: Selecciona 10 palabras totalmente al azar de las 90 disponibles
+    // Selecciona 10 palabras al azar del banco
     sessionWords = [...masterWordBank].sort(() => 0.5 - Math.random()).slice(0, 10);
     
     currentWordIndex = 0;
@@ -575,7 +546,7 @@
   function listenToGlobalLeaderboard() {
     const tbody = document.getElementById("leaderboard-body");
     if (!db) {
-      tbody.innerHTML = `<tr><td colspan='4'>${currentStudent} - ${correctAnswersCount * 0.5} / 5.0</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan='4'>${currentStudent} - ${(correctAnswersCount * 0.5).toFixed(1)} / 5.0</td></tr>`;
       return;
     }
 
@@ -606,7 +577,7 @@
         });
       });
     } catch(e) {
-      tbody.innerHTML = `<tr><td colspan='4'>${currentStudent} - ${correctAnswersCount * 0.5} / 5.0</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan='4'>${currentStudent} - ${(correctAnswersCount * 0.5).toFixed(1)} / 5.0</td></tr>`;
     }
   }
 
