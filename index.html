@@ -85,6 +85,7 @@
             font-weight: bold;
             cursor: pointer;
             transition: background 0.2s;
+            margin-top: 15px;
         }
 
         .btn-green:hover {
@@ -173,10 +174,15 @@
             cursor: pointer;
         }
 
+        .btn-option.selected {
+            background-color: #1e7e34;
+            border-color: var(--accent-green);
+        }
+
         .vowel-btn {
-            background-color: var(--accent-green);
+            background-color: #2a2a32;
             color: white;
-            border: none;
+            border: 1px solid var(--border-color);
             padding: 10px 20px;
             border-radius: 6px;
             font-size: 18px;
@@ -185,13 +191,17 @@
             margin: 5px;
         }
 
+        .vowel-btn.selected {
+            background-color: #1e7e34;
+            border-color: var(--accent-green);
+        }
+
         .feedback-box {
             text-align: center;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
-            color: var(--accent-green);
-            margin: 20px 0;
-            min-height: 28px;
+            margin: 15px 0;
+            min-height: 24px;
         }
 
         table.results-table {
@@ -235,7 +245,7 @@
                 <span>Pregunta: <b id="current-index">1</b> / 10</span>
             </div>
 
-            <p class="step-title"><b>Paso 1:</b> Toca la sílaba tónica para ubicar la palabra en la columna correcta del cuadro SEGA:</p>
+            <p class="step-title"><b>Paso 1:</b> Toca la sílaba tónica:</p>
 
             <table class="sega-table">
                 <thead>
@@ -268,23 +278,18 @@
                 </tbody>
             </table>
 
-            <div id="step-2-container" class="hidden">
-                <p class="step-title" id="step-2-text">Has ubicado la sílaba tónica en la columna: <b></b></p>
-                <p class="step-title"><b>Paso 2:</b> ¿Lleva tilde según la regla de esa columna?</p>
-                <div class="tilde-options">
-                    <button class="btn-option" onclick="handleTildeChoice(true)">Sí lleva tilde</button>
-                    <button class="btn-option" onclick="handleTildeChoice(false)">No lleva tilde</button>
-                </div>
+            <div class="step-title"><b>Paso 2:</b> ¿Lleva tilde?</div>
+            <div class="tilde-options">
+                <button class="btn-option" id="btn-tilde-yes" onclick="setTildeChoice(true)">Sí lleva tilde</button>
+                <button class="btn-option" id="btn-tilde-no" onclick="setTildeChoice(false)">No lleva tilde</button>
             </div>
 
-            <div id="step-3-container" class="hidden" style="text-align: center;">
-                <p class="step-title"><b>Paso 3:</b> Toca la vocal que lleva la tilde en esa sílaba:</p>
-                <div id="vowels-box"></div>
-            </div>
+            <div class="step-title"><b>Paso 3:</b> Vocal con tilde (si aplica):</div>
+            <div id="vowels-box" style="text-align: center;"></div>
 
             <div class="feedback-box" id="feedback-msg"></div>
 
-            <button id="btn-next" class="btn-green hidden" onclick="nextQuestion()">Siguiente Palabra</button>
+            <button id="btn-next" class="btn-green" onclick="nextQuestion()">Siguiente Palabra</button>
         </div>
 
         <!-- PANTALLA DE RESULTADOS -->
@@ -325,7 +330,7 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // Banco de palabras 100% en español real, validadas y sin términos inventados
+        // Banco de palabras 100% en español real, validadas
         const wordBank = [
             { syllables: ["can", "cion"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "ó" },
             { syllables: ["ar", "bol"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "á" },
@@ -344,64 +349,23 @@
             { syllables: ["pe", "ru"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "ú" },
             { syllables: ["ces", "ped"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "é" },
             { syllables: ["e", "xa", "men"], tonicIndex: 1, category: "Grave", tilde: false },
-            { syllables: ["e", "xa", "me", "nes"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "á" },
             { syllables: ["so", "fa"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "á" },
             { syllables: ["fa", "cil"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "á" },
             { syllables: ["me", "di", "co"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "é" },
             { syllables: ["pa", "red"], tonicIndex: 0, category: "Aguda", tilde: false },
             { syllables: ["te", "le", "fo", "no"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "ó" },
             { syllables: ["ce", "lu", "lar"], tonicIndex: 0, category: "Aguda", tilde: false },
-            { syllables: ["a", "zu", "car"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "ú" },
-            { syllables: ["pan", "ta", "lon"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "ó" },
-            { syllables: ["mar", "mol"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "á" },
-            { syllables: ["gra", "fi", "ca"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "á" },
-            { syllables: ["re", "loj"], tonicIndex: 0, category: "Aguda", tilde: false },
-            { syllables: ["li", "der"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "í" },
-            { syllables: ["a", "me", "ri", "ca"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "é" },
-            { syllables: ["vol", "can"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "á" },
-            { syllables: ["di", "fi", "cil"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "í" },
-            { syllables: ["nu", "me", "ro"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "ú" },
-            { syllables: ["ca", "mion"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "ó" },
-            { syllables: ["u", "til"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "ú" },
-            { syllables: ["sa", "ba", "do"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "á" },
-            { syllables: ["com", "pas"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "á" },
-            { syllables: ["bru", "ju", "las"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "ú" },
-            { syllables: ["pa", "pa"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "á" },
-            { syllables: ["cra", "ter"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "á" },
-            { syllables: ["sim", "pa", "ti", "co"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "á" },
-            { syllables: ["ru", "bi"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "í" },
-            { syllables: ["ra", "pi", "do"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "á" },
-            { syllables: ["ja", "mon"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "ó" },
-            { syllables: ["ca", "da", "ver"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "á" },
-            { syllables: ["qui", "mi", "ca"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "í" },
-            { syllables: ["ma", "ni"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "í" },
-            { syllables: ["con", "dor"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "ó" },
-            { syllables: ["plas", "ti", "co"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "á" },
-            { syllables: ["bam", "bu"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "ú" },
-            { syllables: ["al", "bum"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "á" },
-            { syllables: ["lam", "pa", "ra"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "á" },
-            { syllables: ["ja", "po", "nes"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "é" },
-            { syllables: ["tre", "bol"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "é" },
-            { syllables: ["ti", "tu", "lo"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "í" },
-            { syllables: ["le", "on"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "ó" },
-            { syllables: ["tu", "nel"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "ú" },
-            { syllables: ["can", "ta", "ro"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "á" },
-            { syllables: ["a", "nis"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "í" },
-            { syllables: ["pro", "xi", "mo"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "ó" },
-            { syllables: ["bal", "con"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "ó" },
-            { syllables: ["be", "ne", "fi", "co"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "í" },
-            { syllables: ["sar", "ten"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "é" },
-            { syllables: ["in", "gles"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "é" },
-            { syllables: ["ca", "rac", "ter"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "á" },
-            { syllables: ["ra", "ton"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "ó" },
-            { syllables: ["tra", "en", "do", "se", "lo"], tonicIndex: 4, category: "Sobresdrújula", tilde: true, vowel: "é" }
+            { syllables: ["a", "zu", "car"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "ú" }
         ];
 
         let currentStudent = "";
         let currentWordIndex = 0;
         let correctAnswersCount = 0;
         let selectedWords = [];
-        let selectedSyllableIndex = -1;
+        
+        let userSelectedSyllable = -1;
+        let userSelectedTilde = null;
+        let userSelectedVowel = "";
 
         function startGame() {
             const name = document.getElementById("app-user-name").value.trim();
@@ -424,11 +388,12 @@
         }
 
         function loadQuestion() {
-            selectedSyllableIndex = -1;
+            userSelectedSyllable = -1;
+            userSelectedTilde = null;
+            userSelectedVowel = "";
             document.getElementById("feedback-msg").innerText = "";
-            document.getElementById("btn-next").classList.add("hidden");
-            document.getElementById("step-2-container").classList.add("hidden");
-            document.getElementById("step-3-container").classList.add("hidden");
+            document.getElementById("btn-tilde-yes").classList.remove("selected");
+            document.getElementById("btn-tilde-no").classList.remove("selected");
 
             document.getElementById("current-index").innerText = currentWordIndex + 1;
             const currentItem = selectedWords[currentWordIndex];
@@ -443,76 +408,52 @@
                 if (posFromEnd < 4) {
                     const sylText = currentItem.syllables[i];
                     document.getElementById(`cell-${posFromEnd}`).innerHTML = 
-                        `<button class="syllable-btn" onclick="selectSyllable(event, ${posFromEnd})">${sylText}</button>`;
+                        `<button class="syllable-btn" onclick="selectSyllable(this, ${posFromEnd})">${sylText}</button>`;
                 }
             }
+
+            const vowelsBox = document.getElementById("vowels-box");
+            vowelsBox.innerHTML = "";
+            ["a", "e", "i", "o", "u"].forEach(v => {
+                vowelsBox.innerHTML += `<button class="vowel-btn" onclick="selectVowel(this, '${v}')">${v}</button>`;
+            });
         }
 
-        function selectSyllable(e, posFromEnd) {
-            selectedSyllableIndex = posFromEnd;
-
+        function selectSyllable(btn, posFromEnd) {
             document.querySelectorAll(".syllable-btn").forEach(b => b.classList.remove("selected"));
-            if (e && e.currentTarget) {
-                e.currentTarget.classList.add("selected");
-            }
-
-            const colNames = ["Aguda", "Grave", "Esdrújula", "Sobresdrújula"];
-            const colName = colNames[posFromEnd] || "Sobresdrújula";
-
-            document.getElementById("step-2-text").innerHTML = `Has ubicado la sílaba tónica en la columna: <b>${colName}</b>.`;
-            document.getElementById("step-2-container").classList.remove("hidden");
+            btn.classList.add("selected");
+            userSelectedSyllable = posFromEnd;
         }
 
-        function handleTildeChoice(userSaysTilde) {
-            const currentItem = selectedWords[currentWordIndex];
-            const isCorrectCol = (selectedSyllableIndex === currentItem.tonicIndex);
-            const isCorrectTilde = (userSaysTilde === currentItem.tilde);
-
-            // Si falla la columna o la tilde, guardamos como incorrecto y mostramos el botón para continuar directamente
-            if (!isCorrectCol || !isCorrectTilde) {
-                showExamResult(false, "Incorrecto.");
-                return;
-            }
-
-            if (currentItem.tilde) {
-                document.getElementById("step-3-container").classList.remove("hidden");
-                const vowelsBox = document.getElementById("vowels-box");
-                vowelsBox.innerHTML = "";
-
-                ["a", "e", "i", "o", "u"].forEach(v => {
-                    vowelsBox.innerHTML += `<button class="vowel-btn" onclick="checkVowel('${v}')">${v}</button>`;
-                });
-            } else {
-                correctAnswersCount++;
-                showExamResult(true, "¡Correcto!");
-            }
+        function setTildeChoice(hasTilde) {
+            document.getElementById("btn-tilde-yes").classList.toggle("selected", hasTilde);
+            document.getElementById("btn-tilde-no").classList.toggle("selected", !hasTilde);
+            userSelectedTilde = hasTilde;
         }
 
-        function checkVowel(userVowel) {
-            const currentItem = selectedWords[currentWordIndex];
-            const cleanAccentedVowel = currentItem.vowel.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
-            if (userVowel === cleanAccentedVowel) {
-                correctAnswersCount++;
-                showExamResult(true, "¡Correcto!");
-            } else {
-                showExamResult(false, "Incorrecto.");
-            }
-        }
-
-        function showExamResult(isSuccess, message) {
-            const fb = document.getElementById("feedback-msg");
-            fb.innerText = message;
-            fb.style.color = isSuccess ? "var(--accent-green)" : "#ef4444";
-
-            // Deshabilitar los botones actuales para registrar la respuesta
-            document.querySelectorAll(".btn-option, .syllable-btn, .vowel-btn").forEach(b => b.disabled = true);
-            
-            // Mostrar directamente el botón para avanzar a la siguiente palabra sin bloquear el flujo del examen
-            document.getElementById("btn-next").classList.remove("hidden");
+        function selectVowel(btn, vowel) {
+            document.querySelectorAll(".vowel-btn").forEach(b => b.classList.remove("selected"));
+            btn.classList.add("selected");
+            userSelectedVowel = vowel;
         }
 
         function nextQuestion() {
+            const currentItem = selectedWords[currentWordIndex];
+
+            // Validar respuestas
+            const isColCorrect = (userSelectedSyllable === currentItem.tonicIndex);
+            const isTildeCorrect = (userSelectedTilde === currentItem.tilde);
+            
+            let isVowelCorrect = true;
+            if (currentItem.tilde) {
+                const cleanVowel = currentItem.vowel.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                isVowelCorrect = (userSelectedVowel === cleanVowel);
+            }
+
+            if (isColCorrect && isTildeCorrect && isVowelCorrect) {
+                correctAnswersCount++;
+            }
+
             currentWordIndex++;
             if (currentWordIndex < selectedWords.length) {
                 loadQuestion();
