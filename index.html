@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Acento Ortográfico - Juego SEGA</title>
+  <title>Acentuación Ortográfica - Cuadro SEGA</title>
   
-  <!-- SDKs de Firebase (compat) -->
+  <!-- SDKs de Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
@@ -70,25 +70,10 @@
       text-align: center;
       width: 25%;
     }
-    th {
-      background-color: #333;
-      color: #FFC107;
-    }
-    th.rule-header {
-      background-color: #222;
-      color: #aaa;
-      font-weight: normal;
-      font-size: 0.8em;
-    }
-    th.pos-header {
-      background-color: #2c2c2c;
-      color: #4CAF50;
-      font-size: 0.85em;
-    }
-    td.active-column {
-      background-color: #1b4332 !important;
-      border: 2px solid #4CAF50;
-    }
+    th { background-color: #333; color: #FFC107; }
+    th.rule-header { background-color: #222; color: #aaa; font-size: 0.8em; font-weight: normal; }
+    th.pos-header { background-color: #2c2c2c; color: #4CAF50; font-size: 0.85em; }
+    td.active-column { background-color: #1b4332 !important; border: 2px solid #4CAF50; }
 
     .syllable-btn {
       background-color: #333;
@@ -101,22 +86,10 @@
       width: 90%;
       transition: all 0.2s;
     }
-    .syllable-btn:hover {
-      background-color: #444;
-      border-color: #FFC107;
-    }
-    .syllable-btn.selected {
-      border-color: #4CAF50 !important;
-      background-color: #2e7d32 !important;
-      font-weight: bold;
-    }
+    .syllable-btn:hover { background-color: #444; border-color: #FFC107; }
+    .syllable-btn.selected { border-color: #4CAF50 !important; background-color: #2e7d32 !important; font-weight: bold; }
 
-    .vowel-container {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin: 15px 0;
-    }
+    .vowel-container { display: flex; justify-content: center; gap: 10px; margin: 15px 0; }
     .option-btn, .vowel-btn {
       background-color: #333;
       color: #fff;
@@ -127,14 +100,8 @@
       cursor: pointer;
       transition: all 0.2s;
     }
-    .option-btn:hover, .vowel-btn:hover {
-      background-color: #444;
-      border-color: #4CAF50;
-    }
-    .option-btn.selected, .vowel-btn.selected {
-      border-color: #4CAF50 !important;
-      background-color: #2e7d32 !important;
-    }
+    .option-btn:hover, .vowel-btn:hover { background-color: #444; border-color: #4CAF50; }
+    .option-btn.selected, .vowel-btn.selected { border-color: #4CAF50 !important; background-color: #2e7d32 !important; }
 
     .action-btn {
       background-color: #4CAF50;
@@ -146,16 +113,10 @@
       cursor: pointer;
       margin-top: 15px;
       font-weight: bold;
-      transition: background-color 0.2s;
     }
     .action-btn:hover { background-color: #45a049; }
     
-    .feedback {
-      margin-top: 15px;
-      font-weight: bold;
-      min-height: 24px;
-      font-size: 1.05em;
-    }
+    .feedback { margin-top: 15px; font-weight: bold; min-height: 24px; font-size: 1.05em; }
     .status-bar {
       display: flex;
       justify-content: space-between;
@@ -166,49 +127,29 @@
       border-radius: 6px;
       font-size: 0.95em;
     }
-    .status-item {
-      color: #FFC107;
-      font-weight: bold;
-    }
+    .status-item { color: #FFC107; font-weight: bold; }
 
-    .leaderboard-table {
-      width: 100%;
-      margin-top: 15px;
-      border-collapse: collapse;
-    }
-    .leaderboard-table th {
-      background-color: #333;
-      color: #4CAF50;
-      padding: 10px;
-    }
-    .leaderboard-table td {
-      padding: 10px;
-      border-bottom: 1px solid #444;
-    }
-    .leaderboard-table tr:nth-child(even) {
-      background-color: #2a2a2a;
-    }
-    .highlight-user {
-      background-color: #1b4332 !important;
-      font-weight: bold;
-    }
+    .leaderboard-table { width: 100%; margin-top: 15px; border-collapse: collapse; }
+    .leaderboard-table th { background-color: #333; color: #4CAF50; padding: 10px; }
+    .leaderboard-table td { padding: 10px; border-bottom: 1px solid #444; }
+    .highlight-user { background-color: #1b4332 !important; font-weight: bold; }
   </style>
 </head>
 <body>
 
 <div class="card">
-  <!-- PANTALLA 1: REGISTRO -->
+  <!-- PANTALLA 1: INICIO -->
   <div id="screen-welcome">
     <h1>Acentuación Ortográfica - Cuadro SEGA</h1>
     <p>¡Bienvenido a la actividad interactiva de acentuación!</p>
-    <p>Escribe tu nombre o apodo para comenzar la evaluación (10 palabras):</p>
+    <p>Escribe tu nombre o apodo para comenzar la evaluación (10 palabras aleatorias):</p>
     <br>
-    <input type="text" id="student-name" placeholder="Tu nombre o apodo" maxlength="20" autocomplete="off">
+    <input type="text" id="app-user-name" placeholder="Tu nombre o apodo" maxlength="20" autocomplete="off">
     <br>
-    <button class="action-btn" onclick="startGame()">Comenzar Actividad</button>
+    <button class="action-btn" id="start-game-btn">Comenzar Actividad</button>
   </div>
 
-  <!-- PANTALLA 2: JUEGO -->
+  <!-- PANTALLA 2: EVALUACIÓN -->
   <div id="screen-game" style="display:none;">
     <div class="status-bar">
       <div>Estudiante: <span id="display-student-name" class="status-item"></span></div>
@@ -216,7 +157,7 @@
       <div>Aciertos: <span id="correct-counter" class="status-item">0</span></div>
     </div>
 
-    <p id="instruction"><b>Paso 1:</b> Toca la sílaba tónica para ubicar la palabra en la columna correcta del cuadro SEGA:</p>
+    <p id="instruction"><b>Paso 1:</b> Toca la sílaba tónica para ubicar la palabra en la columna correspondiente:</p>
     
     <div class="table-container">
       <table>
@@ -241,7 +182,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr id="interactive-row">
+          <tr>
             <td id="col-3">—</td>
             <td id="col-2">—</td>
             <td id="col-1">—</td>
@@ -255,8 +196,8 @@
       <p id="rule-hint"></p>
       <p><b>Paso 2:</b> ¿Lleva tilde según la regla de esa columna?</p>
       <div style="display: flex; justify-content: center; gap: 15px;">
-        <button class="option-btn" id="btn-yes" onclick="setAccentChoice(true)">Sí lleva tilde</button>
-        <button class="option-btn" id="btn-no" onclick="setAccentChoice(false)">No lleva tilde</button>
+        <button class="option-btn" id="btn-yes">Sí lleva tilde</button>
+        <button class="option-btn" id="btn-no">No lleva tilde</button>
       </div>
     </div>
 
@@ -266,11 +207,11 @@
     </div>
 
     <div id="step-submit" style="display:none; margin-top: 15px;">
-      <button class="action-btn" onclick="validateAnswer()">Comprobar Respuesta</button>
+      <button class="action-btn" id="validate-btn">Comprobar Respuesta</button>
     </div>
 
     <div class="feedback" id="feedback"></div>
-    <button class="action-btn" id="next-btn" style="display:none;" onclick="nextWord()">Siguiente Palabra</button>
+    <button class="action-btn" id="next-btn" style="display:none;">Siguiente Palabra</button>
   </div>
 
   <!-- PANTALLA 3: RESULTADOS -->
@@ -296,41 +237,19 @@
           </tr>
         </thead>
         <tbody id="leaderboard-body">
-          <tr><td colspan='4'>Cargando datos...</td></tr>
+          <tr><td colspan='4'>Cargando clasificación...</td></tr>
         </tbody>
       </table>
     </div>
 
-    <button class="action-btn" onclick="restartActivity()">Intentar de Nuevo / Nuevo Estudiante</button>
+    <button class="action-btn" id="restart-btn">Intentar de Nuevo / Nuevo Estudiante</button>
   </div>
 </div>
 
 <script>
-  // Inicialización Segura de Firebase
-  let db = null;
-  try {
-    const firebaseConfig = {
-      apiKey: "AIzaSyD6au5DwvcsJqd-AVZGh2VrigBK3rcW39s",
-      authDomain: "acento-ortografico.firebaseapp.com",
-      databaseURL: "https://acento-ortografico-default-rtdb.firebaseio.com",
-      projectId: "acento-ortografico",
-      storageBucket: "acento-ortografico.firebasestorage.app",
-      messagingSenderId: "992822183733",
-      appId: "1:992822183733:web:472513a0bdd187a19a6e7c",
-      measurementId: "G-VDFW8GYLBH"
-    };
-
-    if (typeof firebase !== "undefined") {
-      firebase.initializeApp(firebaseConfig);
-      db = firebase.database();
-    }
-  } catch (e) {
-    console.warn("Firebase no se pudo inicializar:", e);
-  }
-
-  // BANCO EXTENDIDO DE PALABRAS
+  // BANCO DE 90 PALABRAS (SE SELECCIONAN 10 AL AZAR POR JUEGO)
   const masterWordBank = [
-    // --- AGUDAS ---
+    // AGUDAS (25)
     { raw: ["li", "mon"], type: "Aguda", hasAccent: true, accentVowelChar: "o", rule: "termina en N." },
     { raw: ["ca", "mion"], type: "Aguda", hasAccent: true, accentVowelChar: "o", rule: "termina en N." },
     { raw: ["ca", "fe"], type: "Aguda", hasAccent: true, accentVowelChar: "e", rule: "termina en Vocal." },
@@ -347,8 +266,17 @@
     { raw: ["in", "gles"], type: "Aguda", hasAccent: true, accentVowelChar: "e", rule: "termina en S." },
     { raw: ["jar", "din"], type: "Aguda", hasAccent: true, accentVowelChar: "i", rule: "termina en N." },
     { raw: ["vol", "can"], type: "Aguda", hasAccent: true, accentVowelChar: "a", rule: "termina en N." },
+    { raw: ["ha", "cer"], type: "Aguda", hasAccent: false, accentVowelChar: null, rule: "NO termina en N, S o Vocal." },
+    { raw: ["pa", me", "ran"], type: "Aguda", hasAccent: false, accentVowelChar: null, rule: "NO termina en N, S o Vocal." },
+    { raw: ["a", "zul"], type: "Aguda", hasAccent: false, accentVowelChar: null, rule: "NO termina en N, S o Vocal." },
+    { raw: ["pa", "pared"], type: "Aguda", hasAccent: false, accentVowelChar: null, rule: "NO termina en N, S o Vocal." },
+    { raw: ["a", "mor"], type: "Aguda", hasAccent: false, accentVowelChar: null, rule: "NO termina en N, S o Vocal." },
+    { raw: ["ca", "ne", "la"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
+    { raw: ["a", "be", "ja"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
+    { raw: ["bo", "cin"], type: "Aguda", hasAccent: true, accentVowelChar: "i", rule: "termina en N." },
+    { raw: ["pa", "trao"], type: "Aguda", hasAccent: false, accentVowelChar: null, rule: "NO termina en N, S o Vocal." },
 
-    // --- GRAVES ---
+    // GRAVES (25)
     { raw: ["ga", "to"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
     { raw: ["ar", "bol"], type: "Grave", hasAccent: true, accentVowelChar: "a", rule: "NO termina en N, S o Vocal." },
     { raw: ["la", "piz"], type: "Grave", hasAccent: true, accentVowelChar: "a", rule: "NO termina en N, S o Vocal." },
@@ -359,8 +287,23 @@
     { raw: ["ce", "sper"], type: "Grave", hasAccent: true, accentVowelChar: "e", rule: "NO termina en N, S o Vocal." },
     { raw: ["an", "gel"], type: "Grave", hasAccent: true, accentVowelChar: "a", rule: "NO termina en N, S o Vocal." },
     { raw: ["di", "fi", "cil"], type: "Grave", hasAccent: true, accentVowelChar: "i", rule: "NO termina en N, S o Vocal." },
+    { raw: ["li", "bro"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
+    { raw: ["ca", "sa"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
+    { raw: ["si", "lla"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
+    { raw: ["ven", "ta", "na"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
+    { raw: ["cam", "pa", "na"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
+    { raw: ["fo", "der"], type: "Grave", hasAccent: true, accentVowelChar: "o", rule: "NO termina en N, S o Vocal." },
+    { raw: ["li", "der"], type: "Grave", hasAccent: true, accentVowelChar: "i", rule: "NO termina en N, S o Vocal." },
+    { raw: ["tré", "bol"], type: "Grave", hasAccent: true, accentVowelChar: "e", rule: "NO termina en N, S o Vocal." },
+    { raw: ["có", "mic"], type: "Grave", hasAccent: true, accentVowelChar: "o", rule: "NO termina en N, S o Vocal." },
+    { raw: ["fe", "liz"], type: "Aguda", hasAccent: false, accentVowelChar: null, rule: "NO termina en N, S o Vocal." },
+    { raw: ["plu", "ma"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
+    { raw: ["cam", "po"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
+    { raw: ["ver", "de"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en Vocal." },
+    { raw: ["jo", "ven"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en N." },
+    { raw: ["cri", "sis"], type: "Grave", hasAccent: false, accentVowelChar: null, rule: "termina en S." },
 
-    // --- ESDRÚJULAS ---
+    // ESDRÚJULAS (20)
     { raw: ["me", "di", "co"], type: "Esdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las esdrújulas llevan tilde." },
     { raw: ["mu", "si", "ca"], type: "Esdrújula", hasAccent: true, accentVowelChar: "u", rule: "todas las esdrújulas llevan tilde." },
     { raw: ["pa", "ja", "ro"], type: "Esdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las esdrújulas llevan tilde." },
@@ -368,14 +311,62 @@
     { raw: ["nu", "me", "ro"], type: "Esdrújula", hasAccent: true, accentVowelChar: "u", rule: "todas las esdrújulas llevan tilde." },
     { raw: ["co", "mi", "co"], type: "Esdrújula", hasAccent: true, accentVowelChar: "o", rule: "todas las esdrújulas llevan tilde." },
     { raw: ["ma", "gi", "co"], type: "Esdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las esdrújulas llevan tilde." },
+    { raw: ["sa", "ba", "do"], type: "Esdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las esdrújulas llevan tilde." },
+    { raw: ["ra", me", "ro"], type: "Esdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las esdrújulas llevan tilde." },
+    { raw: ["cli", "mi", "ca"], type: "Esdrújula", hasAccent: true, accentVowelChar: "i", rule: "todas las esdrújulas llevan tilde." },
+    { raw: ["lam", "pa", "ra"], type: "Esdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las esdrújulas llevan tilde." },
+    { raw: ["mier", "co", "les"], type: "Esdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las esdrújulas llevan tilde." },
+    { raw: ["ti", me", "ro"], type: "Esdrújula", hasAccent: true, accentVowelChar: "i", rule: "todas las esdrújulas llevan tilde." },
+    { raw: ["pa", "gi", "na"], type: "Esdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las esdrújulas llevan tilde." },
+    { raw: ["te", "le", "fo", "no"], type: "Esdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las esdrújulas llevan tilde." },
+    { raw: ["ca", me", "ra"], type: "Esdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las esdrújulas llevan tilde." },
+    { raw: ["fa", "bri", "ca"], type: "Esdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las esdrújulas llevan tilde." },
+    { raw: ["go", me", "ro"], type: "Esdrújula", hasAccent: true, accentVowelChar: "o", rule: "todas las esdrújulas llevan tilde." },
+    { raw: ["la", me", "ro"], type: "Esdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las esdrújulas llevan tilde." },
+    { raw: ["plas", "ti", "co"], type: "Esdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las esdrújulas llevan tilde." },
 
-    // --- SOBRESDRÚJULAS ---
+    // SOBRESDRÚJULAS (20)
     { raw: ["di", "ga", "me", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "i", rule: "todas las sobresdrújulas llevan tilde." },
     { raw: ["com", "pra", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las sobresdrújulas llevan tilde." },
     { raw: ["en", "tre", "ga", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las sobresdrújulas llevan tilde." },
     { raw: ["guar", "da", "te", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las sobresdrújulas llevan tilde." },
-    { raw: ["ex", "pli", "ca", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "i", rule: "todas las sobresdrújulas llevan tilde." }
+    { raw: ["ex", "pli", "ca", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "i", rule: "todas las sobresdrújulas llevan tilde." },
+    { raw: ["ca", "ti", "ga", "me", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "i", rule: "todas las sobresdrújulas llevan tilde." },
+    { raw: ["fir", "ma", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "i", rule: "todas las sobresdrújulas llevan tilde." },
+    { raw: ["pín", "ta", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "i", rule: "todas las sobresdrújulas llevan tilde." },
+    { raw: ["vén", "de", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las sobresdrújulas llevan tilde." },
+    { raw: ["can", "ta", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las sobresdrújulas llevan tilde." },
+    { raw: ["llé", "va", "te", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las sobresdrújulas llevan tilde." },
+    { raw: ["bús", "ca", "me", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "u", rule: "todas las sobresdrújulas llevan tilde." },
+    { raw: ["ár", "ma", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las sobresdrújulas llevan tilde." },
+    { raw: ["co", "cí", "na", "me", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "i", rule: "todas las sobresdrújulas llevan tilde." },
+    { raw: ["a", "rré", "gla", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las sobresdrújulas llevan tilde." },
+    { raw: ["a", "pún", "ta", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "u", rule: "todas las sobresdrújulas llevan tilde." },
+    { raw: ["a", "pó me", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "o", rule: "todas las sobresdrújulas llevan tilde." },
+    { raw: ["re", "ca me", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "a", rule: "todas las sobresdrújulas llevan tilde." },
+    { raw: ["de", "mues", "tra", "se", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "e", rule: "todas las sobresdrújulas llevan tilde." },
+    { raw: ["de", "bú", me", "lo"], type: "Sobresdrújula", hasAccent: true, accentVowelChar: "u", rule: "todas las sobresdrújulas llevan tilde." }
   ];
+
+  let db = null;
+  try {
+    const firebaseConfig = {
+      apiKey: "AIzaSyD6au5DwvcsJqd-AVZGh2VrigBK3rcW39s",
+      authDomain: "acento-ortografico.firebaseapp.com",
+      databaseURL: "https://acento-ortografico-default-rtdb.firebaseio.com",
+      projectId: "acento-ortografico",
+      storageBucket: "acento-ortografico.firebasestorage.app",
+      messagingSenderId: "992822183733",
+      appId: "1:992822183733:web:472513a0bdd187a19a6e7c",
+      measurementId: "G-VDFW8GYLBH"
+    };
+    if (typeof firebase !== "undefined") {
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.database();
+    }
+  } catch (e) {
+    console.warn("Firebase no activo:", e);
+  }
 
   let currentStudent = "";
   let sessionWords = [];
@@ -387,8 +378,17 @@
   let selectedAccentChoice = null;
   let selectedVowelChar = null;
 
+  document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("start-game-btn").addEventListener("click", startGame);
+    document.getElementById("btn-yes").addEventListener("click", () => setAccentChoice(true));
+    document.getElementById("btn-no").addEventListener("click", () => setAccentChoice(false));
+    document.getElementById("validate-btn").addEventListener("click", validateAnswer);
+    document.getElementById("next-btn").addEventListener("click", nextWord);
+    document.getElementById("restart-btn").addEventListener("click", restartActivity);
+  });
+
   function startGame() {
-    const nameInput = document.getElementById("student-name").value.trim();
+    const nameInput = document.getElementById("app-user-name").value.trim();
     if (!nameInput) {
       alert("Por favor, ingresa tu nombre o apodo para comenzar.");
       return;
@@ -397,6 +397,7 @@
     currentStudent = nameInput;
     document.getElementById("display-student-name").innerText = currentStudent;
 
+    // ALGORITMO: Selecciona 10 palabras totalmente al azar de las 90 disponibles
     sessionWords = [...masterWordBank].sort(() => 0.5 - Math.random()).slice(0, 10);
     
     currentWordIndex = 0;
@@ -560,41 +561,34 @@
   function saveToFirebase(name, grade, correct) {
     if (!db) return;
     try {
-      const scoresRef = db.ref("leaderboard");
-      scoresRef.push({
+      db.ref("leaderboard").push({
         name: name,
         grade: grade,
         correct: correct,
         timestamp: Date.now()
       });
     } catch (e) {
-      console.warn("No se pudo guardar en Firebase:", e);
+      console.warn("Error Firebase:", e);
     }
   }
 
   function listenToGlobalLeaderboard() {
     const tbody = document.getElementById("leaderboard-body");
-    
     if (!db) {
-      tbody.innerHTML = `<tr><td colspan='4'>${currentStudent} - ${correctAnswersCount * 0.5} / 5.0 (Modo Local)</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan='4'>${currentStudent} - ${correctAnswersCount * 0.5} / 5.0</td></tr>`;
       return;
     }
 
     try {
-      const scoresRef = db.ref("leaderboard");
-      scoresRef.on("value", (snapshot) => {
+      db.ref("leaderboard").on("value", (snapshot) => {
         tbody.innerHTML = "";
-
         if (!snapshot.exists()) {
-          tbody.innerHTML = "<tr><td colspan='4'>Aún no hay registros en la clasificación.</td></tr>";
+          tbody.innerHTML = "<tr><td colspan='4'>Sin registros aún.</td></tr>";
           return;
         }
 
         let leaderboard = [];
-        snapshot.forEach((childSnapshot) => {
-          leaderboard.push(childSnapshot.val());
-        });
-
+        snapshot.forEach((child) => leaderboard.push(child.val()));
         leaderboard.sort((a, b) => b.grade - a.grade || b.correct - a.correct);
 
         leaderboard.forEach((entry, idx) => {
@@ -602,7 +596,6 @@
           if (entry.name === currentStudent && entry.grade === parseFloat((correctAnswersCount * 0.5).toFixed(1))) {
             tr.className = "highlight-user";
           }
-
           tr.innerHTML = `
             <td>${idx + 1}°</td>
             <td>${entry.name}</td>
@@ -618,7 +611,7 @@
   }
 
   function restartActivity() {
-    document.getElementById("student-name").value = "";
+    document.getElementById("app-user-name").value = "";
     document.getElementById("screen-results").style.display = "none";
     document.getElementById("screen-welcome").style.display = "block";
   }
