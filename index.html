@@ -47,7 +47,6 @@
       border-color: #4CAF50;
     }
 
-    /* Tabla SEGA Interactiva */
     .table-container {
       margin: 20px 0;
       overflow-x: auto;
@@ -86,7 +85,6 @@
       border: 2px solid #4CAF50;
     }
 
-    /* Botones de Sílabas dentro de la tabla */
     .syllable-btn {
       background-color: #333;
       color: #fff;
@@ -108,7 +106,6 @@
       font-weight: bold;
     }
 
-    /* Opciones y Vocales */
     .vowel-container {
       display: flex;
       justify-content: center;
@@ -169,7 +166,6 @@
       font-weight: bold;
     }
 
-    /* Tabla de Clasificación */
     .leaderboard-table {
       width: 100%;
       margin-top: 15px;
@@ -196,7 +192,7 @@
 <body>
 
 <div class="card">
-  <!-- PANTALLA 1: REGISTRO DEL ESTUDIANTE -->
+  <!-- PANTALLA 1: REGISTRO -->
   <div id="screen-welcome">
     <h1>Acentuación Ortográfica - Cuadro SEGA</h1>
     <p>¡Bienvenido a la actividad interactiva de acentuación!</p>
@@ -207,7 +203,7 @@
     <button class="action-btn" onclick="startGame()">Comenzar Actividad</button>
   </div>
 
-  <!-- PANTALLA 2: JUEGO / ACTIVIDAD -->
+  <!-- PANTALLA 2: JUEGO -->
   <div id="screen-game" style="display:none;">
     <div class="status-bar">
       <div>Estudiante: <span id="display-student-name" class="status-item"></span></div>
@@ -217,7 +213,6 @@
 
     <p id="instruction"><b>Paso 1:</b> Toca la sílaba tónica para ubicar la palabra en la columna correcta del cuadro SEGA:</p>
     
-    <!-- TABLA SEGA INTERACTIVA -->
     <div class="table-container">
       <table>
         <thead>
@@ -251,7 +246,6 @@
       </table>
     </div>
 
-    <!-- PASO 2: Decisión de tilde -->
     <div id="step-accent" style="display:none;">
       <p id="rule-hint"></p>
       <p><b>Paso 2:</b> ¿Lleva tilde según la regla de esa columna?</p>
@@ -261,13 +255,11 @@
       </div>
     </div>
 
-    <!-- PASO 3: Selección de vocal -->
     <div id="step-vowel" style="display:none;">
       <p><b>Paso 3:</b> Toca la vocal que lleva la tilde en esa sílaba:</p>
       <div class="vowel-container" id="vowels"></div>
     </div>
 
-    <!-- BOTÓN VALIDAR -->
     <div id="step-submit" style="display:none; margin-top: 15px;">
       <button class="action-btn" onclick="validateAnswer()">Comprobar Respuesta</button>
     </div>
@@ -276,7 +268,7 @@
     <button class="action-btn" id="next-btn" style="display:none;" onclick="nextWord()">Siguiente Palabra</button>
   </div>
 
-  <!-- PANTALLA 3: RESULTADOS Y CLASIFICACIÓN -->
+  <!-- PANTALLA 3: RESULTADOS -->
   <div id="screen-results" style="display:none;">
     <h1>¡Actividad Finalizada!</h1>
     <p>Excelente esfuerzo, <b id="final-student-name" style="color:#FFC107;"></b>.</p>
@@ -298,9 +290,7 @@
             <th>Aciertos</th>
           </tr>
         </thead>
-        <tbody id="leaderboard-body">
-          <!-- Se llena dinámicamente -->
-        </tbody>
+        <tbody id="leaderboard-body"></tbody>
       </table>
     </div>
 
@@ -310,41 +300,42 @@
 </div>
 
 <script>
-  // BANCO AMPLIO DE PALABRAS (30 PALABRAS VARIADAS SEGA)
+  // BANCO DE PALABRAS
+  // tonicCol: 0 = Aguda (última), 1 = Grave (penúltima), 2 = Esdrújula (antepenúltima), 3 = Sobresdrújula (trasantepenúltima)
   const masterWordBank = [
     // Agudas
-    { raw: ["li", "mon"], tonicIndex: 1, type: "Aguda", hasAccent: true, accentVowelIndex: 1, rule: "es Aguda y termina en N." },
-    { raw: ["ca", "mion"], tonicIndex: 1, type: "Aguda", hasAccent: true, accentVowelIndex: 1, rule: "es Aguda y termina en N." },
-    { raw: ["ca", "fe"], tonicIndex: 1, type: "Aguda", hasAccent: true, accentVowelIndex: 1, rule: "es Aguda y termina en Vocal." },
-    { raw: ["pa", "pel"], tonicIndex: 1, type: "Aguda", hasAccent: false, accentVowelIndex: null, rule: "es Aguda y termina en L (no N, S o Vocal)." },
-    { raw: ["re", "loj"], tonicIndex: 1, type: "Aguda", hasAccent: false, accentVowelIndex: null, rule: "es Aguda y termina en J." },
-    { raw: ["co", "ra", "zon"], tonicIndex: 2, type: "Aguda", hasAccent: true, accentVowelIndex: 1, rule: "es Aguda y termina en N." },
-    { raw: ["com", "pa", "nias"], tonicIndex: 2, type: "Aguda", hasAccent: true, accentVowelIndex: 1, rule: "es Aguda y termina en S." },
+    { raw: ["li", "mon"], tonicCol: 0, tonicIndex: 1, type: "Aguda", hasAccent: true, accentVowelIndex: 1, rule: "es Aguda y termina en N." },
+    { raw: ["ca", "mion"], tonicCol: 0, tonicIndex: 1, type: "Aguda", hasAccent: true, accentVowelIndex: 1, rule: "es Aguda y termina en N." },
+    { raw: ["ca", "fe"], tonicCol: 0, tonicIndex: 1, type: "Aguda", hasAccent: true, accentVowelIndex: 1, rule: "es Aguda y termina en Vocal." },
+    { raw: ["pa", "pel"], tonicCol: 0, tonicIndex: 1, type: "Aguda", hasAccent: false, accentVowelIndex: null, rule: "es Aguda y termina en L (no N, S o Vocal)." },
+    { raw: ["re", "loj"], tonicCol: 0, tonicIndex: 1, type: "Aguda", hasAccent: false, accentVowelIndex: null, rule: "es Aguda y termina en J." },
+    { raw: ["co", "ra", "zon"], tonicCol: 0, tonicIndex: 2, type: "Aguda", hasAccent: true, accentVowelIndex: 1, rule: "es Aguda y termina en N." },
+    { raw: ["com", "pa", "nias"], tonicCol: 0, tonicIndex: 2, type: "Aguda", hasAccent: true, accentVowelIndex: 1, rule: "es Aguda y termina en S." },
     
     // Graves
-    { raw: ["ga", "to"], tonicIndex: 0, type: "Grave", hasAccent: false, accentVowelIndex: null, rule: "es Grave y termina en Vocal." },
-    { raw: ["ar", "bol"], tonicIndex: 0, type: "Grave", hasAccent: true, accentVowelIndex: 0, rule: "es Grave y NO termina en N, S o Vocal." },
-    { raw: ["la", "piz"], tonicIndex: 0, type: "Grave", hasAccent: true, accentVowelIndex: 0, rule: "es Grave y NO termina en N, S o Vocal." },
-    { raw: ["me", "sa"], tonicIndex: 0, type: "Grave", hasAccent: false, accentVowelIndex: null, rule: "es Grave y termina en Vocal." },
-    { raw: ["ca", "mi", "sa"], tonicIndex: 1, type: "Grave", hasAccent: false, accentVowelIndex: null, rule: "es Grave y termina en Vocal." },
-    { raw: ["al", "bum"], tonicIndex: 0, type: "Grave", hasAccent: true, accentVowelIndex: 0, rule: "es Grave y NO termina en N, S o Vocal." },
-    { raw: ["a", "zu", "car"], tonicIndex: 1, type: "Grave", hasAccent: true, accentVowelIndex: 0, rule: "es Grave y NO termina en N, S o Vocal." },
-    { raw: ["jo", "ven"], tonicIndex: 0, type: "Grave", hasAccent: false, accentVowelIndex: null, rule: "es Grave y termina en N." },
+    { raw: ["ga", "to"], tonicCol: 1, tonicIndex: 0, type: "Grave", hasAccent: false, accentVowelIndex: null, rule: "es Grave y termina en Vocal." },
+    { raw: ["ar", "bol"], tonicCol: 1, tonicIndex: 0, type: "Grave", hasAccent: true, accentVowelIndex: 0, rule: "es Grave y NO termina en N, S o Vocal." },
+    { raw: ["la", "piz"], tonicCol: 1, tonicIndex: 0, type: "Grave", hasAccent: true, accentVowelIndex: 0, rule: "es Grave y NO termina en N, S o Vocal." },
+    { raw: ["me", "sa"], tonicCol: 1, tonicIndex: 0, type: "Grave", hasAccent: false, accentVowelIndex: null, rule: "es Grave y termina en Vocal." },
+    { raw: ["ca", "mi", "sa"], tonicCol: 1, tonicIndex: 1, type: "Grave", hasAccent: false, accentVowelIndex: null, rule: "es Grave y termina en Vocal." },
+    { raw: ["al", "bum"], tonicCol: 1, tonicIndex: 0, type: "Grave", hasAccent: true, accentVowelIndex: 0, rule: "es Grave y NO termina en N, S o Vocal." },
+    { raw: ["a", "zu", "car"], tonicCol: 1, tonicIndex: 1, type: "Grave", hasAccent: true, accentVowelIndex: 0, rule: "es Grave y NO termina en N, S o Vocal." },
+    { raw: ["jo", "ven"], tonicCol: 1, tonicIndex: 0, type: "Grave", hasAccent: false, accentVowelIndex: null, rule: "es Grave y termina en N." },
 
-    // Esdrújulas (Todas llevan tilde)
-    { raw: ["me", "di", "co"], tonicIndex: 0, type: "Esdrújula", hasAccent: true, accentVowelIndex: 0, rule: "es Esdrújula y TODAS llevan tilde." },
-    { raw: ["mu", "si", "ca"], tonicIndex: 0, type: "Esdrújula", hasAccent: true, accentVowelIndex: 0, rule: "es Esdrújula y TODAS llevan tilde." },
-    { raw: ["pa", "ja", "ro"], tonicIndex: 0, type: "Esdrújula", hasAccent: true, accentVowelIndex: 0, rule: "es Esdrújula y TODAS llevan tilde." },
-    { raw: ["la", "gri", "ma"], tonicIndex: 0, type: "Esdrújula", hasAccent: true, accentVowelIndex: 0, rule: "es Esdrújula y TODAS llevan tilde." },
-    { raw: ["si", "la", "ba"], tonicIndex: 0, type: "Esdrújula", hasAccent: true, accentVowelIndex: 0, rule: "es Esdrújula y TODAS llevan tilde." },
-    { raw: ["bru", "ju", "la"], tonicIndex: 0, type: "Esdrújula", hasAccent: true, accentVowelIndex: 0, rule: "es Esdrújula y TODAS llevan tilde." },
+    // Esdrújulas
+    { raw: ["me", "di", "co"], tonicCol: 2, tonicIndex: 0, type: "Esdrújula", hasAccent: true, accentVowelIndex: 0, rule: "es Esdrújula y TODAS llevan tilde." },
+    { raw: ["mu", "si", "ca"], tonicCol: 2, tonicIndex: 0, type: "Esdrújula", hasAccent: true, accentVowelIndex: 0, rule: "es Esdrújula y TODAS llevan tilde." },
+    { raw: ["pa", "ja", "ro"], tonicCol: 2, tonicIndex: 0, type: "Esdrújula", hasAccent: true, accentVowelIndex: 0, rule: "es Esdrújula y TODAS llevan tilde." },
+    { raw: ["la", "gri", "ma"], tonicCol: 2, tonicIndex: 0, type: "Esdrújula", hasAccent: true, accentVowelIndex: 0, rule: "es Esdrújula y TODAS llevan tilde." },
+    { raw: ["si", "la", "ba"], tonicCol: 2, tonicIndex: 0, type: "Esdrújula", hasAccent: true, accentVowelIndex: 0, rule: "es Esdrújula y TODAS llevan tilde." },
+    { raw: ["bru", "ju", "la"], tonicCol: 2, tonicIndex: 0, type: "Esdrújula", hasAccent: true, accentVowelIndex: 0, rule: "es Esdrújula y TODAS llevan tilde." },
 
-    // Sobresdrújulas (Todas llevan tilde)
-    { raw: ["di", "ga", "me", "lo"], tonicIndex: 0, type: "Sobresdrújula", hasAccent: true, accentVowelIndex: 1, rule: "es Sobresdrújula y TODAS llevan tilde." },
-    { raw: ["com", "pra", "se", "lo"], tonicIndex: 0, type: "Sobresdrújula", hasAccent: true, accentVowelIndex: 1, rule: "es Sobresdrújula y TODAS llevan tilde." },
-    { raw: ["ga", "na", "te", "lo"], tonicIndex: 0, type: "Sobresdrújula", hasAccent: true, accentVowelIndex: 1, rule: "es Sobresdrújula y TODAS llevan tilde." },
-    { raw: ["ven", "de", "se", "lo"], tonicIndex: 0, type: "Sobresdrújula", hasAccent: true, accentVowelIndex: 1, rule: "es Sobresdrújula y TODAS llevan tilde." },
-    { raw: ["ex", "pli", "ca", "se", "lo"], tonicIndex: 0, type: "Sobresdrújula", hasAccent: true, accentVowelIndex: 1, rule: "es Sobresdrújula y TODAS llevan tilde." }
+    // Sobresdrújulas
+    { raw: ["di", "ga", "me", "lo"], tonicCol: 3, tonicIndex: 0, type: "Sobresdrújula", hasAccent: true, accentVowelIndex: 1, rule: "es Sobresdrújula y TODAS llevan tilde." },
+    { raw: ["com", "pra", "se", "lo"], tonicCol: 3, tonicIndex: 0, type: "Sobresdrújula", hasAccent: true, accentVowelIndex: 1, rule: "es Sobresdrújula y TODAS llevan tilde." },
+    { raw: ["ga", "na", "te", "lo"], tonicCol: 3, tonicIndex: 0, type: "Sobresdrújula", hasAccent: true, accentVowelIndex: 1, rule: "es Sobresdrújula y TODAS llevan tilde." },
+    { raw: ["ven", "de", "se", "lo"], tonicCol: 3, tonicIndex: 0, type: "Sobresdrújula", hasAccent: true, accentVowelIndex: 1, rule: "es Sobresdrújula y TODAS llevan tilde." },
+    { raw: ["ex", "pli", "ca", "se", "lo"], tonicCol: 3, tonicIndex: 0, type: "Sobresdrújula", hasAccent: true, accentVowelIndex: 1, rule: "es Sobresdrújula y TODAS llevan tilde." }
   ];
 
   let currentStudent = "";
@@ -352,7 +343,8 @@
   let currentWordIndex = 0;
   let correctAnswersCount = 0;
 
-  let selectedTonic = null;
+  let selectedCol = null;
+  let selectedTonicIndex = null;
   let selectedAccentChoice = null;
   let selectedVowelIndex = null;
 
@@ -366,7 +358,6 @@
     currentStudent = nameInput;
     document.getElementById("display-student-name").innerText = currentStudent;
 
-    // Seleccionar 10 palabras al azar del banco principal
     sessionWords = [...masterWordBank].sort(() => 0.5 - Math.random()).slice(0, 10);
     
     currentWordIndex = 0;
@@ -381,7 +372,8 @@
 
   function loadWord() {
     const word = sessionWords[currentWordIndex];
-    selectedTonic = null;
+    selectedCol = null;
+    selectedTonicIndex = null;
     selectedAccentChoice = null;
     selectedVowelIndex = null;
 
@@ -394,14 +386,12 @@
     document.getElementById("feedback").innerText = "";
     document.getElementById("next-btn").style.display = "none";
 
-    // Limpiar celdas del cuadro
     [0, 1, 2, 3].forEach(col => {
       const cell = document.getElementById(`col-${col}`);
       cell.innerHTML = "—";
       cell.classList.remove("active-column");
     });
 
-    // Colocar sílabas alineadas a la derecha
     const totalSyllables = word.raw.length;
     word.raw.forEach((syllable, index) => {
       const cleanSyllable = syllable.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -419,7 +409,8 @@
   }
 
   function selectTonic(sylIndex, posFromRight, btnElement) {
-    selectedTonic = sylIndex;
+    selectedTonicIndex = sylIndex;
+    selectedCol = posFromRight;
     
     document.querySelectorAll(".syllable-btn").forEach(b => b.classList.remove("selected"));
     btnElement.classList.add("selected");
@@ -460,7 +451,7 @@
 
   function renderVowels() {
     const word = sessionWords[currentWordIndex];
-    const rawSyllable = word.raw[selectedTonic];
+    const rawSyllable = word.raw[selectedTonicIndex];
     const cleanSyllable = rawSyllable.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     
     const vowelsContainer = document.getElementById("vowels");
@@ -488,7 +479,7 @@
     const word = sessionWords[currentWordIndex];
     let isCorrect = true;
 
-    if (selectedTonic !== word.tonicIndex) isCorrect = false;
+    if (selectedCol !== word.tonicCol) isCorrect = false;
     if (selectedAccentChoice !== word.hasAccent) isCorrect = false;
     if (word.hasAccent && selectedVowelIndex !== word.accentVowelIndex) isCorrect = false;
 
@@ -521,7 +512,6 @@
     document.getElementById("screen-game").style.display = "none";
     document.getElementById("screen-results").style.display = "block";
 
-    // Calificación de 0 a 5.0 (Cada acierto vale 0.5 puntos)
     const grade = (correctAnswersCount * 0.5).toFixed(1);
 
     document.getElementById("final-student-name").innerText = currentStudent;
@@ -542,9 +532,7 @@
       date: new Date().toLocaleDateString()
     });
 
-    // Ordenar de mayor a menor calificación
     leaderboard.sort((a, b) => b.grade - a.grade || b.correct - a.correct);
-
     localStorage.setItem("sega_leaderboard", JSON.stringify(leaderboard));
   }
 
@@ -587,9 +575,6 @@
     document.getElementById("screen-welcome").style.display = "block";
   }
 </script>
-
-</body>
-</html>
 
 </body>
 </html>
