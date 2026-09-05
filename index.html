@@ -387,68 +387,59 @@
             console.warn("Firebase no inicializado, usando almacenamiento local.");
         }
 
+        // Banco de palabras actualizado según tu solicitud exacta
         const wordBank = [
             // Esdrújulas
-            { syllables: ["ca", "ma", "ra"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "a" },
-            { syllables: ["te", "le", "fo", "no"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "o" },
-            { syllables: ["mu", "si", "ca"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "u" },
-            { syllables: ["pa", "ja", "ro"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "a" },
-            { syllables: ["ma", "gi", "ca"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "a" },
-            { syllables: ["ra", "pi", "do"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "a" },
-            { syllables: ["me", "di", "co"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "e" },
-            { syllables: ["o", "cé", "a", "no"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "e" },
-            { syllables: ["plás", "ti", "co"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "a" },
-            { syllables: ["pe", "lá", "gi", "co"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "i" },
+            { syllables: ["Plá", "ta", "no"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "a" },
+            { syllables: ["Mú", "si", "ca"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "u" },
+            { syllables: ["Sá", "ba", "do"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "a" },
+            { syllables: ["Mé", "di", "co"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "e" },
+            { syllables: ["Pá", "ja", "ro"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "a" },
+            { syllables: ["O", "cé", "a", "no"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "e" },
+            { syllables: ["Lám", "pa", "ra"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "a" },
+            { syllables: ["Brú", "ju", "la"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "u" },
+            { syllables: ["Te", "lé", "fo", "no"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "e" },
+            { syllables: ["A", "mé", "ri", "ca"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "e" },
 
-            // Sobresdrújulas (Separación silábica ortográfica estricta corregida)
-            { syllables: ["com", "pran", "se", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "o" },
-            { syllables: ["ex", "pli", "gái", "se", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "i" },
-            { syllables: ["dí", "ga", "me", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "a" },
-            { syllables: ["trá", "ae", "se", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "a" },
-            { syllables: ["cuén", "ta", "se", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "e" },
+            // Sobresdrújulas
+            { syllables: ["Guár", "da", "me", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "u" },
+            { syllables: ["Dí", "ga", "se", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "i" },
+            { syllables: ["Trái", "ga", "se", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "a" },
+            { syllables: ["Cóm", "pra", "te", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "o" },
+            { syllables: ["Re", "cuér", "da", "me", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "e" },
+            { syllables: ["Vén", "de", "se", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "e" },
+            { syllables: ["Es", "crí", "be", "me", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "i" },
+            { syllables: ["Co", "ci", "ná", "te", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "a" },
+            { syllables: ["Re", "gá", "la", "nos", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "a" },
+            { syllables: ["Á", "bre", "me", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "a" },
 
             // Graves con tilde
-            { syllables: ["lá", "piz"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "a" },
-            { syllables: ["ár", "bol"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "a" },
-            { syllables: ["cé", "sped"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "e" },
-            { syllables: ["fér", "til"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "i" },
-            { syllables: ["di", "fí", "cil"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "i" },
-            { syllables: ["án", "gel"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "a" },
-            { syllables: ["cár", "cel"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "a" },
-            { syllables: ["az", "ú", "car"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "u" },
-            { syllables: ["hú", "me", "do"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "u" },
+            { syllables: ["Ár", "bol"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "a" },
+            { syllables: ["Lá", "piz"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "a" },
+            { syllables: ["Tú", "nel"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "u" },
+            { syllables: ["Az", "ú", "car"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "u" },
+            { syllables: ["Fá", "cil"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "a" },
 
             // Graves sin tilde
-            { syllables: ["me", "sa"], tonicIndex: 1, category: "Grave", tilde: false },
-            { syllables: ["si", "lla"], tonicIndex: 1, category: "Grave", tilde: false },
-            { syllables: ["vi", "drio"], tonicIndex: 1, category: "Grave", tilde: false },
-            { syllables: ["co", "mi", "da"], tonicIndex: 1, category: "Grave", tilde: false },
-            { syllables: ["es", "pe", "jo"], tonicIndex: 1, category: "Grave", tilde: false },
-            { syllables: ["ven", "ta", "na"], tonicIndex: 1, category: "Grave", tilde: false },
-            { syllables: ["te", "la"], tonicIndex: 1, category: "Grave", tilde: false },
-            { syllables: ["li", "bro"], tonicIndex: 1, category: "Grave", tilde: false },
-            { syllables: ["cua", "der", "no"], tonicIndex: 1, category: "Grave", tilde: false },
-            { syllables: ["es", "pon", "ja"], tonicIndex: 1, category: "Grave", tilde: false },
-            { syllables: ["tri", "ste", "za"], tonicIndex: 1, category: "Grave", tilde: false },
-            { syllables: ["cal", "ma"], tonicIndex: 1, category: "Grave", tilde: false },
-            { syllables: ["i", "ra"], tonicIndex: 1, category: "Grave", tilde: false },
-            { syllables: ["du", "da"], tonicIndex: 1, category: "Grave", tilde: false },
-            { syllables: ["go", "zo"], tonicIndex: 1, category: "Grave", tilde: false },
+            { syllables: ["Ca", "sa"], tonicIndex: 1, category: "Grave", tilde: false },
+            { syllables: ["Pe", "rro"], tonicIndex: 1, category: "Grave", tilde: false },
+            { syllables: ["Ex", "a", "men"], tonicIndex: 1, category: "Grave", tilde: false },
+            { syllables: ["Li", "bro"], tonicIndex: 1, category: "Grave", tilde: false },
+            { syllables: ["Za", "pa", "tos"], tonicIndex: 1, category: "Grave", tilde: false },
 
             // Agudas con tilde
-            { syllables: ["so", "fá"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "a" },
-            { syllables: ["pa", "sión"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "o" },
-            { syllables: ["me", "nú"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "u" },
-            { syllables: ["com", "pás"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "a" },
-            { syllables: ["ba", "lón"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "o" },
-            { syllables: ["jer", "séy"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "e" },
+            { syllables: ["Can", "ción"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "o" },
+            { syllables: ["Ca", "fé"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "e" },
+            { syllables: ["Com", "pás"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "a" },
+            { syllables: ["Pe", "rú"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "u" },
+            { syllables: ["Pa", "tón"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "o" },
 
             // Agudas sin tilde
-            { syllables: ["mo", "ni", "tor"], tonicIndex: 0, category: "Aguda", tilde: false },
-            { syllables: ["re", "loj"], tonicIndex: 0, category: "Aguda", tilde: false },
-            { syllables: ["a", "mor"], tonicIndex: 0, category: "Aguda", tilde: false },
-            { syllables: ["te", "mor"], tonicIndex: 0, category: "Aguda", tilde: false },
-            { syllables: ["pa", "pel"], tonicIndex: 0, category: "Aguda", tilde: false }
+            { syllables: ["A", "mor"], tonicIndex: 0, category: "Aguda", tilde: false },
+            { syllables: ["Pa", "pel"], tonicIndex: 0, category: "Aguda", tilde: false },
+            { syllables: ["Re", "loj"], tonicIndex: 0, category: "Aguda", tilde: false },
+            { syllables: ["pa", "red"], tonicIndex: 0, category: "Aguda", tilde: false },
+            { syllables: ["Can", "tar"], tonicIndex: 0, category: "Aguda", tilde: false }
         ];
 
         let currentStudent = "";
