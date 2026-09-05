@@ -344,7 +344,6 @@
         console.warn("Modo local activado.", e);
     }
 
-    // Banco completo con las 100 palabras enviadas
     const wordBank = [
         // Sobresdrújulas
         { palabra: "dígaselo", syllables: ["dí", "ga", "se", "lo"], category: "Sobresdrújula", hasTilde: true, accentedVowel: "dí" },
@@ -502,11 +501,9 @@
         document.getElementById("word-display").textContent = q.palabra;
 
         const row = document.getElementById("syllables-row");
-        // Las 4 columnas fijas del SEGA: [Sobresdrújula, Esdrújula, Grave, Aguda]
         let cells = ["—", "—", "—", "—"];
         const numSyllables = q.syllables.length;
         
-        // Mapeo dinámico de derecha a izquierda según cantidad de sílabas
         for (let i = 0; i < numSyllables; i++) {
             const targetIndex = 3 - (numSyllables - 1 - i);
             if (targetIndex >= 0 && targetIndex < 4) {
@@ -516,12 +513,16 @@
 
         row.innerHTML = cells.map((c, index) => `<td class="sega-cell-interactive" onclick="selectSyllable(${index})">${c}</td>`).join("");
 
-        // Cargar vocales disponibles
+        // Cargar vocales disponibles (sin tilde para que el usuario elija la letra base)
         const vowelsBox = document.getElementById("vowels-box");
         let vHtml = `<button type="button" class="vowel-btn" onclick="selectVowel(this, 'Ninguna')">Ninguna</button>`;
+        const addedVowels = new Set();
+        
         for (const char of q.palabra) {
-            if (["a", "e", "i", "o", "u", "á", "é", "í", "ó", "ú", "ü", "Á", "É", "Í", "Ó", "Ú"].includes(char)) {
-                vHtml += `<button type="button" class="vowel-btn" onclick="selectVowel(this, '${char}')">${char}</button>`;
+            const cleanChar = char.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+            if (["a", "e", "i", "o", "u"].includes(cleanChar) && !addedVowels.has(cleanChar)) {
+                addedVowels.add(cleanChar);
+                vHtml += `<button type="button" class="vowel-btn" onclick="selectVowel(this, '${cleanChar}')">${cleanChar}</button>`;
             }
         }
         vowelsBox.innerHTML = vHtml;
@@ -594,7 +595,8 @@
         const isTildeCorrect = (userSelectedTilde === q.hasTilde);
         
         const cleanVowel = (v) => v.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-        const isVowelCorrect = (cleanVowel(userSelectedVowel) === cleanVowel(q.accentedVowel.replace(/[^aeiouáéíóúÁÉÍÓÚ]/gi, ""))) || (userSelectedVowel === q.accentedVowel);
+        const correctCleanVowel = cleanVowel(q.accentedVowel);
+        const isVowelCorrect = (userSelectedVowel === correctCleanVowel);
 
         let feedbackHTML = "";
         if (isColCorrect && isTildeCorrect && isVowelCorrect) {
@@ -610,7 +612,7 @@
                 feedbackHTML += `<li>Regla de tilde: Indicaste '${userSelectedTilde ? 'Sí lleva' : 'No lleva'}', pero lo correcto era '${q.hasTilde ? 'Sí lleva tilde' : 'No lleva tilde'}'.</li>`;
             }
             if (!isVowelCorrect) {
-                feedbackHTML += `<li>Vocal acentuada: Seleccionaste '${userSelectedVowel}', pero la tilde va en la vocal de la sílaba '${q.accentedVowel}'.</li>`;
+                feedbackHTML += `<li>Vocal acentuada: Seleccionaste '${userSelectedVowel}', pero la tilde va en la vocal '${correctCleanVowel}'.</li>`;
             }
             feedbackHTML += "</ul>";
         }
@@ -621,11 +623,12 @@
     }
 
     function finishGame() {
-        const finalGrade = parseFloat((correctAnswersCount * 1).toFixed(1));
+        // Puntuación de 0 a 5 (cada acierto vale 0.5 puntos)
+        const finalGrade = parseFloat((correctAnswersCount * 0.5).toFixed(1));
         switchScreen("screen-results");
 
         document.getElementById("result-name").innerText = `Estudiante: ${currentStudent}`;
-        document.getElementById("result-grade").innerText = `Calificación Final: ${finalGrade} / 10`;
+        document.getElementById("result-grade").innerText = `Calificación Final: ${finalGrade} / 5.0 (${correctAnswersCount}/10 aciertos)`;
 
         const record = { name: currentStudent, grade: finalGrade, score: correctAnswersCount, timestamp: Date.now() };
 
@@ -683,7 +686,7 @@
         tbody.innerHTML = leaderboard.map(item => `
             <li class="leaderboard-item">
                 <span><b>${item.name}</b></span>
-                <span>${item.score} aciertos (${item.grade} pts)</span>
+                <span>${item.score} aciertos (${item.grade} / 5.0)</span>
             </li>
         `).join("");
     }
