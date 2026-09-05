@@ -276,7 +276,7 @@
             <p class="description">Evaluación de acentuación y clasificación de palabras.</p>
             <div class="input-group">
                 <label for="user-name">Nombre Completo del Estudiante:</label>
-                <input type="text" id="user-name" placeholder="Ej. Juan Pérez" autocomplete="off">
+                <input type="text" id="user-name" placeholder="Ej. Diego Castro" autocomplete="off">
             </div>
             <button class="btn-green" onclick="startGame()">Comenzar Evaluación</button>
             <button class="btn-secondary" onclick="showLeaderboardView()">Ver Tabla de Posiciones General</button>
@@ -372,7 +372,19 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-    <script>
+    <script><script>
+    function startGame() {
+        const nameInput = document.getElementById("user-name").value.trim();
+        if (!nameInput) {
+            alert("Por favor ingresa tu nombre completo antes de comenzar.");
+            return;
+        }
+        
+        document.getElementById("screen-welcome").classList.remove("active");
+        document.getElementById("screen-game").classList.add("active");
+        document.getElementById("player-display").textContent = nameInput;
+    }
+</script>
         const firebaseConfig = {
             databaseURL: "https://acento-ortografico-8ed2d-default-rtdb.firebaseio.com/"
         };
