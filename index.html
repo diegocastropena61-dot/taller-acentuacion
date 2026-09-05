@@ -175,11 +175,7 @@
             font-weight: bold;
             cursor: pointer;
             min-width: 50px;
-            text-transform: lowercase;
-        }
-
-        .syllable-btn::first-letter {
-            text-transform: uppercase;
+            /* Sin transformaciones CSS automáticas para respetar el script */
         }
 
         .syllable-btn.selected {
@@ -233,7 +229,6 @@
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            text-transform: lowercase;
         }
 
         .vowel-btn.selected {
@@ -276,7 +271,6 @@
 <body>
 
     <div class="container">
-        <!-- PANTALLA INICIAL -->
         <div id="screen-welcome" class="screen active">
             <h1>Taller de Acentuación Ortográfica</h1>
             <p class="description">Evaluación de acentuación y clasificación de palabras.</p>
@@ -288,7 +282,6 @@
             <button class="btn-secondary" onclick="showLeaderboardView()">Ver Tabla de Posiciones General</button>
         </div>
 
-        <!-- PANTALLA DEL EXAMEN -->
         <div id="screen-game" class="screen">
             <div class="header-game">
                 <span>Estudiante: <b id="player-display"></b></span>
@@ -345,7 +338,6 @@
             <button id="btn-next" class="btn-green" onclick="handleNextStep()">Siguiente Palabra</button>
         </div>
 
-        <!-- PANTALLA DE RESULTADOS -->
         <div id="screen-results" class="screen">
             <h2>Resultados de la Evaluación</h2>
             <div id="result-user-container" style="display:none;">
@@ -374,7 +366,6 @@
         </div>
     </div>
 
-    <!-- FIREBASE DB -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -403,12 +394,12 @@
             { syllables: ["ra", "pi", "do"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "a" },
             { syllables: ["me", "di", "co"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "e" },
             { syllables: ["o", "cea", "no"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "e" },
-            { syllables: ["plasti", "co"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "a" },
-            { syllables: ["pela", "gi", "co"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "i" },
+            { syllables: ["plas", "ti", "co"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "a" },
+            { syllables: ["pe", "la", "gi", "co"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "i" },
 
             // Sobresdrújulas
             { syllables: ["com", "pran", "se", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "o" },
-            { syllables: ["ex", "pli", "gi", "se", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "i" },
+            { syllables: ["ex", "pli", "gai", "se", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "i" },
             { syllables: ["di", "ga", "me", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "a" },
             { syllables: ["tra", "ae", "se", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "a" },
             { syllables: ["cue", "nta", "se", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "e" },
@@ -416,13 +407,13 @@
             // Graves con tilde
             { syllables: ["la", "piz"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "a" },
             { syllables: ["ar", "bol"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "a" },
-            { syllables: ["ce", "sued", "jar"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "u" },
-            { syllables: ["fer", "tíl"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "i" },
-            { syllables: ["di", "fí", "cil"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "i" },
+            { syllables: ["cé", "sped"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "e" },
+            { syllables: ["fer", "til"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "i" },
+            { syllables: ["di", "fi", "cil"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "i" },
             { syllables: ["an", "gel"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "a" },
-            { syllables: ["cár", "cel"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "a" },
-            { syllables: ["az", "ú", "car"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "u" },
-            { syllables: ["hú", "me", "do"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "u" },
+            { syllables: ["car", "cel"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "a" },
+            { syllables: ["az", "u", "car"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "u" },
+            { syllables: ["hu", "me", "do"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "u" },
 
             // Graves sin tilde
             { syllables: ["me", "sa"], tonicIndex: 1, category: "Grave", tilde: false },
@@ -440,15 +431,14 @@
             { syllables: ["i", "ra"], tonicIndex: 1, category: "Grave", tilde: false },
             { syllables: ["du", "da"], tonicIndex: 1, category: "Grave", tilde: false },
             { syllables: ["go", "zo"], tonicIndex: 1, category: "Grave", tilde: false },
-            { syllables: ["ven", "ta", "na"], tonicIndex: 1, category: "Grave", tilde: false },
 
             // Agudas con tilde
             { syllables: ["so", "fa"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "a" },
             { syllables: ["pa", "sion"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "o" },
-            { syllables: ["men", "ú"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "u" },
+            { syllables: ["me", "nu"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "u" },
             { syllables: ["com", "pas"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "a" },
-            { syllables: ["ba", "lón"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "o" },
-            { syllables: ["jer", "séy"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "e" },
+            { syllables: ["ba", "lon"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "o" },
+            { syllables: ["jer", "sey"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "e" },
 
             // Agudas sin tilde
             { syllables: ["mo", "ni", "tor"], tonicIndex: 0, category: "Aguda", tilde: false },
@@ -473,6 +463,15 @@
         function switchScreen(screenId) {
             document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
+        }
+
+        // Función para poner únicamente la primera letra de toda la palabra en mayúscula
+        function formatWordDisplay(syllablesArray, index) {
+            let fullWord = syllablesArray.join("");
+            if (index === 0) {
+                return fullWord.charAt(0).toUpperCase() + fullWord.slice(1);
+            }
+            return syllablesArray[index];
         }
 
         function startGame() {
@@ -523,7 +522,13 @@
             for (let i = 0; i < totalSyllables; i++) {
                 const posFromEnd = totalSyllables - 1 - i;
                 if (posFromEnd < 4) {
-                    const sylText = currentItem.syllables[i];
+                    let sylText = currentItem.syllables[i];
+                    
+                    // Si esta sílaba es la primera de la palabra, se pone su inicial en mayúscula
+                    if (i === 0) {
+                        sylText = sylText.charAt(0).toUpperCase() + sylText.slice(1);
+                    }
+
                     document.getElementById(`cell-${posFromEnd}`).innerHTML = 
                         `<button class="syllable-btn" onclick="selectSyllable(this, ${posFromEnd})">${sylText}</button>`;
                 }
