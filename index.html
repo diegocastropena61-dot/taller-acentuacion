@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taller de Acentuación Ortográfica</title>
+    <title>Taller de Acentuación Ortográfica - Método SEGA</title>
     <style>
         :root {
             --primary: #1e293b;
-            --accent: #10b981;
+            --accent: #22c55e;
             --secondary: #3b82f6;
-            --bg: #0f172a;
-            --card-bg: #1e293b;
+            --bg: #121212;
+            --card-bg: #1e1e1e;
             --text: #f8fafc;
-            --border: #334155;
+            --border: #333333;
         }
 
         body {
@@ -27,11 +27,11 @@
 
         .container {
             width: 100%;
-            max-width: 850px;
+            max-width: 900px;
             background: var(--card-bg);
             padding: 30px;
             border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
             border: 1px solid var(--border);
         }
 
@@ -64,7 +64,7 @@
         input[type="text"] {
             padding: 12px;
             border: 1px solid var(--border);
-            background: #0f172a;
+            background: #2a2a2a;
             color: white;
             border-radius: 8px;
             font-size: 16px;
@@ -105,10 +105,10 @@
             display: flex;
             justify-content: space-between;
             padding: 12px 15px;
-            background: #0f172a;
+            background: #2a2a2a;
             border-radius: 8px;
             margin-bottom: 20px;
-            font-size: 14px;
+            font-size: 15px;
             border: 1px solid var(--border);
         }
 
@@ -118,66 +118,94 @@
             margin: 20px 0;
             border-radius: 8px;
             overflow: hidden;
-        }
-
-        .sega-table th, .sega-table td {
-            border: 1px solid var(--border);
-            padding: 14px;
             text-align: center;
         }
 
         .sega-table th {
-            background-color: #0f172a;
-            color: #38bdf8;
-            font-size: 14px;
+            background-color: #1a2234;
+            color: #fbbf24;
+            border: 1px solid var(--border);
+            padding: 12px;
+            font-size: 15px;
         }
 
         .sega-table td {
+            border: 1px solid var(--border);
+            padding: 12px;
+            font-size: 15px;
+            background: #1e1e1e;
+            color: #cbd5e1;
+        }
+
+        .rule-subtext {
+            font-size: 12px;
+            color: #94a3b8;
+            padding-bottom: 6px;
+        }
+
+        .position-subtext {
+            font-size: 13px;
+            color: #4ade80;
+            font-weight: bold;
+            padding-bottom: 8px;
+        }
+
+        .sega-cell-interactive {
             height: 45px;
             cursor: pointer;
             font-size: 18px;
-            background: #1e293b;
-            color: white;
+            background: #262626 !important;
+            color: white !important;
+            font-weight: bold;
+            transition: background 0.2s;
         }
 
-        .sega-table td.selected {
-            background-color: #065f46;
-            border: 2px solid var(--accent);
-            font-weight: bold;
+        .sega-cell-interactive:hover {
+            background: #334155 !important;
+        }
+
+        .sega-cell-interactive.selected {
+            background-color: #15803d !important;
+            border: 2px solid var(--accent) !important;
         }
 
         .options-box {
             display: flex;
             gap: 15px;
-            margin-top: 15px;
+            margin-top: 10px;
         }
 
         .option-btn {
             flex: 1;
-            background: #0f172a;
+            background: #2a2a2a;
             border: 1px solid var(--border);
             color: white;
-            padding: 10px;
+            padding: 12px;
             border-radius: 6px;
             cursor: pointer;
+            font-weight: bold;
         }
 
         .option-btn.selected {
-            background: var(--secondary);
-            border-color: #60a5fa;
+            background: var(--accent);
+            color: #0f172a;
+            border-color: #4ade80;
         }
 
         .vowel-btn {
-            padding: 8px 12px;
-            background: #0f172a;
+            padding: 10px 16px;
+            background: #2a2a2a;
             border: 1px solid var(--border);
             color: white;
             cursor: pointer;
-            border-radius: 4px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 16px;
         }
 
         .vowel-btn.selected {
-            background: var(--secondary);
+            background: var(--accent);
+            color: #0f172a;
         }
 
         .leaderboard-list {
@@ -191,7 +219,7 @@
             justify-content: space-between;
             padding: 12px 15px;
             border-bottom: 1px solid var(--border);
-            background: #0f172a;
+            background: #2a2a2a;
             margin-bottom: 6px;
             border-radius: 6px;
         }
@@ -222,13 +250,13 @@
             <span>Aciertos: <b id="score-display">0</b></span>
         </div>
 
-        <h2 id="word-display" style="text-align: center; letter-spacing: 3px; font-size: 28px; margin: 20px 0;">---</h2>
+        <h2 id="word-display" style="text-align: center; letter-spacing: 3px; font-size: 32px; margin: 20px 0; color: #38bdf8;">---</h2>
 
-        <p style="font-weight: bold; margin-bottom: 5px;">Paso 1: Selecciona la sílaba tónica en el cuadro SEGA</p>
+        <p style="font-weight: bold; margin-bottom: 10px; text-align: center;">Paso 1: Toca la sílaba tónica para ubicar la palabra en la columna correcta del cuadro SEGA:</p>
+        
         <table class="sega-table">
             <thead>
                 <tr>
-                    <th>Anterior</th>
                     <th>Sobresdrújula</th>
                     <th>Esdrújula</th>
                     <th>Grave</th>
@@ -236,20 +264,28 @@
                 </tr>
             </thead>
             <tbody>
+                <tr>
+                    <td class="rule-subtext">Todas llevan tilde</td>
+                    <td class="rule-subtext">Todas llevan tilde</td>
+                    <td class="rule-subtext">No termina en N, S o Vocal</td>
+                    <td class="rule-subtext">Termina en N, S o Vocal</td>
+                </tr>
+                <tr>
+                    <td class="position-subtext">Trasantepenúltima</td>
+                    <td class="position-subtext">Antepenúltima</td>
+                    <td class="position-subtext">Penúltima</td>
+                    <td class="position-subtext">Última</td>
+                </tr>
                 <tr id="syllables-row">
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
+                    <!-- Dinámico -->
                 </tr>
             </tbody>
         </table>
 
-        <div id="step1-info" style="margin-top: 10px; font-weight: bold; color: #38bdf8; min-height: 24px;"></div>
+        <div id="step1-info" style="margin-top: 10px; font-weight: bold; color: #38bdf8; text-align: center; min-height: 24px;"></div>
 
         <div style="margin-top: 15px;">
-            <p style="font-weight: bold; margin-bottom: 5px;">Paso 2: ¿Lleva tilde la palabra?</p>
+            <p style="font-weight: bold; margin-bottom: 5px;">Paso 2: ¿Lleva tilde según la regla de esa columna?</p>
             <div class="options-box">
                 <button type="button" id="btn-tilde-yes" class="option-btn" onclick="setTildeChoice(true)">Sí lleva tilde</button>
                 <button type="button" id="btn-tilde-no" class="option-btn" onclick="setTildeChoice(false)">No lleva tilde</button>
@@ -257,13 +293,13 @@
         </div>
 
         <div style="margin-top: 15px;">
-            <p style="font-weight: bold; margin-bottom: 5px;">Paso 3: Selecciona la vocal acentuada (o Ninguna)</p>
-            <div id="vowels-box" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 5px;"></div>
+            <p style="font-weight: bold; margin-bottom: 5px;">Paso 3: Toca la vocal que lleva la tilde en esa sílaba:</p>
+            <div id="vowels-box" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 5px; justify-content: center;"></div>
         </div>
 
-        <div id="feedback-msg" style="margin-top: 20px; padding: 12px; border-radius: 6px; background: #0f172a; border: 1px solid var(--border); display: none;"></div>
+        <div id="feedback-msg" style="margin-top: 20px; padding: 12px; border-radius: 6px; background: #162032; border: 1px solid var(--border); display: none;"></div>
 
-        <button class="btn-green" id="btn-next" onclick="handleNextStep()" style="margin-top: 25px;">Siguiente Pregunta</button>
+        <button class="btn-green" id="btn-next" onclick="handleNextStep()" style="margin-top: 25px;">Siguiente Palabra</button>
     </div>
 
     <!-- PANTALLA DE RESULTADOS -->
@@ -271,7 +307,6 @@
         <h2>Resultados de la Evaluación</h2>
         <p id="result-name" style="text-align: center; font-size: 18px; font-weight: bold; margin-top: 15px;"></p>
         <p id="result-grade" style="text-align: center; font-size: 24px; color: var(--accent); margin: 15px 0;"></p>
-        <div id="result-user-container" style="margin: 20px 0; text-align: center;"></div>
         <button class="btn-green" onclick="loadLeaderboard()">Ver Tabla de Posiciones</button>
         <button class="btn-secondary" onclick="showWelcomeScreen()">Volver al Inicio</button>
     </div>
@@ -460,22 +495,26 @@
         document.getElementById("feedback-msg").style.display = "none";
         document.getElementById("btn-tilde-yes").classList.remove("selected");
         document.getElementById("btn-tilde-no").classList.remove("selected");
+        document.getElementById("btn-next").innerText = "Siguiente Palabra";
 
         const q = selectedWords[currentWordIndex];
         document.getElementById("current-index").textContent = currentWordIndex + 1;
         document.getElementById("word-display").textContent = q.palabra;
 
         const row = document.getElementById("syllables-row");
-        const cells = ["", "", "", "", ""];
+        // Las 4 columnas fijas del SEGA: [Sobresdrújula, Esdrújula, Grave, Aguda]
+        let cells = ["—", "—", "—", "—"];
+        const numSyllables = q.syllables.length;
         
-        for (let i = 0; i < q.syllables.length; i++) {
-            const pos = 4 - i;
-            if (pos >= 0) {
-                cells[pos] = q.syllables[q.syllables.length - 1 - i];
+        // Mapeo dinámico de derecha a izquierda según cantidad de sílabas
+        for (let i = 0; i < numSyllables; i++) {
+            const targetIndex = 3 - (numSyllables - 1 - i);
+            if (targetIndex >= 0 && targetIndex < 4) {
+                cells[targetIndex] = q.syllables[i];
             }
         }
 
-        row.innerHTML = cells.map((c, index) => `<td onclick="selectSyllable(${index})">${c || "-"}</td>`).join("");
+        row.innerHTML = cells.map((c, index) => `<td class="sega-cell-interactive" onclick="selectSyllable(${index})">${c}</td>`).join("");
 
         // Cargar vocales disponibles
         const vowelsBox = document.getElementById("vowels-box");
@@ -494,14 +533,14 @@
         
         const tdCells = document.querySelectorAll("#syllables-row td");
         tdCells.forEach((td, idx) => {
-            if (idx === index && td.innerText !== "-") {
+            if (idx === index && td.innerText !== "—") {
                 td.classList.add("selected");
             } else {
                 td.classList.remove("selected");
             }
         });
 
-        const categoryNames = { 4: "Aguda", 3: "Grave", 2: "Esdrújula", 1: "Sobresdrújula", 0: "Anterior" };
+        const categoryNames = { 0: "Sobresdrújula", 1: "Esdrújula", 2: "Grave", 3: "Aguda" };
         const colName = categoryNames[index] || "--";
         document.getElementById("step1-info").innerText = `Has ubicado la sílaba tónica en la columna: ${colName}.`;
     }
@@ -545,9 +584,10 @@
         }
 
         isShowingFeedback = true;
+        document.getElementById("btn-next").innerText = "Siguiente Pregunta";
         const q = selectedWords[currentWordIndex];
         
-        const categoryMap = { 4: "Aguda", 3: "Grave", 2: "Esdrújula", 1: "Sobresdrújula" };
+        const categoryMap = { 0: "Sobresdrújula", 1: "Esdrújula", 2: "Grave", 3: "Aguda" };
         const userCategory = categoryMap[userSelectedSyllable];
 
         const isColCorrect = (userCategory === q.category);
@@ -560,17 +600,17 @@
         if (isColCorrect && isTildeCorrect && isVowelCorrect) {
             correctAnswersCount++;
             document.getElementById("score-display").textContent = correctAnswersCount;
-            feedbackHTML = "<b>¡Excelente! Todo correcto. Es una palabra " + q.category + ".</b>";
+            feedbackHTML = `<b>¡Correcto! La palabra es ${q.category} y cumple con sus reglas de acentuación.</b>`;
         } else {
-            feedbackHTML = "<b>Errores detectados en esta palabra:</b><br><ul>";
+            feedbackHTML = "<b>Se encontraron algunos errores:</b><br><ul style='margin: 8px 0; padding-left: 20px;'>";
             if (!isColCorrect) {
-                feedbackHTML += `<li>Clasificación errónea: Elegiste '${userCategory || 'Ninguna'}', pero la palabra es ${q.category}.</li>`;
+                feedbackHTML += `<li>Clasificación: Elegiste '${userCategory || 'Ninguna'}', pero la palabra correcta es ${q.category}.</li>`;
             }
             if (!isTildeCorrect) {
-                feedbackHTML += `<li>Regla de tilde errónea: Te equivocaste al decir si llevaba o no tilde (Lo correcto era: ${q.hasTilde ? 'Sí lleva tilde' : 'No lleva tilde'}).</li>`;
+                feedbackHTML += `<li>Regla de tilde: Indicaste '${userSelectedTilde ? 'Sí lleva' : 'No lleva'}', pero lo correcto era '${q.hasTilde ? 'Sí lleva tilde' : 'No lleva tilde'}'.</li>`;
             }
             if (!isVowelCorrect) {
-                feedbackHTML += `<li>Vocal acentuada errónea: Marcaste la vocal '${userSelectedVowel}', pero la tilde iba en la '${q.accentedVowel}'.</li>`;
+                feedbackHTML += `<li>Vocal acentuada: Seleccionaste '${userSelectedVowel}', pero la tilde va en la vocal de la sílaba '${q.accentedVowel}'.</li>`;
             }
             feedbackHTML += "</ul>";
         }
