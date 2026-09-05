@@ -61,8 +61,12 @@
         .feedback-text.incorrect { color: var(--error); }
 
         .timer-bar { text-align: center; font-weight: bold; font-size: 14px; color: var(--error); margin-bottom: 15px; background: rgba(247, 90, 104, 0.1); padding: 8px; border-radius: 6px; border: 1px solid rgba(247, 90, 104, 0.3); }
-        .leaderboard-list { list-style: none; margin-bottom: 20px; max-height: 220px; overflow-y: auto; }
-        .leaderboard-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #323238; font-size: 14px; }
+        .leaderboard-list { list-style: none; margin-bottom: 15px; max-height: 180px; overflow-y: auto; }
+        .leaderboard-item { display: flex; justify-content: space-between; padding: 8px 10px; border-bottom: 1px solid #323238; font-size: 14px; }
+        
+        /* Panel de Profesor oculto por defecto */
+        .teacher-panel-toggle { background: transparent; color: var(--accent-yellow); border: 1px dashed var(--accent-yellow); font-size: 13px; padding: 8px; margin-top: 5px; }
+        .teacher-panel-toggle:hover { background: rgba(251, 169, 76, 0.05); }
     </style>
 </head>
 <body>
@@ -146,14 +150,20 @@
             <p id="finalScoreText" style="font-size: 20px; font-weight: bold; margin-bottom: 20px; color: var(--accent-yellow);"></p>
             <h2 style="font-size: 18px; margin-bottom: 10px;">Tabla de Posiciones</h2>
             <ul id="leaderboardList" class="leaderboard-list"></ul>
-            <button class="btn-secondary" onclick="location.reload()">Jugar Nuevamente</button>
+            
+            <button class="teacher-panel-toggle" onclick="toggleTeacherView()">📋 Ver Notas Completas de Estudiantes</button>
+            <div id="teacherViewContainer" style="display:none; margin-top: 15px; background: var(--surface-card); padding: 12px; border-radius: 8px; border: 1px solid #323238;">
+                <p style="font-size: 13px; font-weight: bold; color: var(--accent-yellow); margin-bottom: 8px;">Registro de Notas Guardadas:</p>
+                <ul id="teacherNotesList" class="leaderboard-list" style="max-height: 120px; margin-bottom: 10px;"></ul>
+                <button class="btn-secondary" style="padding: 8px; font-size: 14px;" onclick="clearRecords()">🗑️ Borrar Historial</button>
+            </div>
+
+            <button class="btn-secondary" style="margin-top: 15px;" onclick="location.reload()">Jugar Nuevamente</button>
         </div>
     </div>
 
     <script>
-        // Banco completo original de palabras
         const rawWordBank = [
-            // Sobresdrújulas
             { palabra: "Digaselo", syllables: ["Di", "ga", "se", "lo"], category: "sobresdrújula", hasTilde: true, accentedVowel: "í" },
             { palabra: "Compratelo", syllables: ["Com", "pra", "te", "lo"], category: "sobresdrújula", hasTilde: true, accentedVowel: "ó" },
             { palabra: "traigaselo", syllables: ["Trai", "ga", "se", "lo"], category: "sobresdrújula", hasTilde: true, accentedVowel: "á" },
@@ -175,7 +185,6 @@
             { palabra: "Quitatelo", syllables: ["Qui", "ta", "te", "lo"], category: "sobresdrújula", hasTilde: true, accentedVowel: "í" },
             { palabra: "Pasamelo", syllables: ["Pa", "sa", "me", "lo"], category: "sobresdrújula", hasTilde: true, accentedVowel: "á" },
 
-            // Esdrújulas
             { palabra: "Platano", syllables: ["Pla", "ta", "no"], category: "esdrújula", hasTilde: true, accentedVowel: "á" },
             { palabra: "Musica", syllables: ["Mu", "si", "ca"], category: "esdrújula", hasTilde: true, accentedVowel: "ú" },
             { palabra: "Sabado", syllables: ["Sa", "ba", "do"], category: "esdrújula", hasTilde: true, accentedVowel: "á" },
@@ -197,7 +206,6 @@
             { palabra: "Tunica", syllables: ["ta", "ni", "ca"], category: "esdrújula", hasTilde: true, accentedVowel: "ú" },
             { palabra: "Panico", syllables: ["Pa", "ni", "co"], category: "esdrújula", hasTilde: true, accentedVowel: "á" },
 
-            // Graves con tilde
             { palabra: "Arbol", syllables: ["Ar", "bol"], category: "grave", hasTilde: true, accentedVowel: "á" },
             { palabra: "Lapiz", syllables: ["La", "piz"], category: "grave", hasTilde: true, accentedVowel: "á" },
             { palabra: "Tunel", syllables: ["Tu", "nel"], category: "grave", hasTilde: true, accentedVowel: "ú" },
@@ -219,7 +227,6 @@
             { palabra: "Trebol", syllables: ["Tre", "bol"], category: "grave", hasTilde: true, accentedVowel: "é" },
             { palabra: "Movil", syllables: ["Mo", "vil"], category: "grave", hasTilde: true, accentedVowel: "ó" },
 
-            // Graves sin tilde
             { palabra: "Casa", syllables: ["Ca", "sa"], category: "grave", hasTilde: false, accentedVowel: "a" },
             { palabra: "Perro", syllables: ["Pe", "rro"], category: "grave", hasTilde: false, accentedVowel: "e" },
             { palabra: "Libro", syllables: ["Li", "bro"], category: "grave", hasTilde: false, accentedVowel: "i" },
@@ -241,7 +248,6 @@
             { palabra: "Espejo", syllables: ["Es", "pe", "jo"], category: "grave", hasTilde: false, accentedVowel: "e" },
             { palabra: "Zapatos", syllables: ["Za", "pa", "tos"], category: "grave", hasTilde: false, accentedVowel: "a" },
 
-            // Agudas con tilde
             { palabra: "Cafe", syllables: ["Ca", "fe"], category: "aguda", hasTilde: true, accentedVowel: "é" },
             { palabra: "Peru", syllables: ["Pe", "ru"], category: "aguda", hasTilde: true, accentedVowel: "ú" },
             { palabra: "Raton", syllables: ["Ra", "ton"], category: "aguda", hasTilde: true, accentedVowel: "ó" },
@@ -259,7 +265,6 @@
             { palabra: "Compas", syllables: ["Com", "pas"], category: "aguda", hasTilde: true, accentedVowel: "á" }
         ];
 
-        // Procesar automáticamente el banco para añadir tonicIndex a cada elemento
         const wordBank = rawWordBank.map(item => {
             let targetIndex = 0;
             const len = item.syllables.length;
@@ -268,10 +273,7 @@
             else if (item.category === "grave") targetIndex = len >= 2 ? len - 2 : 0;
             else if (item.category === "aguda") targetIndex = len - 1;
 
-            return {
-                ...item,
-                tonicIndex: targetIndex
-            };
+            return { ...item, tonicIndex: targetIndex };
         });
 
         let activeGameWords = [];
@@ -293,7 +295,6 @@
             playerName = nameInput;
             document.getElementById("studentDisplay").innerText = playerName.split(" ")[0];
             
-            // Tomar 10 palabras aleatorias del banco completo
             activeGameWords = [...wordBank].sort(() => 0.5 - Math.random()).slice(0, 10);
 
             document.getElementById("welcome").classList.remove("active");
@@ -338,7 +339,6 @@
             document.getElementById("step2Feedback").innerText = "";
             document.getElementById("nextQuestionBtn").style.display = "none";
 
-            // Rellenar dinámicamente los slots del cuadro SEGA
             const categories = ["sobresdrújula", "esdrújula", "grave", "aguda"];
             categories.forEach(cat => {
                 const slot = document.getElementById(`slot-${cat}`);
@@ -449,20 +449,59 @@
 
         function saveScore(name, finalScore) {
             let leaderboard = JSON.parse(localStorage.getItem("sega_leaderboard") || "[]");
-            leaderboard.push({ name, score: finalScore });
+            leaderboard.push({ name, score: finalScore, date: new Date().toLocaleDateString() });
             leaderboard.sort((a, b) => b.score - a.score);
-            leaderboard = leaderboard.slice(0, 5);
             localStorage.setItem("sega_leaderboard", JSON.stringify(leaderboard));
 
+            updateLeaderboardUI();
+        }
+
+        function updateLeaderboardUI() {
+            let leaderboard = JSON.parse(localStorage.getItem("sega_leaderboard") || "[]");
+            
+            // Top 5 para la tabla principal
             const list = document.getElementById("leaderboardList");
             list.innerHTML = "";
-            leaderboard.forEach((entry, idx) => {
+            leaderboard.slice(0, 5).forEach((entry, idx) => {
                 const li = document.createElement("li");
                 li.className = "leaderboard-item";
                 li.innerHTML = `<span>${idx + 1}. ${entry.name}</span> <span><b>${entry.score} pts</b></span>`;
                 list.appendChild(li);
             });
+
+            // Lista completa para el panel de notas del profesor
+            const notesList = document.getElementById("teacherNotesList");
+            if (notesList) {
+                notesList.innerHTML = "";
+                if (leaderboard.length === 0) {
+                    notesList.innerHTML = `<li class="leaderboard-item" style="justify-content:center; color:#a8a8b3;">No hay estudiantes registrados aún.</li>`;
+                } else {
+                    leaderboard.forEach((entry, idx) => {
+                        const li = document.createElement("li");
+                        li.className = "leaderboard-item";
+                        li.innerHTML = `<span>${idx + 1}. ${entry.name} <small style="color:#a8a8b3;">(${entry.date || 'Reciente'})</small></span> <span><b>${entry.score} pts</b></span>`;
+                        notesList.appendChild(li);
+                    });
+                }
+            }
         }
+
+        function toggleTeacherView() {
+            const panel = document.getElementById("teacherViewContainer");
+            panel.style.display = panel.style.display === "none" ? "block" : "none";
+        }
+
+        function clearRecords() {
+            if (confirm("¿Estás seguro de borrar todas las notas guardadas?")) {
+                localStorage.removeItem("sega_leaderboard");
+                updateLeaderboardUI();
+            }
+        }
+
+        // Cargar registros al iniciar por si acaso
+        window.onload = function() {
+            updateLeaderboardUI();
+        };
     </script>
 </body>
 </html>
