@@ -402,7 +402,7 @@
             { syllables: ["A", "me", "ri", "ca"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "e" },
 
             // Sobresdrújulas
-            { syllables: ["Guar", "da", "me", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "u" },
+            { syllables: ["Guar", "da", "me", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "a" },
             { syllables: ["Di", "ga", "se", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "i" },
             { syllables: ["Trai", "ga", "se", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "a" },
             { syllables: ["Com", "pra", "te", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "o" },
@@ -695,5 +695,29 @@
             switchScreen('screen-welcome');
         }
     </script>
+    <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyD6au5DwvcsJqd-AVZGh2VrigBK3rcW39s",
+    authDomain: "acento-ortografico.firebaseapp.com",
+    databaseURL: "https://acento-ortografico-default-rtdb.firebaseio.com",
+    projectId: "acento-ortografico",
+    storageBucket: "acento-ortografico.firebasestorage.app",
+    messagingSenderId: "992822183733",
+    appId: "1:992822183733:web:472513a0bdd187a19a6e7c",
+    measurementId: "G-VDFW8GYLBH"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
 </body>
 </html>
