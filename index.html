@@ -16,6 +16,7 @@
             --yellow-text: #fbbf24;
             --btn-gray: #374151;
             --btn-gray-hover: #4b5563;
+            --error-red: #ef4444;
         }
 
         * {
@@ -235,11 +236,14 @@
         }
 
         .feedback-box {
-            text-align: center;
-            font-size: 15px;
-            font-weight: bold;
+            background-color: #121212;
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
             margin: 15px 0;
-            min-height: 24px;
+            min-height: 50px;
+            text-align: left;
         }
 
         table.results-table {
@@ -330,7 +334,7 @@
             <p class="step-title"><b>Paso 3:</b> Toca la vocal que lleva la tilde en esa sílaba (si aplica):</p>
             <div class="vowel-container" id="vowels-box"></div>
 
-            <div class="feedback-box" id="feedback-msg"></div>
+            <div class="feedback-box" id="feedback-msg">Selecciona tus respuestas y haz clic en Siguiente Palabra para ver el desglose de tus aciertos y errores.</div>
 
             <button id="btn-next" class="btn-green" onclick="nextQuestion()">Siguiente Palabra</button>
         </div>
@@ -456,7 +460,7 @@
             userSelectedSyllable = -1;
             userSelectedTilde = null;
             userSelectedVowel = "";
-            document.getElementById("feedback-msg").innerText = "";
+            document.getElementById("feedback-msg").innerHTML = "Selecciona tus respuestas y haz clic en Siguiente Palabra para ver el desglose de tus aciertos y errores.";
             document.getElementById("step1-info").innerText = "Has ubicado la sílaba tónica en la columna: --";
             document.getElementById("btn-tilde-yes").classList.remove("selected");
             document.getElementById("btn-tilde-no").classList.remove("selected");
@@ -524,17 +528,29 @@
 
             const isTotallyCorrect = isColCorrect && isTildeCorrect && isVowelCorrect;
 
+            let feedbackHTML = "";
             if (isTotallyCorrect) {
                 correctAnswersCount++;
-                document.getElementById("feedback-msg").style.color = "var(--accent-green)";
-                document.getElementById("feedback-msg").innerText = `¡Correcto! Es una palabra ${currentItem.category}.`;
+                feedbackHTML = `<span style="color: var(--accent-green); font-weight: bold;">¡Excelente! Todo correcto. Es una palabra ${currentItem.category}.</span>`;
             } else {
-                document.getElementById("feedback-msg").style.color = "#ef4444";
-                document.getElementById("feedback-msg").innerText = `Incorrecto. La clasificación correcta era ${currentItem.category}.`;
+                feedbackHTML = `<span style="color: var(--error-red); font-weight: bold;">Errores detectados en esta palabra:</span><ul style="margin-left: 20px; margin-top: 5px;">`;
+                
+                if (!isColCorrect) {
+                    feedbackHTML += `<li>Clasificación errónea: Elegiste <b>${categoryNames[userSelectedSyllable] || 'Ninguna'}</b>, pero la palabra es <b>${currentItem.category}</b>.</li>`;
+                }
+                if (!isTildeCorrect) {
+                    feedbackHTML += `<li>Regla de tilde errónea: Te equivocaste al decir si llevaba o no tilde (Lo correcto era: <b>${currentItem.tilde ? 'Sí lleva tilde' : 'No lleva tilde'}</b>).</li>`;
+                }
+                if (currentItem.tilde && !isVowelCorrect) {
+                    feedbackHTML += `<li>Vocal acentuada errónea: Marcaste la vocal <b>'${userSelectedVowel || 'Ninguna'}'</b>, pero la tilde iba en la <b>'${currentItem.vowel}'</b>.</li>`;
+                }
+                feedbackHTML += `</ul>`;
             }
 
+            document.getElementById("feedback-msg").innerHTML = feedbackHTML;
             document.getElementById("score-display").innerText = correctAnswersCount;
 
+            // Desactivamos botones momentáneamente para que lea el desglose antes de avanzar
             setTimeout(() => {
                 currentWordIndex++;
                 if (currentWordIndex < selectedWords.length) {
@@ -542,7 +558,7 @@
                 } else {
                     finishGame();
                 }
-            }, 1200);
+            }, 4500); // Se da más tiempo (4.5s) para leer el desglose detallado del error
         }
 
         function finishGame() {
@@ -560,7 +576,6 @@
                 timestamp: Date.now()
             };
 
-            // Guardado local de respaldo inmediato
             let localLeaderboard = JSON.parse(localStorage.getItem("leaderboard_acento") || "[]");
             localLeaderboard.push(record);
             localStorage.setItem("leaderboard_acento", JSON.stringify(localLeaderboard));
