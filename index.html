@@ -106,7 +106,6 @@
             font-size: 14px;
         }
 
-        /* Tabla SEGA de 5 columnas */
         .sega-table {
             width: 100%;
             border-collapse: collapse;
@@ -126,11 +125,17 @@
 
         .sega-table td {
             height: 40px;
+            cursor: pointer;
+        }
+
+        .sega-table td.selected {
+            background-color: #d4efdf;
+            border: 2px solid var(--accent);
+            font-weight: bold;
         }
 
         .options-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+            display: flex;
             gap: 10px;
             margin-top: 15px;
         }
@@ -162,7 +167,7 @@
         </div>
 
         <button class="btn-green" onclick="startGame()">Comenzar Evaluación</button>
-        <button class="btn-secondary" onclick="showLeaderboardView()">Ver Tabla de Posiciones General</button>
+        <button class="btn-secondary" onclick="loadLeaderboard()">Ver Tabla de Posiciones General</button>
     </div>
 
     <!-- PANTALLA DEL EXAMEN -->
@@ -175,7 +180,7 @@
 
         <h2 id="word-display" style="text-align: center; letter-spacing: 2px;">---</h2>
 
-        <!-- Estructura de la Tabla SEGA (5 columnas) -->
+        <!-- Tabla SEGA (5 columnas) -->
         <table class="sega-table">
             <thead>
                 <tr>
@@ -197,16 +202,26 @@
             </tbody>
         </table>
 
-        <div class="options-group" id="action-buttons">
-            <!-- Botones de clasificación/respuesta generados dinámicamente -->
-        </div>
+        <div id="step1-info" style="margin-top: 10px; font-weight: bold; color: var(--secondary);"></div>
+
+        <button class="btn-green" onclick="handleNextStep()" style="margin-top: 20px;">Siguiente</button>
     </div>
 
-    <!-- PANTALLA DE RESULTADOS / TABLA DE POSICIONES -->
+    <!-- PANTALLA DE RESULTADOS -->
+    <div id="screen-results" class="screen">
+        <h2>Resultados de la Evaluación</h2>
+        <p id="result-name" style="text-align: center; font-size: 18px; font-weight: bold;"></p>
+        <p id="result-grade" style="text-align: center; font-size: 22px; color: var(--accent);"></p>
+        <div id="result-user-container" style="margin: 20px 0;"></div>
+        <button class="btn-green" onclick="loadLeaderboard()">Ver Tabla de Posiciones</button>
+        <button class="btn-secondary" onclick="showWelcomeScreen()">Volver al Inicio</button>
+    </div>
+
+    <!-- PANTALLA DE TABLA DE POSICIONES -->
     <div id="screen-leaderboard" class="screen">
         <h2>Tabla de Posiciones General</h2>
-        <ul id="leaderboard-container" class="leaderboard-list">
-            <!-- Cargado dinámicamente desde Firebase/localStorage -->
+        <ul id="leaderboard-body" class="leaderboard-list">
+            <!-- Cargado dinámicamente -->
         </ul>
         <button class="btn-secondary" onclick="showWelcomeScreen()">Volver al Inicio</button>
     </div>
@@ -217,7 +232,6 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <script>
-    // Configuración de tu proyecto de Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyD6au5DwvcsJqd-AVZHg2VrigBK3rcw39s",
         authDomain: "acento-ortografico.firebaseapp.com",
@@ -228,130 +242,34 @@
         appId: "1:992822183733:web:472513a0bdd187a19a6e7c"
     };
 
-    // Inicialización
     let database = null;
     try {
         firebase.initializeApp(firebaseConfig);
         database = firebase.database();
     } catch(e) {
-        console.warn("Firebase no configurado o falló al cargar, usando almacenamiento local.", e);
+        console.warn("Modo local activado.", e);
     }
 
-    // Banco de palabras validado pedagógicamente
     const wordBank = [
-        // Sobresdrújulas
-        { syllables: ["dí", "ga", "se", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "i" },
-        { syllables: ["cóm", "pra", "te", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "o" },
-        { syllables: ["trái", "ga", "se", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "a" },
-        { syllables: ["vén", "de", "se", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "e" },
-        { syllables: ["á", "bre", "me", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "a" },
-        { syllables: ["pá", "ga", "me", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "a" },
-        { syllables: ["trá", "e", "me", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "a" },
-        { syllables: ["bús", "ca", "te", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "u" },
-        { syllables: ["cuén", "ta", "me", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "e" },
-        { syllables: ["cám", "bia", "te", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "a" },
-        { syllables: ["lé", "a", "se", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "e" },
-        { syllables: ["cú", "re", "te", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "u" },
-        { syllables: ["gá", "na", "te", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "a" },
-        { syllables: ["pí", "de", "se", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "i" },
-        { syllables: ["sá", "ca", "me", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "a" },
-        { syllables: ["róm", "pe", "te", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "o" },
-        { syllables: ["é", "cha", "se", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "e" },
-        { syllables: ["jú", "ra", "me", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "u" },
-        { syllables: ["quí", "ta", "te", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "i" },
-        { syllables: ["pá", "sa", "me", "lo"], tonicIndex: 3, category: "Sobresdrújula", tilde: true, vowel: "a" },
-
-        // Esdrújulas
-        { syllables: ["plá", "ta", "no"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "a" },
-        { syllables: ["mú", "si", "ca"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "u" },
-        { syllables: ["sá", "ba", "do"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "a" },
-        { syllables: ["mé", "di", "co"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "e" },
-        { syllables: ["pá", "ja", "ro"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "a" },
-        { syllables: ["lám", "pa", "ra"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "a" },
-        { syllables: ["brú", "ju", "la"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "u" },
-        { syllables: ["cá", "ma", "ra"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "a" },
-        { syllables: ["pá", "gi", "na"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "a" },
-        { syllables: ["ár", "bo", "les"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "a" },
-        { syllables: ["cé", "lu", "la"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "e" },
-        { syllables: ["lá", "gri", "ma"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "a" },
-        { syllables: ["rá", "pi", "do"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "a" },
-        { syllables: ["án", "gu", "lo"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "a" },
-        { syllables: ["fá", "bri", "ca"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "a" },
-        { syllables: ["má", "gi", "co"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "a" },
-        { syllables: ["nú", "me", "ro"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "u" },
-        { syllables: ["bél", "gi", "ca"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "e" },
-        { syllables: ["tú", "ni", "ca"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "u" },
-        { syllables: ["pá", "ni", "co"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "a" },
-
-        // Graves con tilde
-        { syllables: ["ár", "bol"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "a" },
-        { syllables: ["lá", "piz"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "a" },
-        { syllables: ["tú", "nel"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "u" },
-        { syllables: ["fá", "cil"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "a" },
-        { syllables: ["có", "mic"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "o" },
-        { syllables: ["án", "gel"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "a" },
-        { syllables: ["crá", "ter"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "a" },
-        { syllables: ["fút", "bol"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "u" },
-        { syllables: ["lí", "der"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "i" },
-        { syllables: ["cés", "ped"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "e" },
-        { syllables: ["ú", "til"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "u" },
-        { syllables: ["dó", "lar"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "o" },
-        { syllables: ["már", "mol"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "a" },
-        { syllables: ["ál", "bum"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "a" },
-        { syllables: ["cár", "cel"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "a" },
-        { syllables: ["dé", "bil"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "e" },
-        { syllables: ["fé", "mur"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "e" },
-        { syllables: ["cón", "sul"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "o" },
-        { syllables: ["tré", "bol"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "e" },
-        { syllables: ["mó", "vil"], tonicIndex: 1, category: "Grave", tilde: true, vowel: "o" },
-
-        // Graves sin tilde
-        { syllables: ["ca", "sa"], tonicIndex: 1, category: "Grave", tilde: false },
-        { syllables: ["pe", "rro"], tonicIndex: 1, category: "Grave", tilde: false },
-        { syllables: ["li", "bro"], tonicIndex: 1, category: "Grave", tilde: false },
-        { syllables: ["me", "sa"], tonicIndex: 1, category: "Grave", tilde: false },
-        { syllables: ["ca", "ma"], tonicIndex: 1, category: "Grave", tilde: false },
-        { syllables: ["si", "lla"], tonicIndex: 1, category: "Grave", tilde: false },
-        { syllables: ["ga", "to"], tonicIndex: 1, category: "Grave", tilde: false },
-        { syllables: ["cal", "ma"], tonicIndex: 1, category: "Grave", tilde: false },
-        { syllables: ["go", "zo"], tonicIndex: 1, category: "Grave", tilde: false },
-        { syllables: ["vi", "drio"], tonicIndex: 1, category: "Grave", tilde: false },
-        { syllables: ["fru", "ta"], tonicIndex: 1, category: "Grave", tilde: false },
-        { syllables: ["ro", "pa"], tonicIndex: 1, category: "Grave", tilde: false },
-        { syllables: ["pla", "to"], tonicIndex: 1, category: "Grave", tilde: false },
-        { syllables: ["nu", "be"], tonicIndex: 1, category: "Grave", tilde: false },
-        { syllables: ["a", "gua"], tonicIndex: 1, category: "Grave", tilde: false },
-        { syllables: ["pe", "lo"], tonicIndex: 1, category: "Grave", tilde: false },
-        { syllables: ["ven", "ta", "na"], tonicIndex: 1, category: "Grave", tilde: false },
-        { syllables: ["co", "mi", "da"], tonicIndex: 1, category: "Grave", tilde: false },
-        { syllables: ["es", "pe", "jo"], tonicIndex: 1, category: "Grave", tilde: false },
-        { syllables: ["za", "pa", "tos"], tonicIndex: 1, category: "Grave", tilde: false },
-
-        // Agudas con tilde
-        { syllables: ["ca", "fé"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "e" },
-        { syllables: ["Pe", "rú"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "u" },
-        { syllables: ["ra", "tón"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "o" },
-        { syllables: ["so", "fá"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "a" },
-        { syllables: ["ma", "má"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "a" },
-        { syllables: ["pa", "pá"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "a" },
-        { syllables: ["be", "bé"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "e" },
-        { syllables: ["can", "ción"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "o" },
-        { syllables: ["a", "vión"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "o" },
-        { syllables: ["ca", "mión"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "o" },
-        { syllables: ["jar", "dín"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "i" },
-        { syllables: ["Pa", "rís"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "i" },
-        { syllables: ["An", "drés"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "e" },
-        { syllables: ["ma", "ní"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "i" },
-        { syllables: ["com", "pás"], tonicIndex: 0, category: "Aguda", tilde: true, vowel: "a" }
+        { syllables: ["dí", "ga", "se", "lo"], category: "Sobresdrújula" },
+        { syllables: ["cóm", "pra", "te", "lo"], category: "Sobresdrújula" },
+        { syllables: ["plá", "ta", "no"], category: "Esdrújula" },
+        { syllables: ["mú", "si", "ca"], category: "Esdrújula" },
+        { syllables: ["ár", "bol"], category: "Grave" },
+        { syllables: ["lá", "piz"], category: "Grave" },
+        { syllables: ["ca", "sa"], category: "Grave" },
+        { syllables: ["pe", "rro"], category: "Grave" },
+        { syllables: ["ca", "fé"], category: "Aguda" },
+        { syllables: ["ra", "tón"], category: "Aguda" }
     ];
 
-    // Variables de Estado
-    let currentUser = "";
-    let score = 0;
-    let currentQuestion = 0;
-    let selectedQuestions = [];
+    let currentStudent = "";
+    let correctAnswersCount = 0;
+    let currentWordIndex = 0;
+    let selectedWords = [];
+    let userSelectedSyllable = -1;
+    let isShowingFeedback = false;
 
-    // Funciones Principales
     function startGame() {
         const nameInput = document.getElementById("user-name").value.trim();
         if (!nameInput) {
@@ -359,35 +277,35 @@
             return;
         }
 
-        currentUser = nameInput;
-        score = 0;
-        currentQuestion = 0;
-        
-        // Seleccionar 10 palabras aleatorias del banco
-        selectedQuestions = [...wordBank].sort(() => 0.5 - Math.random()).slice(0, 10);
+        currentStudent = nameInput;
+        correctAnswersCount = 0;
+        currentWordIndex = 0;
+        selectedWords = [...wordBank].sort(() => 0.5 - Math.random()).slice(0, 10);
 
-        document.getElementById("player-display").textContent = currentUser;
-        document.getElementById("score-display").textContent = score;
+        document.getElementById("player-display").textContent = currentStudent;
+        document.getElementById("score-display").textContent = correctAnswersCount;
 
         switchScreen("screen-game");
         loadQuestion();
     }
 
     function loadQuestion() {
-        if (currentQuestion >= selectedQuestions.length) {
+        if (currentWordIndex >= selectedWords.length) {
             finishGame();
             return;
         }
 
-        const q = selectedQuestions[currentQuestion];
-        document.getElementById("current-index").textContent = currentQuestion + 1;
+        isShowingFeedback = false;
+        userSelectedSyllable = -1;
+        document.getElementById("step1-info").innerText = "";
+
+        const q = selectedWords[currentWordIndex];
+        document.getElementById("current-index").textContent = currentWordIndex + 1;
         document.getElementById("word-display").textContent = q.syllables.join("");
 
-        // Renderizar sílabas en la tabla SEGA de 5 columnas
         const row = document.getElementById("syllables-row");
         const cells = ["", "", "", "", ""];
         
-        // Colocar sílabas comenzando desde la derecha (Aguda = índice 4)
         for (let i = 0; i < q.syllables.length; i++) {
             const pos = 4 - i;
             if (pos >= 0) {
@@ -395,79 +313,122 @@
             }
         }
 
-        row.innerHTML = cells.map(c => `<td>${c || "-"}</td>`).join("");
-
-        // Generar botones de clasificación
-        const actions = document.getElementById("action-buttons");
-        actions.innerHTML = `
-            <button class="btn-green" onclick="answer('Sobresdrújula')">Sobresdrújula</button>
-            <button class="btn-green" onclick="answer('Esdrújula')">Esdrújula</button>
-            <button class="btn-green" onclick="answer('Grave')">Grave</button>
-            <button class="btn-green" onclick="answer('Aguda')">Aguda</button>
-        `;
+        row.innerHTML = cells.map((c, index) => `<td onclick="selectSyllable(${index})">${c || "-"}</td>`).join("");
     }
 
-    function answer(categorySelected) {
-        const q = selectedQuestions[currentQuestion];
-        if (categorySelected === q.category) {
-            score += 10;
-            document.getElementById("score-display").textContent = score;
-        }
+    function selectSyllable(index) {
+        if (isShowingFeedback) return;
+        userSelectedSyllable = index;
         
-        currentQuestion++;
-        loadQuestion();
+        const tdCells = document.querySelectorAll("#syllables-row td");
+        tdCells.forEach((td, idx) => {
+            if (idx === index && td.innerText !== "-") {
+                td.classList.add("selected");
+            } else {
+                td.classList.remove("selected");
+            }
+        });
+
+        const categoryNames = { 4: "Aguda", 3: "Grave", 2: "Esdrújula", 1: "Sobresdrújula", 0: "Anterior" };
+        const colName = categoryNames[index] || "--";
+        document.getElementById("step1-info").innerText = `Has ubicado la sílaba tónica en la columna: ${colName}.`;
+    }
+
+    function handleNextStep() {
+        if (isShowingFeedback) {
+            currentWordIndex++;
+            if (currentWordIndex < selectedWords.length) {
+                loadQuestion();
+            } else {
+                finishGame();
+            }
+            return;
+        }
+
+        if (userSelectedSyllable === -1) {
+            alert("Por favor selecciona la sílaba tónica en el cuadro SEGA.");
+            return;
+        }
+
+        isShowingFeedback = true;
+        const q = selectedWords[currentWordIndex];
+        
+        const categoryMap = { 4: "Aguda", 3: "Grave", 2: "Esdrújula", 1: "Sobresdrújula" };
+        const userCategory = categoryMap[userSelectedSyllable];
+
+        if (userCategory === q.category) {
+            correctAnswersCount++;
+            document.getElementById("score-display").textContent = correctAnswersCount;
+            document.getElementById("step1-info").innerHTML = "¡Excelente! Todo correcto.";
+        } else {
+            document.getElementById("step1-info").innerHTML = `Clasificación errónea: Elegiste ${userCategory}, pero la palabra es ${q.category}.`;
+        }
     }
 
     function finishGame() {
-        alert(`¡Evaluación finalizada! Tu puntaje es: ${score}/100`);
-        
-        // Guardar resultado en Firebase o localStorage
+        const finalGrade = parseFloat((correctAnswersCount * 1).toFixed(1));
+        switchScreen("screen-results");
+
+        document.getElementById("result-name").innerText = `Estudiante: ${currentStudent}`;
+        document.getElementById("result-grade").innerText = `Calificación Final: ${finalGrade} / 10`;
+
+        const record = { name: currentStudent, grade: finalGrade, score: correctAnswersCount, timestamp: Date.now() };
+
         if (database) {
-            database.ref('posiciones').push({
-                nombre: currentUser,
-                puntaje: score,
-                fecha: new Date().toLocaleDateString()
+            database.ref("leaderboard").push(record).then(() => {
+                console.log("Puntaje guardado en Firebase.");
+            }).catch(() => {
+                saveLeaderboardLocal(record);
             });
         } else {
-            let localScores = JSON.parse(localStorage.getItem("scores") || "[]");
-            localScores.push({ nombre: currentUser, puntaje: score });
-            localStorage.setItem("scores", JSON.stringify(localScores));
+            saveLeaderboardLocal(record);
         }
-
-        showLeaderboardView();
     }
 
-    function showLeaderboardView() {
+    function saveLeaderboardLocal(record) {
+        let localLeaderboard = JSON.parse(localStorage.getItem("leaderboard_acento") || "[]");
+        localLeaderboard.push(record);
+        localStorage.setItem("leaderboard_acento", JSON.stringify(localLeaderboard));
+    }
+
+    function loadLeaderboard() {
         switchScreen("screen-leaderboard");
-        const container = document.getElementById("leaderboard-container");
-        container.innerHTML = "<li>Cargando...</li>";
+        const tbody = document.getElementById("leaderboard-body");
+        tbody.innerHTML = "<li>Cargando puntajes...</li>";
 
         if (database) {
-            database.ref('posiciones').orderByChild('puntaje').limitToLast(10).once('value', (snapshot) => {
-                container.innerHTML = "";
-                let items = [];
+            database.ref("leaderboard").once("value").then((snapshot) => {
+                let leaderboard = [];
                 snapshot.forEach(child => {
-                    items.unshift(child.val());
+                    leaderboard.push(child.val());
                 });
-                renderScores(items);
+                renderLeaderboardTable(leaderboard);
+            }).catch(() => {
+                loadLeaderboardFromLocal();
             });
         } else {
-            let localScores = JSON.parse(localStorage.getItem("scores") || "[]");
-            localScores.sort((a,b) => b.puntaje - a.puntaje);
-            renderScores(localScores);
+            loadLeaderboardFromLocal();
         }
     }
 
-    function renderScores(items) {
-        const container = document.getElementById("leaderboard-container");
-        if (items.length === 0) {
-            container.innerHTML = "<li>No hay puntajes registrados aún.</li>";
+    function loadLeaderboardFromLocal() {
+        let localLeaderboard = JSON.parse(localStorage.getItem("leaderboard_acento") || "[]");
+        renderLeaderboardTable(localLeaderboard);
+    }
+
+    function renderLeaderboardTable(leaderboard) {
+        const tbody = document.getElementById("leaderboard-body");
+        leaderboard.sort((a, b) => b.score - a.score);
+
+        if (leaderboard.length === 0) {
+            tbody.innerHTML = "<li>No hay puntajes registrados aún.</li>";
             return;
         }
-        container.innerHTML = items.map(item => `
+
+        tbody.innerHTML = leaderboard.map(item => `
             <li class="leaderboard-item">
-                <span><b>${item.nombre}</b></span>
-                <span>${item.puntaje} pts</span>
+                <span><b>${item.name}</b></span>
+                <span>${item.score} aciertos (${item.grade} pts)</span>
             </li>
         `).join("");
     }
