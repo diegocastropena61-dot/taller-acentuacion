@@ -175,7 +175,6 @@
             font-weight: bold;
             cursor: pointer;
             min-width: 50px;
-            /* Sin transformaciones CSS automáticas para respetar el script */
         }
 
         .syllable-btn.selected {
@@ -271,6 +270,7 @@
 <body>
 
     <div class="container">
+        <!-- PANTALLA INICIAL -->
         <div id="screen-welcome" class="screen active">
             <h1>Taller de Acentuación Ortográfica</h1>
             <p class="description">Evaluación de acentuación y clasificación de palabras.</p>
@@ -282,6 +282,7 @@
             <button class="btn-secondary" onclick="showLeaderboardView()">Ver Tabla de Posiciones General</button>
         </div>
 
+        <!-- PANTALLA DEL EXAMEN -->
         <div id="screen-game" class="screen">
             <div class="header-game">
                 <span>Estudiante: <b id="player-display"></b></span>
@@ -338,6 +339,7 @@
             <button id="btn-next" class="btn-green" onclick="handleNextStep()">Siguiente Palabra</button>
         </div>
 
+        <!-- PANTALLA DE RESULTADOS -->
         <div id="screen-results" class="screen">
             <h2>Resultados de la Evaluación</h2>
             <div id="result-user-container" style="display:none;">
@@ -366,6 +368,7 @@
         </div>
     </div>
 
+    <!-- FIREBASE DB -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -465,15 +468,6 @@
             document.getElementById(screenId).classList.add('active');
         }
 
-        // Función para poner únicamente la primera letra de toda la palabra en mayúscula
-        function formatWordDisplay(syllablesArray, index) {
-            let fullWord = syllablesArray.join("");
-            if (index === 0) {
-                return fullWord.charAt(0).toUpperCase() + fullWord.slice(1);
-            }
-            return syllablesArray[index];
-        }
-
         function startGame() {
             const nameField = document.getElementById("user-name");
             const name = nameField.value.trim();
@@ -524,9 +518,12 @@
                 if (posFromEnd < 4) {
                     let sylText = currentItem.syllables[i];
                     
-                    // Si esta sílaba es la primera de la palabra, se pone su inicial en mayúscula
+                    // CORRECCIÓN: Solo se pasa a mayúscula la primera letra si es el índice 0 absoluto de la palabra.
+                    // Todo lo demás (incluyendo la 'c' o la 'n' de sílabas intermedias) se fuerza a minúsculas.
                     if (i === 0) {
-                        sylText = sylText.charAt(0).toUpperCase() + sylText.slice(1);
+                        sylText = sylText.charAt(0).toUpperCase() + sylText.slice(1).toLowerCase();
+                    } else {
+                        sylText = sylText.toLowerCase();
                     }
 
                     document.getElementById(`cell-${posFromEnd}`).innerHTML = 
