@@ -271,8 +271,8 @@
             <h1>Taller de Acentuación Ortográfica</h1>
             <p class="description">Evaluación de acentuación y clasificación de objetos y sentimientos.</p>
             <div class="input-group">
-                <label for="app-user-name">Nombre Completo del Estudiante:</label>
-                <input type="text" id="app-user-name" placeholder="Ej. Juan Pérez" autocomplete="off">
+                <label for="user-name">Nombre Completo del Estudiante:</label>
+                <input type="text" id="user-name" placeholder="Ej. Juan Pérez" autocomplete="off">
             </div>
             <button class="btn-green" onclick="startGame()">Comenzar Evaluación</button>
             <button class="btn-secondary" onclick="showLeaderboardView()">Ver Tabla de Posiciones General</button>
@@ -372,10 +372,16 @@
         const firebaseConfig = {
             databaseURL: "https://acento-ortografico-8ed2d-default-rtdb.firebaseio.com/"
         };
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
+        
+        let database = null;
+        try {
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+            database = firebase.database();
+        } catch (e) {
+            console.warn("Firebase no inicializado, usando almacenamiento local.");
         }
-        const database = firebase.database();
 
         const wordBank = [
             { syllables: ["ca", "ma", "ra"], tonicIndex: 2, category: "Esdrújula", tilde: true, vowel: "a" },
@@ -416,14 +422,13 @@
 
         const categoryNames = ["Aguda", "Grave", "Esdrújula", "Sobresdrújula"];
 
-        // Función centralizada para mostrar pantallas de forma limpia
         function switchScreen(screenId) {
             document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
         }
 
         function startGame() {
-            const nameField = document.getElementById("app-user-name");
+            const nameField = document.getElementById("user-name");
             const name = nameField.value.trim();
             if (!name) {
                 alert("Por favor ingresa tu nombre");
@@ -555,44 +560,73 @@
                 timestamp: Date.now()
             };
 
-            database.ref("leaderboard").push(record)
-                .then(() => loadLeaderboard())
-                .catch(() => loadLeaderboard());
+            // Guardado local de respaldo inmediato
+            let localLeaderboard = JSON.parse(localStorage.getItem("leaderboard_acento") || "[]");
+            localLeaderboard.push(record);
+            localStorage.setItem("leaderboard_acento", JSON.stringify(localLeaderboard));
+
+            if (database) {
+                database.ref("leaderboard").push(record)
+                    .then(() => loadLeaderboard())
+                    .catch(() => loadLeaderboardFromLocal());
+            } else {
+                loadLeaderboardFromLocal();
+            }
         }
 
         function loadLeaderboard() {
             const tbody = document.getElementById("leaderboard-body");
             tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Cargando puntajes...</td></tr>";
 
+            if (!database) {
+                loadLeaderboardFromLocal();
+                return;
+            }
+
             database.ref("leaderboard").once("value").then(snapshot => {
                 let leaderboard = [];
                 snapshot.forEach(child => leaderboard.push(child.val()));
 
-                leaderboard.sort((a, b) => b.grade - a.grade || b.correct - a.correct);
-
-                tbody.innerHTML = "";
-                if(leaderboard.length === 0) {
-                    tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>No hay registros aún.</td></tr>";
+                if (leaderboard.length === 0) {
+                    loadLeaderboardFromLocal();
                     return;
                 }
 
-                leaderboard.forEach((entry, idx) => {
-                    const tr = document.createElement("tr");
-                    tr.innerHTML = `
-                        <td>${idx + 1}°</td>
-                        <td>${entry.name}</td>
-                        <td><b style="color:var(--accent-green)">${Number(entry.grade).toFixed(1)}</b> / 5.0</td>
-                        <td>${entry.correct} / 10</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
+                renderLeaderboardTable(leaderboard);
             }).catch(() => {
-                tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:#ef4444;'>Error al cargar los datos.</td></tr>";
+                loadLeaderboardFromLocal();
+            });
+        }
+
+        function loadLeaderboardFromLocal() {
+            let leaderboard = JSON.parse(localStorage.getItem("leaderboard_acento") || "[]");
+            renderLeaderboardTable(leaderboard);
+        }
+
+        function renderLeaderboardTable(leaderboard) {
+            const tbody = document.getElementById("leaderboard-body");
+            leaderboard.sort((a, b) => b.grade - a.grade || b.correct - a.correct);
+
+            tbody.innerHTML = "";
+            if (leaderboard.length === 0) {
+                tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>No hay registros aún.</td></tr>";
+                return;
+            }
+
+            leaderboard.forEach((entry, idx) => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${idx + 1}°</td>
+                    <td>${entry.name}</td>
+                    <td><b style="color:var(--accent-green)">${Number(entry.grade).toFixed(1)}</b> / 5.0</td>
+                    <td>${entry.correct} / 10</td>
+                `;
+                tbody.appendChild(tr);
             });
         }
 
         function restartActivity() {
-            document.getElementById("app-user-name").value = "";
+            document.getElementById("user-name").value = "";
             switchScreen('screen-welcome');
         }
     </script>
